@@ -95,7 +95,15 @@
           <td class="item-name">{{ item.name }}</td>
           <td>{{ item.category }}</td>
           <td class="item-stock">
-            {{ item.currentStock }} {{ item.unit }}
+            <div class="stock-info">
+              <span>{{ item.currentStock }} {{ item.unit }}</span>
+            </div>
+            <div class="progress-bar-container">
+              <div class="progress-fill" 
+                   [class]="getProgressBarClass(item)"
+                   [style.width.%]="getPercentage(item)">
+              </div>
+            </div>
           </td>
           <td class="item-min">{{ item.minStock }} {{ item.unit }}</td>
           <td>
@@ -106,9 +114,14 @@
             }
           </td>
           <td>
-            <app-ui-button variant="primary" size="sm" (click)="openRestockModal(item)">
-              Пополнить
-            </app-ui-button>
+            <div class="actions-group">
+              <button class="icon-btn" (click)="openRestockModal(item)" title="Пополнить запасы">
+                📦
+              </button>
+              <button class="icon-btn" (click)="openEditModal(item)" title="Редактировать">
+                ✏️
+              </button>
+            </div>
           </td>
         </tr>
       } @empty {
@@ -167,6 +180,63 @@
         <div class="modal-actions">
           <app-ui-button variant="secondary" (click)="closeRestockModal()" type="button">Отмена</app-ui-button>
           <app-ui-button variant="primary" [disabled]="restockForm.invalid" type="submit">Пополнить склад</app-ui-button>
+        </div>
+      </form>
+    </div>
+  }
+</app-ui-modal>
+
+<!-- Модальное окно редактирования -->
+<app-ui-modal 
+  [isOpen]="selectedEditItem() !== null" 
+  [title]="'Редактирование позиции'"
+  (onClose)="closeEditModal()">
+  
+  @if (selectedEditItem(); as item) {
+    <div class="edit-modal-content">
+      <form [formGroup]="editForm" (ngSubmit)="submitEdit()" class="restock-form">
+        <div class="form-group">
+          <label>Наименование</label>
+          <input type="text" formControlName="name" />
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label>Категория</label>
+            <select formControlName="category" class="category-select" style="width: 100%;">
+              <option value="Овощи">Овощи</option>
+              <option value="Мясо">Мясо</option>
+              <option value="Морепродукты">Морепродукты</option>
+              <option value="Бакалея">Бакалея</option>
+              <option value="Напитки">Напитки</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Мин. запас</label>
+            <input type="number" formControlName="minStock" />
+          </div>
+        </div>
+
+        <div class="related-dishes-box">
+          <h4>Используется в меню:</h4>
+          @let related = getRelatedDishes(item);
+          @if (related.length > 0) {
+            <ul class="related-list">
+              @for (dish of related; track dish.id) {
+                <li>
+                  <span class="dish-name">{{ dish.name }}</span>
+                  <span class="dish-cat badge">{{ dish.category }}</span>
+                </li>
+              }
+            </ul>
+          } @else {
+            <p class="empty-hint">Этот ингредиент пока не используется ни в одной технологической карте.</p>
+          }
+        </div>
+        
+        <div class="modal-actions">
+          <app-ui-button variant="secondary" (click)="closeEditModal()" type="button">Отмена</app-ui-button>
+          <app-ui-button variant="success" [disabled]="editForm.invalid" type="submit">Сохранить</app-ui-button>
         </div>
       </form>
     </div>

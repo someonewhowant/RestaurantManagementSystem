@@ -62,6 +62,17 @@ export class InventoryService {
     );
   }
 
+  // Обновление параметров ингредиента (название, категория, минимум)
+  updateItem(id: string, partial: Partial<InventoryItem>) {
+    this.itemsSignal.update(items =>
+      items.map(item =>
+        item.id === id
+          ? { ...item, ...partial }
+          : item
+      )
+    );
+  }
+
   // Массовое списание по рецептам
   consumeForOrderItems(orderItems: { dish: any, quantity: number }[]) {
     const consumptionMap = new Map<string, number>();
