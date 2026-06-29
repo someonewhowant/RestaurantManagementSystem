@@ -10,7 +10,8 @@ export const routes: Routes = [
     loadComponent: () => import('./core/layout/admin-layout/admin-layout.component').then(m => m.AdminLayoutComponent),
     children: [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
-      { path: 'dashboard', loadComponent: () => import('./features/admin/dashboard/dashboard.component').then(m => m.AdminDashboardComponent) }
+      { path: 'dashboard', loadComponent: () => import('./features/admin/dashboard/dashboard.component').then(m => m.AdminDashboardComponent) },
+      { path: 'inventory', loadComponent: () => import('./features/admin/inventory/inventory.component').then(m => m.AdminInventoryComponent) }
     ]
   }
 ];

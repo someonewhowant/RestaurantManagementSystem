@@ -7,5 +7,5 @@ import { Component, input } from '@angular/core';
   styleUrls: ['./badge.component.scss']
 })
 export class UiBadgeComponent {
-  color = input<'primary' | 'success' | 'warning'>('primary');
+  color = input<'primary' | 'success' | 'warning' | 'danger'>('primary');
 }

@@ -9,4 +9,6 @@ import { Component, input } from '@angular/core';
 export class UiButtonComponent {
   variant = input<'primary' | 'danger' | 'success'>('primary');
   size = input<'sm' | 'md'>('md');
+  disabled = input<boolean>(false);
+  type = input<'button' | 'submit' | 'reset'>('button');
 }

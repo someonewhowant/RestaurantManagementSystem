@@ -1,0 +1,102 @@
+<div class="inventory-header">
+  <div>
+    <h2>Управление складом</h2>
+    <p>Текущие остатки ингредиентов. Красным выделены позиции, требующие закупки.</p>
+  </div>
+  <app-ui-button variant="primary" (click)="toggleAddForm()">
+    @if (showAddForm()) { Отмена } @else { Новая позиция }
+  </app-ui-button>
+</div>
+
+@if (showAddForm()) {
+  <div class="add-form-container">
+    <h3>Добавление нового ингредиента</h3>
+    <form [formGroup]="addForm" (ngSubmit)="onSubmitAdd()" class="add-form">
+      <div class="form-group">
+        <label>Наименование</label>
+        <input type="text" formControlName="name" placeholder="Например: Мука" />
+      </div>
+      <div class="form-group">
+        <label>Категория</label>
+        <select formControlName="category">
+          <option value="Овощи">Овощи</option>
+          <option value="Мясо">Мясо</option>
+          <option value="Морепродукты">Морепродукты</option>
+          <option value="Бакалея">Бакалея</option>
+          <option value="Напитки">Напитки</option>
+        </select>
+      </div>
+      <div class="form-group stock-inputs">
+        <div class="form-group">
+          <label>Остаток</label>
+          <input type="number" formControlName="currentStock" />
+        </div>
+        <div class="form-group">
+          <label>Минимум</label>
+          <input type="number" formControlName="minStock" />
+        </div>
+        <div class="form-group">
+          <label>Ед. изм.</label>
+          <select formControlName="unit">
+            <option value="кг">кг</option>
+            <option value="л">л</option>
+            <option value="шт">шт</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-actions">
+        <app-ui-button variant="success" [disabled]="addForm.invalid" type="submit">Сохранить позицию</app-ui-button>
+      </div>
+    </form>
+  </div>
+}
+
+<!-- Блок с предупреждениями -->
+@if (inventoryService.lowStockItems().length > 0) {
+  <div class="alert-box">
+    <span class="alert-icon">⚠️</span>
+    <div class="alert-content">
+      <strong>Внимание: Дефицит продуктов!</strong>
+      <p>Количество позиций, требующих немедленного пополнения: {{ inventoryService.lowStockItems().length }}</p>
+    </div>
+  </div>
+}
+
+<div class="table-container">
+  <table class="inventory-table">
+    <thead>
+      <tr>
+        <th>Наименование</th>
+        <th>Категория</th>
+        <th>Остаток</th>
+        <th>Минимум</th>
+        <th>Статус</th>
+        <th>Действия</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (item of inventoryService.items(); track item.id) {
+        <tr>
+          <td class="item-name">{{ item.name }}</td>
+          <td>{{ item.category }}</td>
+          <td class="item-stock">
+            {{ item.currentStock }} {{ item.unit }}
+          </td>
+          <td class="item-min">{{ item.minStock }} {{ item.unit }}</td>
+          <td>
+            @if (item.currentStock <= item.minStock) {
+              <app-ui-badge color="danger">Дефицит</app-ui-badge>
+            } @else {
+              <app-ui-badge color="success">В норме</app-ui-badge>
+            }
+          </td>
+          <td>
+            <app-ui-button variant="primary" size="sm" (click)="onRestock(item.id)">
+              +10
+            </app-ui-button>
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>
