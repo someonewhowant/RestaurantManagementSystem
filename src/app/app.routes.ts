@@ -22,7 +22,8 @@ export const routes: Routes = [
     children: [
       { path: '', redirectTo: 'tables', pathMatch: 'full' },
       { path: 'tables', loadComponent: () => import('./features/waiter/tables/tables.component').then(m => m.WaiterTablesComponent) },
-      { path: 'terminal', loadComponent: () => import('./features/waiter/terminal/terminal.component').then(m => m.WaiterTerminalComponent) }
+      { path: 'terminal', loadComponent: () => import('./features/waiter/terminal/terminal.component').then(m => m.WaiterTerminalComponent) },
+      { path: 'kitchen', loadComponent: () => import('./features/waiter/kitchen/kitchen.component').then(m => m.KitchenComponent) }
     ]
   }
 ];

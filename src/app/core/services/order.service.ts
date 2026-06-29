@@ -74,6 +74,42 @@ export class OrderService {
     });
   }
 
+  clearOrder(tableId: string) {
+    this.ordersSignal.update(orders => {
+      const newOrders = { ...orders };
+      delete newOrders[tableId];
+      return newOrders;
+    });
+  }
+
+  sendToKitchen(tableId: string) {
+    this.ordersSignal.update(orders => {
+      const order = orders[tableId];
+      if (!order) return orders;
+
+      const newItems = order.items.map(item => {
+        if (item.status === 'new') return { ...item, status: 'cooking' as OrderItemStatus };
+        return item;
+      });
+
+      return { ...orders, [tableId]: { ...order, items: newItems } };
+    });
+  }
+
+  updateItemStatus(tableId: string, dishId: string, newStatus: OrderItemStatus) {
+    this.ordersSignal.update(orders => {
+      const order = orders[tableId];
+      if (!order) return orders;
+
+      const newItems = order.items.map(item => {
+        if (item.dish.id === dishId) return { ...item, status: newStatus };
+        return item;
+      });
+
+      return { ...orders, [tableId]: { ...order, items: newItems } };
+    });
+  }
+
   getTotal(tableId: string): number {
     const order = this.ordersSignal()[tableId];
     if (!order) return 0;

@@ -87,8 +87,8 @@
     </thead>
     <tbody>
       @for (tx of budgetService.transactions(); track tx.id) {
-        <tr>
-          <td class="tx-date">{{ tx.date | date:'dd MMM yyyy' }}</td>
+        <tr class="clickable-row" (click)="openTransactionDetails(tx)">
+          <td class="tx-date">{{ tx.date | date:'dd MMM yyyy HH:mm' }}</td>
           <td>
             @if (tx.type === 'Доход') {
               <app-ui-badge color="success">Доход</app-ui-badge>
@@ -99,7 +99,7 @@
           <td>{{ tx.category }}</td>
           <td>{{ tx.description }}</td>
           <td class="text-right tx-amount" [class.text-success]="tx.type === 'Доход'" [class.text-danger]="tx.type === 'Расход'">
-            {{ tx.type === 'Доход' ? '+' : '-' }}{{ tx.amount | currency:'USD' }}
+            {{ tx.type === 'Доход' ? '+' : '-' }}{{ tx.amount | currency:'RUB':'symbol-narrow':'1.0-0' }}
           </td>
         </tr>
       } @empty {
@@ -110,3 +110,45 @@
     </tbody>
   </table>
 </div>
+
+<app-ui-modal 
+  [isOpen]="selectedTransaction() !== null" 
+  [title]="'Чек операции'"
+  (onClose)="closeModal()">
+  
+  @if (selectedTransaction(); as tx) {
+    <div class="receipt-modal">
+      <div class="receipt-header">
+        <div class="receipt-icon" [class.success]="tx.type === 'Доход'" [class.danger]="tx.type === 'Расход'">
+          {{ tx.type === 'Доход' ? '↑' : '↓' }}
+        </div>
+        <h2>{{ tx.type === 'Доход' ? 'Успешное пополнение' : 'Успешное списание' }}</h2>
+        <div class="receipt-amount">{{ tx.type === 'Доход' ? '+' : '-' }}{{ tx.amount | currency:'RUB':'symbol-narrow':'1.0-0' }}</div>
+      </div>
+
+      <div class="receipt-body">
+        <div class="receipt-row">
+          <span class="label">Дата операции</span>
+          <span class="value">{{ tx.date | date:'dd MMMM yyyy, HH:mm' }}</span>
+        </div>
+        <div class="receipt-row">
+          <span class="label">Категория</span>
+          <span class="value">{{ tx.category }}</span>
+        </div>
+        <div class="receipt-row">
+          <span class="label">Детали</span>
+          <span class="value">{{ tx.description || '—' }}</span>
+        </div>
+        <div class="receipt-divider"></div>
+        <div class="receipt-row">
+          <span class="label">ID Транзакции</span>
+          <span class="value mono">#{{ tx.id }}</span>
+        </div>
+      </div>
+
+      <div class="receipt-footer">
+        <app-ui-button variant="primary" class="full-width" (click)="closeModal()">Отлично</app-ui-button>
+      </div>
+    </div>
+  }
+</app-ui-modal>

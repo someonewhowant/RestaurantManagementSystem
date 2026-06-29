@@ -1,0 +1,48 @@
+<div class="kitchen-container">
+  <div class="kitchen-header">
+    <h2>Раздача кухни</h2>
+    <p>Отслеживание готовности блюд для выноса в зал</p>
+  </div>
+
+  <div class="kitchen-grid">
+    @for (active of activeItems(); track active.item.dish.id + active.tableId) {
+      <div class="dish-card" [class.ready]="active.item.status === 'ready'">
+        <div class="dish-status-bar"></div>
+        <div class="dish-content">
+          <div class="dish-meta">
+            <app-ui-badge [color]="active.item.status === 'ready' ? 'success' : 'warning'">
+              {{ active.item.status === 'ready' ? 'Готово к выдаче' : 'Готовится' }}
+            </app-ui-badge>
+            <span class="table-id">Стол #{{ active.tableId }}</span>
+          </div>
+          
+          <div class="dish-info">
+            <span class="dish-icon">{{ active.item.dish.imageIcon }}</span>
+            <div class="dish-details">
+              <h3>{{ active.item.dish.name }}</h3>
+              <p>Порций: <strong>{{ active.item.quantity }}</strong></p>
+            </div>
+          </div>
+
+          <div class="dish-actions">
+            @if (active.item.status === 'cooking') {
+              <app-ui-button variant="primary" class="full-width" (click)="markAsReady(active.tableId, active.item.dish.id)">
+                Отметить готовым
+              </app-ui-button>
+            } @else {
+              <app-ui-button variant="success" class="full-width" (click)="markAsServed(active.tableId, active.item.dish.id)">
+                Вынесено в зал
+              </app-ui-button>
+            }
+          </div>
+        </div>
+      </div>
+    } @empty {
+      <div class="empty-state">
+        <div class="empty-icon">🍳</div>
+        <h3>Кухня свободна</h3>
+        <p>На данный момент нет активных заказов на кухне</p>
+      </div>
+    }
+  </div>
+</div>

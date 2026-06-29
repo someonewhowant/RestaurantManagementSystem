@@ -75,10 +75,10 @@
       </div>
       
       <div class="action-buttons">
-        <app-ui-button variant="warning" size="md" [disabled]="currentOrderItems().length === 0">
+        <app-ui-button variant="warning" size="md" [disabled]="currentOrderItems().length === 0" (click)="sendToKitchen()">
           На кухню
         </app-ui-button>
-        <app-ui-button variant="success" size="md" [disabled]="currentOrderItems().length === 0">
+        <app-ui-button variant="success" size="md" [disabled]="currentOrderItems().length === 0" (click)="payOrder()">
           Оплата
         </app-ui-button>
       </div>

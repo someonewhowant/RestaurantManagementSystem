@@ -4,12 +4,13 @@ import { BudgetService, Transaction } from '../../../core/services/budget.servic
 import { UiCardComponent } from '../../../core/ui/card/card.component';
 import { UiBadgeComponent } from '../../../core/ui/badge/badge.component';
 import { UiButtonComponent } from '../../../core/ui/button/button.component';
+import { UiModalComponent } from '../../../core/ui/modal/modal.component';
 import { DatePipe, CurrencyPipe } from '@angular/common';
 
 @Component({
   selector: 'app-admin-budget',
   standalone: true,
-  imports: [UiCardComponent, UiBadgeComponent, UiButtonComponent, ReactiveFormsModule, DatePipe, CurrencyPipe],
+  imports: [UiCardComponent, UiBadgeComponent, UiButtonComponent, ReactiveFormsModule, DatePipe, CurrencyPipe, UiModalComponent],
   templateUrl: './budget.component.html',
   styleUrl: './budget.component.scss'
 })
@@ -18,6 +19,15 @@ export class AdminBudgetComponent {
   private fb = inject(FormBuilder);
 
   public showAddForm = signal(false);
+  public selectedTransaction = signal<Transaction | null>(null);
+
+  openTransactionDetails(transaction: Transaction) {
+    this.selectedTransaction.set(transaction);
+  }
+
+  closeModal() {
+    this.selectedTransaction.set(null);
+  }
 
   public txForm = this.fb.nonNullable.group({
     amount: [0, [Validators.required, Validators.min(0.01)]],

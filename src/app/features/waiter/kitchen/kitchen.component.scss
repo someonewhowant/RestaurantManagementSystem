@@ -1,0 +1,119 @@
+.kitchen-container {
+  padding: 32px;
+}
+
+.kitchen-header {
+  margin-bottom: 32px;
+}
+.kitchen-header h2 {
+  font-size: 28px;
+  color: var(--color-text-main);
+  margin-bottom: 8px;
+}
+.kitchen-header p {
+  color: var(--color-text-muted);
+}
+
+.kitchen-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 24px;
+}
+
+.dish-card {
+  background: white;
+  border-radius: var(--radius-lg);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border: 1px solid rgba(0,0,0,0.05);
+}
+.dish-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+}
+
+.dish-status-bar {
+  height: 6px;
+  background-color: var(--color-warning);
+}
+.dish-card.ready .dish-status-bar {
+  background-color: var(--color-success);
+}
+
+.dish-content {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  flex: 1;
+}
+
+.dish-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.table-id {
+  font-weight: 700;
+  color: var(--color-primary);
+  font-size: 14px;
+  background: rgba(230, 81, 0, 0.05);
+  padding: 4px 8px;
+  border-radius: var(--radius-md);
+}
+
+.dish-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.dish-icon {
+  font-size: 48px;
+}
+.dish-details h3 {
+  font-size: 18px;
+  color: var(--color-text-main);
+  margin-bottom: 4px;
+}
+.dish-details p {
+  color: var(--color-text-muted);
+  font-size: 14px;
+}
+
+.dish-actions {
+  margin-top: auto;
+}
+
+.full-width {
+  width: 100%;
+  display: block;
+}
+
+.empty-state {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 64px 24px;
+  background: rgba(0,0,0,0.02);
+  border-radius: var(--radius-lg);
+  border: 2px dashed rgba(0,0,0,0.05);
+  text-align: center;
+}
+.empty-icon {
+  font-size: 64px;
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+.empty-state h3 {
+  font-size: 20px;
+  color: var(--color-text-main);
+  margin-bottom: 8px;
+}
+.empty-state p {
+  color: var(--color-text-muted);
+}
