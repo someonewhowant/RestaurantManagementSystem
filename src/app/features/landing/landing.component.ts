@@ -7,7 +7,7 @@ import { UiBadgeComponent } from '../../core/ui/badge/badge.component';
 @Component({
   selector: 'app-landing',
   standalone: true,
-  imports: [UiButtonComponent, UiCardComponent, UiBadgeComponent, RouterLink],
+  imports: [UiButtonComponent, UiBadgeComponent, RouterLink],
   templateUrl: './landing.component.html',
   styleUrls: ['./landing.component.scss']
 })

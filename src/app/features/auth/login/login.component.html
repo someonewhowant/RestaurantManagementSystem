@@ -1,0 +1,31 @@
+<div class="auth-layout">
+  <div class="auth-card">
+    <div class="logo">
+      <span class="logo-icon">💠</span>
+      <span class="logo-text">Vanilla CRM</span>
+    </div>
+    <h2>Вход в аккаунт</h2>
+    <p class="subtitle">Добро пожаловать обратно! Введите данные для входа в систему управления рестораном.</p>
+    
+    <form (submit)="onSubmit($event)" class="auth-form">
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" name="email" [(ngModel)]="email" placeholder="owner@restaurant.com" required>
+      </div>
+      <div class="form-group">
+        <label>Пароль</label>
+        <input type="password" name="password" [(ngModel)]="password" placeholder="••••••••" required>
+      </div>
+      
+      <div style="display: flex; justify-content: flex-end; margin-top: -8px; margin-bottom: 24px;">
+        <a href="#" class="forgot-link">Забыли пароль?</a>
+      </div>
+
+      <button type="submit" class="auth-button">Войти в панель</button>
+    </form>
+    
+    <div class="auth-footer">
+      Нет аккаунта? <a routerLink="/auth/register">Зарегистрироваться бесплатно</a>
+    </div>
+  </div>
+</div>

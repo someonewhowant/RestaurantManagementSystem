@@ -1,19 +1,173 @@
-<div class="dashboard-grid">
-  <app-ui-card class="stat-card">
-    <h3>Выручка за сегодня</h3>
-    <div class="value">$1,240.50</div>
-    <div class="trend positive">↑ 12% со вчера</div>
+<div class="page-header" style="margin-bottom: 24px;">
+  <h2>Сводка за день</h2>
+  <p style="color: var(--color-text-muted); font-size: 14px;">Ключевые показатели работы ресторана на данный момент.</p>
+</div>
+
+<div class="dashboard-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px;">
+  <app-ui-card class="stat-card" style="display: flex; flex-direction: column; gap: 8px;">
+    <h3 style="font-size: 14px; font-weight: 500; color: var(--color-text-muted); margin: 0;">Выручка</h3>
+    <div class="value" style="font-size: 28px; font-weight: 700; color: var(--color-text-main);">
+      {{ totalRevenue() | currency:'RUB':'symbol-narrow':'1.0-0' }}
+    </div>
+    <div class="trend positive" style="font-size: 12px; font-weight: 600; color: var(--color-success); background: rgba(76,175,80,0.1); padding: 4px 8px; border-radius: 4px; display: inline-block; align-self: flex-start;">Текущая смена</div>
   </app-ui-card>
   
-  <app-ui-card class="stat-card">
-    <h3>Активных столов</h3>
-    <div class="value">8 / 15</div>
-    <div class="trend">Средняя загрузка</div>
+  <app-ui-card class="stat-card" style="display: flex; flex-direction: column; gap: 8px;">
+    <h3 style="font-size: 14px; font-weight: 500; color: var(--color-text-muted); margin: 0;">Прибыль</h3>
+    <div class="value" style="font-size: 28px; font-weight: 700; color: var(--color-text-main);">
+      {{ profit() | currency:'RUB':'symbol-narrow':'1.0-0' }}
+    </div>
+    <div class="trend" style="font-size: 12px; font-weight: 600; padding: 4px 8px; border-radius: 4px; display: inline-block; align-self: flex-start;"
+         [style.color]="profit() >= 0 ? 'var(--color-success)' : 'var(--color-danger)'"
+         [style.background]="profit() >= 0 ? 'rgba(76,175,80,0.1)' : 'rgba(244,67,54,0.1)'">
+      Выручка минус расходы
+    </div>
+  </app-ui-card>
+
+  <app-ui-card class="stat-card" style="display: flex; flex-direction: column; gap: 8px;">
+    <h3 style="font-size: 14px; font-weight: 500; color: var(--color-text-muted); margin: 0;">Загруженность зала</h3>
+    <div class="value" style="font-size: 28px; font-weight: 700; color: var(--color-text-main);">
+      {{ occupiedTablesCount() }} <span style="font-size: 16px; color: var(--color-text-muted);">/ {{ totalTablesCount() }}</span>
+    </div>
+    <div class="progress-bar-container" style="height: 6px; background: rgba(0,0,0,0.05); border-radius: 3px; overflow: hidden; margin-top: 4px;">
+      <div class="progress-fill" [style.width.%]="(occupiedTablesCount() / totalTablesCount()) * 100" [style.background]="(occupiedTablesCount() / totalTablesCount()) > 0.8 ? 'var(--color-danger)' : 'var(--color-primary)'" style="height: 100%; transition: width 0.3s ease;"></div>
+    </div>
   </app-ui-card>
   
-  <app-ui-card class="stat-card">
-    <h3>Дефицит склада</h3>
-    <div class="value">3 позиции</div>
-    <div class="trend negative">Требуется закупка</div>
+  <app-ui-card class="stat-card" style="display: flex; flex-direction: column; gap: 8px;">
+    <h3 style="font-size: 14px; font-weight: 500; color: var(--color-text-muted); margin: 0;">Активные заказы</h3>
+    <div class="value" style="font-size: 28px; font-weight: 700; color: var(--color-text-main);">
+      {{ activeOrdersCount() }}
+    </div>
+    <div class="trend warning" style="font-size: 12px; font-weight: 600; color: var(--color-warning); background: rgba(255,152,0,0.1); padding: 4px 8px; border-radius: 4px; display: inline-block; align-self: flex-start;">В процессе</div>
+  </app-ui-card>
+</div>
+
+<div class="secondary-metrics-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; margin-top: 16px;">
+  <!-- Топ-официант -->
+  <app-ui-card class="stat-card" style="display: flex; flex-direction: column; gap: 12px; height: 100%;">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+      <h3 style="font-size: 16px; font-weight: 600; color: var(--color-text-main); margin: 0;">Топ-сотрудник дня 🏆</h3>
+      <span style="font-size: 12px; color: var(--color-text-muted); background: rgba(0,0,0,0.05); padding: 2px 6px; border-radius: 4px; border: 1px solid rgba(0,0,0,0.05);">По выручке</span>
+    </div>
+    @if (topWaiter(); as top) {
+      <div style="display: flex; align-items: center; gap: 16px; margin-top: auto; padding-top: 16px;">
+        <div style="width: 52px; height: 52px; border-radius: 50%; background: linear-gradient(135deg, var(--color-primary), #60a5fa); display: flex; align-items: center; justify-content: center; color: white; font-size: 22px; font-weight: bold; box-shadow: 0 4px 10px rgba(59,130,246,0.3);">
+          {{ top.name.charAt(0) }}
+        </div>
+        <div>
+          <div style="font-size: 18px; font-weight: 700; color: var(--color-text-main);">{{ top.name }}</div>
+          <div style="font-size: 15px; color: var(--color-success); font-weight: 600; margin-top: 2px;">+ {{ top.revenue | currency:'RUB':'symbol-narrow':'1.0-0' }}</div>
+        </div>
+      </div>
+    } @else {
+      <div style="color: var(--color-text-muted); font-size: 14px; margin-top: 16px; font-style: italic;">Пока нет данных о закрытых счетах за сегодня.</div>
+    }
+  </app-ui-card>
+
+  <!-- Сотрудники на смене -->
+  <app-ui-card class="stat-card" style="display: flex; flex-direction: column; gap: 12px; height: 100%;">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+      <h3 style="font-size: 16px; font-weight: 600; color: var(--color-text-main); margin: 0;">Сотрудники на смене</h3>
+      <span style="font-size: 13px; font-weight: 700; color: var(--color-success); background: rgba(76,175,80,0.1); padding: 2px 8px; border-radius: 12px;">{{ staffOnShift().length }}</span>
+    </div>
+    <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px;">
+      @for (emp of staffOnShift(); track emp.id) {
+        <div style="display: flex; align-items: center; gap: 8px; background: white; padding: 8px 14px; border-radius: 20px; border: 1px solid rgba(0,0,0,0.08); box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+          <span style="width: 8px; height: 8px; border-radius: 50%; background: var(--color-success); box-shadow: 0 0 6px var(--color-success);"></span>
+          <span style="font-size: 13px; font-weight: 600; color: var(--color-text-main);">{{ emp.name.split(' ')[0] }}</span>
+          <span style="font-size: 12px; color: var(--color-text-muted); background: rgba(0,0,0,0.04); padding: 2px 6px; border-radius: 4px;">{{ emp.role }}</span>
+        </div>
+      } @empty {
+        <div style="color: var(--color-text-muted); font-size: 14px; font-style: italic;">Нет открытых смен. Работников в зале нет.</div>
+      }
+    </div>
+  </app-ui-card>
+</div>
+
+<div class="alerts-section" style="margin-top: 16px;">
+  <app-ui-card class="stat-card" style="border: 1px solid rgba(244,67,54,0.3); background: rgba(244,67,54,0.02);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+      <h3 style="font-size: 16px; font-weight: 600; color: var(--color-danger); margin: 0; display: flex; align-items: center; gap: 8px;">
+        <span>⚠️</span> Дефицит на складе
+      </h3>
+      <a routerLink="/admin/inventory" style="font-size: 13px; color: var(--color-primary); text-decoration: none; font-weight: 600; background: rgba(33,150,243,0.1); padding: 4px 10px; border-radius: 6px; transition: background 0.2s;">
+        Перейти в склад →
+      </a>
+    </div>
+    
+    @if (lowStockItems().length > 0) {
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 12px;">
+        @for (item of lowStockItems(); track item.id) {
+          <div style="display: flex; justify-content: space-between; align-items: center; background: white; padding: 10px 14px; border-radius: 8px; border: 1px solid rgba(244,67,54,0.15); box-shadow: 0 2px 4px rgba(244,67,54,0.05);">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <span style="font-size: 18px; display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; background: rgba(0,0,0,0.03); border-radius: 6px;">
+                @if (item.category === 'Морепродукты') { 🐟 }
+                @else if (item.category === 'Мясо') { 🥩 }
+                @else if (item.category === 'Овощи') { 🥦 }
+                @else if (item.category === 'Бакалея') { 🧂 }
+                @else { 📦 }
+              </span>
+              <div>
+                <div style="font-size: 14px; font-weight: 600; color: var(--color-text-main);">{{ item.name }}</div>
+                <div style="font-size: 11px; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.5px;">{{ item.category }}</div>
+              </div>
+            </div>
+            <div style="text-align: right;">
+              <div style="font-size: 14px; font-weight: 700; color: var(--color-danger);">{{ item.currentStock }} {{ item.unit }}</div>
+              <div style="font-size: 11px; color: var(--color-text-muted);">мин. {{ item.minStock }}</div>
+            </div>
+          </div>
+        }
+      </div>
+    } @else {
+      <div style="color: var(--color-success); font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 8px; background: rgba(76,175,80,0.05); padding: 12px; border-radius: 8px;">
+        <span style="font-size: 18px;">✅</span> Все продукты в достаточном количестве. Закупки не требуются.
+      </div>
+    }
+  </app-ui-card>
+</div>
+
+<!-- Лента активности -->
+<div class="activity-feed-section" style="margin-top: 16px;">
+  <app-ui-card class="stat-card" style="display: flex; flex-direction: column; gap: 16px;">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+      <h3 style="font-size: 16px; font-weight: 600; color: var(--color-text-main); margin: 0;">Лента активности</h3>
+      <a routerLink="/admin/budget" style="font-size: 13px; color: var(--color-primary); text-decoration: none; font-weight: 600;">Вся история →</a>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 0;">
+      @for (tx of recentTransactions(); track tx.id; let last = $last) {
+        <div style="display: flex; align-items: flex-start; gap: 16px; padding: 12px 0;" [style.border-bottom]="last ? 'none' : '1px solid rgba(0,0,0,0.05)'">
+          <!-- Иконка транзакции -->
+          <div style="width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;"
+               [style.background]="tx.type === 'Доход' ? 'rgba(76,175,80,0.1)' : 'rgba(244,67,54,0.1)'"
+               [style.color]="tx.type === 'Доход' ? 'var(--color-success)' : 'var(--color-danger)'">
+            @if (tx.type === 'Доход') {
+              <span style="font-size: 18px;">💰</span>
+            } @else {
+              <span style="font-size: 18px;">🛒</span>
+            }
+          </div>
+          
+          <!-- Описание и время -->
+          <div style="flex: 1;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+              <div style="font-size: 14px; font-weight: 600; color: var(--color-text-main);">{{ tx.category }}</div>
+              <div style="font-size: 15px; font-weight: 700;"
+                   [style.color]="tx.type === 'Доход' ? 'var(--color-success)' : 'var(--color-text-main)'">
+                {{ tx.type === 'Доход' ? '+' : '-' }} {{ tx.amount | currency:'RUB':'symbol-narrow':'1.0-0' }}
+              </div>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px;">
+              <div style="font-size: 13px; color: var(--color-text-muted);">{{ tx.description }}</div>
+              <div style="font-size: 12px; color: var(--color-text-muted);">{{ tx.date | date:'HH:mm (dd.MM)' }}</div>
+            </div>
+          </div>
+        </div>
+      } @empty {
+        <div style="color: var(--color-text-muted); font-size: 14px; padding: 16px 0; text-align: center; font-style: italic;">Транзакций пока нет.</div>
+      }
+    </div>
   </app-ui-card>
 </div>
