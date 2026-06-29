@@ -21,7 +21,8 @@ export const routes: Routes = [
     loadComponent: () => import('./core/layout/waiter-layout/waiter-layout.component').then(m => m.WaiterLayoutComponent),
     children: [
       { path: '', redirectTo: 'tables', pathMatch: 'full' },
-      { path: 'tables', loadComponent: () => import('./features/waiter/tables/tables.component').then(m => m.WaiterTablesComponent) }
+      { path: 'tables', loadComponent: () => import('./features/waiter/tables/tables.component').then(m => m.WaiterTablesComponent) },
+      { path: 'terminal', loadComponent: () => import('./features/waiter/terminal/terminal.component').then(m => m.WaiterTerminalComponent) }
     ]
   }
 ];

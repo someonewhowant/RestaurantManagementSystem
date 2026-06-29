@@ -1,25 +1,48 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
+import { Router } from '@angular/router';
 import { TablesService, Table, TableStatus } from '../../../core/services/tables.service';
 import { UiCardComponent } from '../../../core/ui/card/card.component';
 import { UiBadgeComponent } from '../../../core/ui/badge/badge.component';
+import { UiModalComponent } from '../../../core/ui/modal/modal.component';
+import { UiButtonComponent } from '../../../core/ui/button/button.component';
 
 @Component({
   selector: 'app-waiter-tables',
   standalone: true,
-  imports: [UiCardComponent, UiBadgeComponent],
+  imports: [UiCardComponent, UiBadgeComponent, UiModalComponent, UiButtonComponent],
   templateUrl: './tables.component.html',
   styleUrl: './tables.component.scss'
 })
 export class WaiterTablesComponent {
   public tablesService = inject(TablesService);
+  private router = inject(Router);
+  
+  public selectedTable = signal<Table | null>(null);
 
   onTableClick(table: Table) {
-    // Временная логика для демонстрации реактивности.
-    // Позже клик по столу будет открывать его заказ.
-    const statuses: TableStatus[] = ['Свободен', 'Занят', 'Ожидает блюда', 'Оплата'];
-    const currentIndex = statuses.indexOf(table.status);
-    const nextStatus = statuses[(currentIndex + 1) % statuses.length];
-    this.tablesService.changeStatus(table.id, nextStatus);
+    // Открываем модальное окно выбранного стола
+    this.selectedTable.set(table);
+  }
+
+  closeModal() {
+    this.selectedTable.set(null);
+  }
+
+  changeTableStatus(newStatus: TableStatus) {
+    const table = this.selectedTable();
+    if (table) {
+      this.tablesService.changeStatus(table.id, newStatus);
+      // Обновляем локальный стейт модалки
+      this.selectedTable.set({ ...table, status: newStatus });
+    }
+  }
+
+  goToOrder() {
+    const table = this.selectedTable();
+    if (table) {
+      this.router.navigate(['/waiter/terminal'], { queryParams: { tableId: table.id } });
+      this.closeModal();
+    }
   }
 
   getStatusColor(status: TableStatus): 'success' | 'danger' | 'warning' | 'primary' {

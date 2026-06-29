@@ -21,3 +21,50 @@
     </div>
   }
 </div>
+
+<app-ui-modal 
+  [isOpen]="selectedTable() !== null" 
+  [title]="'Стол № ' + (selectedTable()?.number || '')"
+  (onClose)="closeModal()">
+  
+  @if (selectedTable(); as table) {
+    <div class="modal-table-info">
+      <div class="info-group">
+        <span class="label">Вместимость:</span>
+        <span class="value">{{ table.capacity }} персон</span>
+      </div>
+      <div class="info-group">
+        <span class="label">Текущий статус:</span>
+        <app-ui-badge [color]="getStatusColor(table.status)">{{ table.status }}</app-ui-badge>
+      </div>
+    </div>
+
+    <div class="status-actions">
+      <h4>Установить статус</h4>
+      <div class="status-selector">
+        <div class="status-option" [class.active]="table.status === 'Свободен'" (click)="changeTableStatus('Свободен')">
+          <span class="dot bg-success"></span>
+          <span>Свободен</span>
+        </div>
+        <div class="status-option" [class.active]="table.status === 'Занят'" (click)="changeTableStatus('Занят')">
+          <span class="dot bg-danger"></span>
+          <span>Занят</span>
+        </div>
+        <div class="status-option" [class.active]="table.status === 'Ожидает блюда'" (click)="changeTableStatus('Ожидает блюда')">
+          <span class="dot bg-warning"></span>
+          <span>Ожидает</span>
+        </div>
+        <div class="status-option" [class.active]="table.status === 'Оплата'" (click)="changeTableStatus('Оплата')">
+          <span class="dot bg-primary"></span>
+          <span>Оплата</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="order-actions">
+      <app-ui-button variant="primary" class="full-width" (click)="goToOrder()">
+        Перейти к заказу
+      </app-ui-button>
+    </div>
+  }
+</app-ui-modal>

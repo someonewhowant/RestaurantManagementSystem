@@ -7,7 +7,7 @@ import { Component, input } from '@angular/core';
   styleUrls: ['./button.component.scss']
 })
 export class UiButtonComponent {
-  variant = input<'primary' | 'danger' | 'success'>('primary');
+  variant = input<'primary' | 'danger' | 'success' | 'warning'>('primary');
   size = input<'sm' | 'md'>('md');
   disabled = input<boolean>(false);
   type = input<'button' | 'submit' | 'reset'>('button');
