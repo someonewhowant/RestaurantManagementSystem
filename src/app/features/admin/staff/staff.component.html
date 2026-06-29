@@ -1,0 +1,81 @@
+<div class="staff-header">
+  <div>
+    <h2>Персонал</h2>
+    <p>Управление сотрудниками, ролями и доступами.</p>
+  </div>
+  <app-ui-button variant="primary" (click)="toggleAddForm()">
+    @if (showAddForm()) { Отмена } @else { Нанять сотрудника }
+  </app-ui-button>
+</div>
+
+@if (showAddForm()) {
+  <div class="add-form-container">
+    <h3>Регистрация нового сотрудника</h3>
+    <form [formGroup]="addForm" (ngSubmit)="onSubmitAdd()" class="add-form">
+      <div class="form-group">
+        <label>ФИО сотрудника</label>
+        <input type="text" formControlName="name" placeholder="Иван Иванов" />
+      </div>
+      <div class="form-group">
+        <label>Роль</label>
+        <select formControlName="role">
+          <option value="Менеджер">Менеджер</option>
+          <option value="Официант">Официант</option>
+          <option value="Повар">Повар</option>
+          <option value="Кассир">Кассир</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Статус</label>
+        <select formControlName="status">
+          <option value="Активен">Активен</option>
+          <option value="В отпуске">В отпуске</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Дата найма</label>
+        <input type="date" formControlName="hireDate" />
+      </div>
+      <div class="form-actions">
+        <app-ui-button variant="success" [disabled]="addForm.invalid" type="submit">Сохранить</app-ui-button>
+      </div>
+    </form>
+  </div>
+}
+
+<div class="staff-grid">
+  @for (emp of staffService.staff(); track emp.id) {
+    <app-ui-card class="staff-card" [class.fired]="emp.status === 'Уволен'">
+      <div class="card-top">
+        <div class="staff-name">{{ emp.name }}</div>
+        
+        @switch(emp.role) {
+          @case('Менеджер') { <app-ui-badge color="success">{{ emp.role }}</app-ui-badge> }
+          @case('Повар') { <app-ui-badge color="warning">{{ emp.role }}</app-ui-badge> }
+          @default { <app-ui-badge color="primary">{{ emp.role }}</app-ui-badge> }
+        }
+      </div>
+      
+      <div class="card-info">
+        <div class="info-row">
+          <span class="label">Статус:</span>
+          <span class="value" [class.text-danger]="emp.status === 'Уволен'" [class.text-success]="emp.status === 'Активен'">
+            {{ emp.status }}
+          </span>
+        </div>
+        <div class="info-row">
+          <span class="label">Нанят:</span>
+          <span class="value">{{ emp.hireDate | date:'dd.MM.yyyy' }}</span>
+        </div>
+      </div>
+      
+      <div class="card-actions">
+        @if (emp.status === 'Уволен') {
+          <app-ui-button variant="success" size="sm" (click)="activateEmployee(emp.id)">Восстановить</app-ui-button>
+        } @else {
+          <app-ui-button variant="danger" size="sm" (click)="fireEmployee(emp.id)">Уволить</app-ui-button>
+        }
+      </div>
+    </app-ui-card>
+  }
+</div>
