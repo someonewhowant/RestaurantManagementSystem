@@ -1,0 +1,45 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto:wght@500;700&display=swap');
+
+:root {
+  // Цветовая палитра
+  --color-primary: #E65100;
+  --color-primary-hover: #F57C00;
+  --color-success: #4CAF50;
+  --color-success-hover: #45a049;
+  --color-warning: #FFC107;
+  --color-danger: #F44336;
+  --color-danger-hover: #d32f2f;
+  --color-bg: #F5F7FA;
+  --color-surface: #FFFFFF;
+  --color-text-main: #212529;
+  --color-text-muted: #6c757d;
+
+  // Типографика
+  --font-primary: 'Inter', sans-serif;
+  --font-secondary: 'Roboto', sans-serif;
+
+  // Отступы и формы
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-primary);
+  background-color: var(--color-bg);
+  color: var(--color-text-main);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-secondary);
+}

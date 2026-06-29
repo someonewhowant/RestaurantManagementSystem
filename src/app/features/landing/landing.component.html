@@ -1,0 +1,170 @@
+<div class="landing-container">
+  <header class="header">
+    <div class="logo">
+      <span class="logo-icon">🍽️</span>
+      <span class="logo-text">Vanilla CRM</span>
+    </div>
+    <nav class="nav">
+      <a href="#features">Возможности</a>
+      <a href="#modules">Модули системы</a>
+      <a href="#about">О системе</a>
+    </nav>
+  </header>
+
+  <main class="hero">
+    <div class="hero-content">
+      <app-ui-badge color="warning">Версия 1.0.0 • Для ресторанов и кафе</app-ui-badge>
+      <h1 class="hero-title">Идеальный контроль над вашим рестораном</h1>
+      <p class="hero-subtitle">
+        Переведите управление заказами, инвентаризацией, персоналом и финансами в единую экосистему. Откажитесь от блокнотов и сложных таблиц.
+      </p>
+      
+      <div class="hero-actions">
+        <!-- Позже эти кнопки будут вести на /pos и /admin через routerLink -->
+        <app-ui-button variant="primary" size="md">
+          Открыть Кассу (POS)
+        </app-ui-button>
+        <app-ui-button routerLink="/admin" variant="success" size="md">
+          Панель Менеджера
+        </app-ui-button>
+      </div>
+    </div>
+    
+    <div class="hero-visual">
+      <div class="visual-card-wrapper">
+        <app-ui-card class="floating-card pos-card">
+          <div class="card-header">Стол #4 • Заказ #1042</div>
+          <app-ui-badge color="primary">Готовится</app-ui-badge>
+          <div style="margin-top: 12px; font-size: 14px; color: var(--color-text-muted);">Стейк из лосося x 1</div>
+          <div style="font-size: 14px; color: var(--color-text-muted);">Лимонад x 2</div>
+          <div class="card-total">Итого: $45.00</div>
+        </app-ui-card>
+
+        <app-ui-card class="floating-card stock-card">
+          <div class="card-header">Склад: Лосось</div>
+          <app-ui-badge color="warning">Низкий запас (2 кг)</app-ui-badge>
+          <div style="margin-top: 16px;">
+            <app-ui-button variant="primary" size="sm">Пополнить</app-ui-button>
+          </div>
+        </app-ui-card>
+      </div>
+    </div>
+  </main>
+
+  <section id="features" class="features">
+    <div class="section-heading">
+      <h2>Ключевые преимущества</h2>
+      <p>Всё, что нужно для стабильной работы заведения, в одном окне.</p>
+    </div>
+    
+    <div class="features-grid">
+      <div class="feature-item">
+        <div class="feature-icon">🚀</div>
+        <h3>Молниеносный POS</h3>
+        <p>Разработано специально для тач-скринов. Официанты могут открыть стол и пробить заказ за несколько касаний.</p>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">📦</div>
+        <h3>Умный склад (Inventory)</h3>
+        <p>Система сама списывает ингредиенты по технологическим картам и предупреждает о дефиците продуктов.</p>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">👥</div>
+        <h3>Управление персоналом</h3>
+        <p>Встроенный учет сотрудников. Быстрый найм и увольнение, распределение ролей (Официант, Повар, Кассир).</p>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">📊</div>
+        <h3>Прозрачный бюджет</h3>
+        <p>Полная история транзакций: от оплаты счетов до расходов на закупки. Баланс в реальном времени.</p>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">📈</div>
+        <h3>Аналитика продаж</h3>
+        <p>Формирование дневных отчетов (`stats / день`), выявление самых популярных и прибыльных блюд.</p>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">📖</div>
+        <h3>Цифровое меню и рецепты</h3>
+        <p>Встроенный справочник блюд и технологических карт. Все рецептуры всегда под рукой.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="modules" class="modules-preview">
+    <div class="modules-container">
+      <h2>От консоли к современному UI</h2>
+      <p style="color: var(--color-text-muted); max-width: 600px; margin-bottom: 40px;">
+        Мы взяли мощное ядро CLI-приложения "Vanilla Restaurant" и превратили его в наглядную графическую панель.
+      </p>
+      
+      <div class="modules-list">
+        <div class="module-card">
+          <app-ui-badge color="success">POS-система</app-ui-badge>
+          <h3>Вместо команд `open` и `add`</h3>
+          <p>Интерактивная карта столов ресторана и визуальное меню.</p>
+        </div>
+        <div class="module-card">
+          <app-ui-badge color="primary">Менеджмент</app-ui-badge>
+          <h3>Вместо `stock` и `restock`</h3>
+          <p>Сортируемые таблицы с индикацией низких запасов и быстрыми формами.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="showcase" class="showcase">
+    <div class="section-heading">
+      <h2>Галерея интерфейсов</h2>
+      <p>Оцените удобство и скорость работы в нашей системе.</p>
+    </div>
+    <div class="showcase-grid">
+      <div class="showcase-item">
+        <img src="assets/tablet_pos.png" alt="POS Интерфейс на планшете" />
+        <div class="showcase-caption">
+          <h3>POS-терминал для официанта</h3>
+          <p>Адаптировано для iPad и Android планшетов.</p>
+        </div>
+      </div>
+      <div class="showcase-item">
+        <img src="assets/laptop_dashboard.png" alt="Панель менеджера на ноутбуке" />
+        <div class="showcase-caption">
+          <h3>Аналитика для менеджера</h3>
+          <p>Детальные графики продаж и контроль бюджета на любом ноутбуке.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="about" class="about-section">
+    <div class="about-container">
+      <div class="about-content">
+        <h2>О системе Vanilla CRM</h2>
+        <p>Vanilla CRM эволюционировала из мощного консольного инструмента (CLI) в полноформатную графическую панель. Нашей целью было сохранить молниеносную скорость работы консоли, добавив удобство современного интерфейса.</p>
+        <p>Проект построен на передовом стеке <strong>Angular</strong> с использованием Standalone-компонентов и реактивных Signals. Мы фокусируемся на строгом контроле состояний: от ингредиентов на складе до финансовой отчетности.</p>
+      </div>
+      <div class="about-stats">
+        <div class="stat-box">
+          <span class="stat-number">0</span>
+          <span class="stat-label">потерянных чеков</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-number">100%</span>
+          <span class="stat-label">контроль склада</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-number">24/7</span>
+          <span class="stat-label">доступность</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="logo">
+      <span class="logo-icon">🍽️</span>
+      <span class="logo-text">Vanilla CRM</span>
+    </div>
+    <p>© 2026 Vanilla Restaurant Team. Все права защищены.</p>
+  </footer>
+</div>

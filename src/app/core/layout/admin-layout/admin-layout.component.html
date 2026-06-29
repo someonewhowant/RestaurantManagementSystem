@@ -1,0 +1,53 @@
+<div class="admin-layout">
+  <!-- Боковая панель навигации -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <span class="logo-icon">🍽️</span>
+      <span class="logo-text">Vanilla Admin</span>
+    </div>
+    
+    <nav class="sidebar-nav">
+      <a routerLink="/admin/dashboard" routerLinkActive="active" class="nav-item">
+        <span class="icon">📊</span>
+        <span class="text">Дашборд</span>
+      </a>
+      <a routerLink="/admin/inventory" routerLinkActive="active" class="nav-item">
+        <span class="icon">📦</span>
+        <span class="text">Склад</span>
+      </a>
+      <a routerLink="/admin/staff" routerLinkActive="active" class="nav-item">
+        <span class="icon">👥</span>
+        <span class="text">Персонал</span>
+      </a>
+      <a routerLink="/admin/budget" routerLinkActive="active" class="nav-item">
+        <span class="icon">💵</span>
+        <span class="text">Бюджет</span>
+      </a>
+    </nav>
+    
+    <div class="sidebar-footer">
+      <a routerLink="/" class="nav-item back-link">
+        <span class="icon">🔙</span>
+        <span class="text">На главную</span>
+      </a>
+    </div>
+  </aside>
+
+  <!-- Основная область с контентом -->
+  <div class="main-wrapper">
+    <header class="topbar">
+      <!-- Название страницы можно будет потом делать динамическим -->
+      <div class="page-title">Панель управления</div>
+      
+      <div class="user-profile">
+        <span style="font-size: 14px; font-weight: 500;">Александр (Менеджер)</span>
+        <app-ui-badge color="success">В сети</app-ui-badge>
+      </div>
+    </header>
+    
+    <main class="content-area">
+      <!-- Сюда загружаются дочерние компоненты (Дашборд, Склад и т.д.) -->
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>
