@@ -9,7 +9,7 @@ import { UiButtonComponent } from '../../../core/ui/button/button.component';
 @Component({
   selector: 'app-waiter-tables',
   standalone: true,
-  imports: [UiCardComponent, UiBadgeComponent, UiModalComponent, UiButtonComponent],
+  imports: [UiBadgeComponent, UiModalComponent, UiButtonComponent],
   templateUrl: './tables.component.html',
   styleUrl: './tables.component.scss'
 })

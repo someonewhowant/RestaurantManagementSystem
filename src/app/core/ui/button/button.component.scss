@@ -59,6 +59,15 @@
   background-color: var(--color-warning);
   color: white;
 }
-.btn-warning:hover {
-  background-color: #f5b000;
+.btn-warning:hover:not(:disabled) {
+  background-color: #f57c00;
+}
+
+.btn-secondary {
+  background-color: var(--color-bg);
+  color: var(--color-text-main);
+  border: 1px solid rgba(0,0,0,0.1);
+}
+.btn-secondary:hover:not(:disabled) {
+  background-color: rgba(0,0,0,0.05);
 }

@@ -61,4 +61,29 @@ export class InventoryService {
       )
     );
   }
+
+  // Массовое списание по рецептам
+  consumeForOrderItems(orderItems: { dish: any, quantity: number }[]) {
+    const consumptionMap = new Map<string, number>();
+
+    for (const item of orderItems) {
+      if (item.dish.recipe) {
+        for (const ingredient of item.dish.recipe) {
+          const totalAmount = ingredient.amount * item.quantity;
+          const current = consumptionMap.get(ingredient.ingredientId) || 0;
+          consumptionMap.set(ingredient.ingredientId, current + totalAmount);
+        }
+      }
+    }
+
+    this.itemsSignal.update(items =>
+      items.map(item => {
+        const consumed = consumptionMap.get(item.id);
+        if (consumed) {
+          return { ...item, currentStock: Math.max(0, parseFloat((item.currentStock - consumed).toFixed(3))) };
+        }
+        return item;
+      })
+    );
+  }
 }

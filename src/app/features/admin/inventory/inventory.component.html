@@ -63,6 +63,21 @@
 }
 
 <div class="table-container">
+  <div class="filters-bar">
+    <div class="search-input">
+      <span class="icon">🔍</span>
+      <input type="text" placeholder="Поиск по названию..." [ngModel]="searchQuery()" (ngModelChange)="searchQuery.set($event)" />
+    </div>
+    <select class="category-select" [ngModel]="selectedCategory()" (ngModelChange)="selectedCategory.set($event)">
+      <option value="Все категории">Все категории</option>
+      <option value="Овощи">Овощи</option>
+      <option value="Мясо">Мясо</option>
+      <option value="Морепродукты">Морепродукты</option>
+      <option value="Бакалея">Бакалея</option>
+      <option value="Напитки">Напитки</option>
+    </select>
+  </div>
+
   <table class="inventory-table">
     <thead>
       <tr>
@@ -75,7 +90,7 @@
       </tr>
     </thead>
     <tbody>
-      @for (item of inventoryService.items(); track item.id) {
+      @for (item of filteredItems(); track item.id) {
         <tr>
           <td class="item-name">{{ item.name }}</td>
           <td>{{ item.category }}</td>
@@ -91,12 +106,69 @@
             }
           </td>
           <td>
-            <app-ui-button variant="primary" size="sm" (click)="onRestock(item.id)">
-              +10
+            <app-ui-button variant="primary" size="sm" (click)="openRestockModal(item)">
+              Пополнить
             </app-ui-button>
           </td>
+        </tr>
+      } @empty {
+        <tr>
+          <td colspan="6" class="empty-state">По вашему запросу ничего не найдено</td>
         </tr>
       }
     </tbody>
   </table>
 </div>
+
+<!-- Модальное окно пополнения -->
+<app-ui-modal 
+  [isOpen]="selectedRestockItem() !== null" 
+  [title]="'Оформление закупки'"
+  (onClose)="closeRestockModal()">
+  
+  @if (selectedRestockItem(); as item) {
+    <div class="restock-modal-content">
+      <div class="restock-item-header">
+        <div class="item-icon">📦</div>
+        <div class="item-details">
+          <h3>{{ item.name }}</h3>
+          <span class="badge category-badge">{{ item.category }}</span>
+        </div>
+      </div>
+      
+      <div class="current-stock-box" [class.warning]="item.currentStock <= item.minStock">
+        <span class="stock-label">Текущий остаток на складе:</span>
+        <span class="stock-value">{{ item.currentStock }} <small>{{ item.unit }}</small></span>
+      </div>
+
+      <form [formGroup]="restockForm" (ngSubmit)="submitRestock()" class="restock-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Количество ({{ item.unit }})</label>
+            <div class="input-with-icon">
+              <span class="input-icon">⚖️</span>
+              <input type="number" formControlName="amount" step="0.1" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Сумма закупки (RUB)</label>
+            <div class="input-with-icon">
+              <span class="input-icon">💳</span>
+              <input type="number" formControlName="cost" step="1" placeholder="0" />
+            </div>
+          </div>
+        </div>
+        
+        <div class="hint-box">
+          <span class="hint-icon">ℹ️</span>
+          <span>Указанная сумма будет автоматически списана из Бюджета ресторана в категорию "Закупки".</span>
+        </div>
+        
+        <div class="modal-actions">
+          <app-ui-button variant="secondary" (click)="closeRestockModal()" type="button">Отмена</app-ui-button>
+          <app-ui-button variant="primary" [disabled]="restockForm.invalid" type="submit">Пополнить склад</app-ui-button>
+        </div>
+      </form>
+    </div>
+  }
+</app-ui-modal>

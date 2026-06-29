@@ -5,6 +5,7 @@ import { MenuService, MenuCategory, Dish } from '../../../core/services/menu.ser
 import { OrderService } from '../../../core/services/order.service';
 import { BudgetService } from '../../../core/services/budget.service';
 import { TablesService } from '../../../core/services/tables.service';
+import { InventoryService } from '../../../core/services/inventory.service';
 import { UiButtonComponent } from '../../../core/ui/button/button.component';
 
 @Component({
@@ -21,6 +22,7 @@ export class WaiterTerminalComponent {
   public orderService = inject(OrderService);
   public budgetService = inject(BudgetService);
   public tablesService = inject(TablesService);
+  public inventoryService = inject(InventoryService);
   
   public tableId = signal<string | null>(null);
   public selectedCategory = signal<MenuCategory>('Популярное');
@@ -91,6 +93,13 @@ export class WaiterTerminalComponent {
   sendToKitchen() {
     const tid = this.tableId();
     if (tid) {
+      // Ищем блюда в статусе 'new', чтобы списать их ингредиенты
+      const order = this.orderService.orders()[tid];
+      if (order) {
+        const newItems = order.items.filter(i => i.status === 'new');
+        this.inventoryService.consumeForOrderItems(newItems);
+      }
+
       this.orderService.sendToKitchen(tid);
       this.tablesService.changeStatus(tid, 'Ожидает блюда');
     }
