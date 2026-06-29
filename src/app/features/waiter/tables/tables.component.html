@@ -1,0 +1,23 @@
+<div class="page-header">
+  <h2>Карта столов</h2>
+  <p>Обзор зала ресторана. Выберите столик для обслуживания.</p>
+</div>
+
+<div class="legend">
+  <div class="legend-item"><span class="dot bg-success"></span> Свободен</div>
+  <div class="legend-item"><span class="dot bg-danger"></span> Занят</div>
+  <div class="legend-item"><span class="dot bg-warning"></span> Ожидает блюда</div>
+  <div class="legend-item"><span class="dot bg-primary"></span> Оплата</div>
+</div>
+
+<div class="tables-grid">
+  @for (table of tablesService.tables(); track table.id) {
+    <div class="table-item" [class]="'status-' + getStatusColor(table.status)" (click)="onTableClick(table)">
+      <div class="table-number">{{ table.number }}</div>
+      <div class="table-info">
+        <div class="capacity">🧑‍🤝‍🧑 {{ table.capacity }}</div>
+        <app-ui-badge [color]="getStatusColor(table.status)">{{ table.status }}</app-ui-badge>
+      </div>
+    </div>
+  }
+</div>

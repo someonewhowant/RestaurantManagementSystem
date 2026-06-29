@@ -20,7 +20,8 @@ export const routes: Routes = [
     path: 'waiter',
     loadComponent: () => import('./core/layout/waiter-layout/waiter-layout.component').then(m => m.WaiterLayoutComponent),
     children: [
-      // Мы добавим сюда роуты для Карты столов и Заказов позже
+      { path: '', redirectTo: 'tables', pathMatch: 'full' },
+      { path: 'tables', loadComponent: () => import('./features/waiter/tables/tables.component').then(m => m.WaiterTablesComponent) }
     ]
   }
 ];
