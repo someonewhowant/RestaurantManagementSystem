@@ -1,9 +1,87 @@
-<div class="terminal-placeholder">
-  <h2>Терминал Заказов</h2>
-  @if (tableId) {
-    <p>Создание заказа для столика ID: <strong>{{ tableId }}</strong></p>
-  } @else {
-    <p>Выберите столик на карте зала, чтобы открыть заказ.</p>
-  }
-  <div class="construction">🚧 Модуль в разработке 🚧</div>
+<div class="terminal-layout">
+  <!-- Левая колонка: Меню -->
+  <div class="menu-section">
+    <div class="menu-header">
+      <app-ui-button routerLink="/waiter/tables" variant="primary">← В зал</app-ui-button>
+      <h2>Меню</h2>
+    </div>
+
+    <!-- Категории -->
+    <div class="categories-scroll">
+      @for (category of menuService.categories(); track category) {
+        <button 
+          class="category-btn" 
+          [class.active]="category === selectedCategory()"
+          (click)="selectCategory(category)">
+          {{ category }}
+        </button>
+      }
+    </div>
+
+    <!-- Плитки блюд -->
+    <div class="dishes-grid">
+      @for (dish of displayedDishes(); track dish.id) {
+        <div class="dish-card" (click)="addToCart(dish)">
+          <div class="dish-icon">{{ dish.imageIcon }}</div>
+          <div class="dish-info">
+            <h4>{{ dish.name }}</h4>
+            <span class="weight">{{ dish.weight }}</span>
+          </div>
+          <div class="dish-price">{{ dish.price | currency:'RUB':'symbol-narrow':'1.0-0' }}</div>
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- Правая колонка: Корзина / Чек -->
+  <div class="cart-section">
+    <div class="cart-header">
+      <h3>Заказ: Стол {{ tableId() || '?' }}</h3>
+      <span class="cart-meta">Новый чек</span>
+    </div>
+
+    <div class="cart-items">
+      @if (currentOrderItems().length === 0) {
+        <div class="empty-cart">
+          <span class="empty-icon">🍽️</span>
+          <p>Корзина пуста.<br>Выберите блюда из меню слева.</p>
+        </div>
+      } @else {
+        @for (item of currentOrderItems(); track item.dish.id) {
+          <div class="cart-item">
+            <div class="item-details">
+              <span class="item-name">{{ item.dish.name }}</span>
+              <span class="item-price">{{ item.dish.price | currency:'RUB':'symbol-narrow':'1.0-0' }}</span>
+            </div>
+            
+            <div class="item-controls">
+              @if (item.status === 'new') {
+                <button class="control-btn minus" (click)="removeFromCart(item.dish.id)">-</button>
+                <span class="quantity">{{ item.quantity }}</span>
+                <button class="control-btn plus" (click)="addToCart(item.dish)">+</button>
+              } @else {
+                <span class="status-badge" [class]="item.status">{{ item.status }}</span>
+              }
+            </div>
+          </div>
+        }
+      }
+    </div>
+
+    <div class="cart-footer">
+      <div class="total-row">
+        <span>Итого:</span>
+        <span class="total-sum">{{ orderTotal() | currency:'RUB':'symbol-narrow':'1.0-0' }}</span>
+      </div>
+      
+      <div class="action-buttons">
+        <app-ui-button variant="warning" size="md" [disabled]="currentOrderItems().length === 0">
+          На кухню
+        </app-ui-button>
+        <app-ui-button variant="success" size="md" [disabled]="currentOrderItems().length === 0">
+          Оплата
+        </app-ui-button>
+      </div>
+    </div>
+  </div>
 </div>
