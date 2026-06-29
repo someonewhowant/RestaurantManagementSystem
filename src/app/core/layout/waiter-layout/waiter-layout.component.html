@@ -1,0 +1,48 @@
+<div class="waiter-layout">
+  <!-- Боковая навигация (адаптирована для планшетов) -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="logo">🍽️ CRM <span>Waiter</span></div>
+    </div>
+    
+    <nav class="sidebar-nav">
+      <a routerLink="/waiter/tables" routerLinkActive="active" class="nav-item">
+        <span class="icon">🪑</span>
+        <span class="text">Зал (Столы)</span>
+      </a>
+      <a routerLink="/waiter/terminal" routerLinkActive="active" class="nav-item">
+        <span class="icon">📝</span>
+        <span class="text">Новый Заказ</span>
+      </a>
+      <a routerLink="/waiter/kitchen" routerLinkActive="active" class="nav-item">
+        <span class="icon">🍳</span>
+        <span class="text">Раздача Кухни</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <a routerLink="/" class="nav-item exit-item">
+        <span class="icon">🚪</span>
+        <span class="text">Выход</span>
+      </a>
+    </div>
+  </aside>
+
+  <!-- Основной контент -->
+  <main class="main-content">
+    <header class="topbar">
+      <div class="topbar-left">
+        <app-ui-badge color="primary">Официант</app-ui-badge>
+        <span class="waiter-name">{{ waiterName }}</span>
+      </div>
+      <div class="topbar-right">
+        <!-- Место для текущего времени, которое важно для официанта -->
+        <span class="clock">Смена активна</span>
+      </div>
+    </header>
+    
+    <div class="content-wrapper">
+      <router-outlet></router-outlet>
+    </div>
+  </main>
+</div>

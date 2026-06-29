@@ -15,5 +15,12 @@ export const routes: Routes = [
       { path: 'staff', loadComponent: () => import('./features/admin/staff/staff.component').then(m => m.AdminStaffComponent) },
       { path: 'budget', loadComponent: () => import('./features/admin/budget/budget.component').then(m => m.AdminBudgetComponent) }
     ]
+  },
+  {
+    path: 'waiter',
+    loadComponent: () => import('./core/layout/waiter-layout/waiter-layout.component').then(m => m.WaiterLayoutComponent),
+    children: [
+      // Мы добавим сюда роуты для Карты столов и Заказов позже
+    ]
   }
 ];
