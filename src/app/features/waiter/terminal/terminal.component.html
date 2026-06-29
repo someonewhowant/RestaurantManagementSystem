@@ -36,7 +36,12 @@
   <!-- Правая колонка: Корзина / Чек -->
   <div class="cart-section">
     <div class="cart-header">
-      <h3>Заказ: Стол {{ tableId() || '?' }}</h3>
+      <div style="display: flex; flex-direction: column; gap: 4px;">
+        <h3>Заказ: Стол {{ tableId() || '?' }}</h3>
+        @if (waiterName()) {
+          <span style="font-size: 13px; color: var(--color-text-muted);">Официант: <strong>{{ waiterName() }}</strong></span>
+        }
+      </div>
       <span class="cart-meta">Новый чек</span>
     </div>
 

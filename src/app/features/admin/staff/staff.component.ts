@@ -1,15 +1,16 @@
-import { Component, inject, signal } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Component, inject, signal, computed } from '@angular/core';
+import { FormBuilder, ReactiveFormsModule, Validators, FormsModule } from '@angular/forms';
 import { StaffService, Employee } from '../../../core/services/staff.service';
 import { UiCardComponent } from '../../../core/ui/card/card.component';
 import { UiBadgeComponent } from '../../../core/ui/badge/badge.component';
 import { UiButtonComponent } from '../../../core/ui/button/button.component';
+import { UiModalComponent } from '../../../core/ui/modal/modal.component';
 import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-admin-staff',
   standalone: true,
-  imports: [UiCardComponent, UiBadgeComponent, UiButtonComponent, ReactiveFormsModule, DatePipe],
+  imports: [UiCardComponent, UiBadgeComponent, UiButtonComponent, UiModalComponent, ReactiveFormsModule, FormsModule, DatePipe],
   templateUrl: './staff.component.html',
   styleUrl: './staff.component.scss'
 })
@@ -19,12 +20,77 @@ export class AdminStaffComponent {
 
   public showAddForm = signal(false);
 
+  public searchQuery = signal<string>('');
+  public roleFilter = signal<string>('Все');
+  public statusFilter = signal<string>('Все');
+
+  public filteredStaff = computed(() => {
+    let list = this.staffService.staff();
+    
+    const query = this.searchQuery().toLowerCase().trim();
+    if (query) {
+      list = list.filter(e => e.name.toLowerCase().includes(query));
+    }
+    
+    const role = this.roleFilter();
+    if (role !== 'Все') {
+      list = list.filter(e => e.role === role);
+    }
+    
+    const status = this.statusFilter();
+    if (status !== 'Все') {
+      list = list.filter(e => e.status === status);
+    }
+    
+    return list;
+  });
+
   public addForm = this.fb.nonNullable.group({
     name: ['', Validators.required],
     role: ['Официант' as Employee['role'], Validators.required],
     status: ['Активен' as Employee['status'], Validators.required],
-    hireDate: [new Date().toISOString().split('T')[0], Validators.required]
+    hireDate: [new Date().toISOString().split('T')[0], Validators.required],
+    fireDate: [''],
+    vacationStart: [''],
+    vacationEnd: ['']
   });
+
+  public selectedEditEmployee = signal<Employee | null>(null);
+
+  public editForm = this.fb.nonNullable.group({
+    name: ['', Validators.required],
+    role: ['Официант' as Employee['role'], Validators.required],
+    status: ['Активен' as Employee['status'], Validators.required],
+    hireDate: ['', Validators.required],
+    fireDate: [''],
+    vacationStart: [''],
+    vacationEnd: ['']
+  });
+
+  openEditModal(emp: Employee) {
+    this.selectedEditEmployee.set(emp);
+    this.editForm.reset({
+      name: emp.name,
+      role: emp.role,
+      status: emp.status,
+      hireDate: emp.hireDate,
+      fireDate: emp.fireDate || '',
+      vacationStart: emp.vacationStart || '',
+      vacationEnd: emp.vacationEnd || ''
+    });
+  }
+
+  closeEditModal() {
+    this.selectedEditEmployee.set(null);
+  }
+
+  submitEdit() {
+    const emp = this.selectedEditEmployee();
+    if (emp && this.editForm.valid) {
+      this.staffService.updateEmployee(emp.id, this.editForm.getRawValue());
+      this.closeEditModal();
+    }
+  }
 
   toggleAddForm() {
     this.showAddForm.update(v => !v);
@@ -39,10 +105,22 @@ export class AdminStaffComponent {
   }
 
   fireEmployee(id: string) {
-    this.staffService.changeStatus(id, 'Уволен');
+    this.staffService.updateEmployee(id, { 
+      status: 'Уволен', 
+      fireDate: new Date().toISOString().split('T')[0] 
+    });
   }
 
   activateEmployee(id: string) {
-    this.staffService.changeStatus(id, 'Активен');
+    this.staffService.updateEmployee(id, { 
+      status: 'Активен', 
+      fireDate: undefined, 
+      vacationStart: undefined, 
+      vacationEnd: undefined 
+    });
+  }
+
+  toggleShift(id: string) {
+    this.staffService.toggleShift(id);
   }
 }

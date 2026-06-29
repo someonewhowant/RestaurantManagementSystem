@@ -43,9 +43,29 @@
   </div>
 }
 
+<div class="filters-panel" style="display: flex; gap: 16px; margin-bottom: 24px; padding: 16px; background: white; border-radius: var(--radius-md); box-shadow: 0 2px 8px rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.05); align-items: center; flex-wrap: wrap;">
+  <div style="flex: 1; min-width: 200px; position: relative;">
+    <span style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--color-text-muted);">🔍</span>
+    <input type="text" [ngModel]="searchQuery()" (ngModelChange)="searchQuery.set($event)" placeholder="Поиск по имени сотрудника..." style="width: 100%; padding: 10px 12px 10px 36px; border: 1px solid rgba(0,0,0,0.1); border-radius: 6px; outline: none; font-size: 14px; font-family: inherit; transition: all 0.2s;">
+  </div>
+  <select [ngModel]="roleFilter()" (ngModelChange)="roleFilter.set($event)" style="padding: 10px 12px; border: 1px solid rgba(0,0,0,0.1); border-radius: 6px; outline: none; font-size: 14px; font-family: inherit; background: white;">
+    <option value="Все">Все должности</option>
+    <option value="Менеджер">Менеджер</option>
+    <option value="Официант">Официант</option>
+    <option value="Повар">Повар</option>
+    <option value="Кассир">Кассир</option>
+  </select>
+  <select [ngModel]="statusFilter()" (ngModelChange)="statusFilter.set($event)" style="padding: 10px 12px; border: 1px solid rgba(0,0,0,0.1); border-radius: 6px; outline: none; font-size: 14px; font-family: inherit; background: white;">
+    <option value="Все">Все статусы</option>
+    <option value="Активен">Активен</option>
+    <option value="В отпуске">В отпуске</option>
+    <option value="Уволен">Уволен</option>
+  </select>
+</div>
+
 <div class="staff-grid">
-  @for (emp of staffService.staff(); track emp.id) {
-    <app-ui-card class="staff-card" [class.fired]="emp.status === 'Уволен'">
+  @for (emp of filteredStaff(); track emp.id) {
+    <app-ui-card class="staff-card" [class.fired]="emp.status === 'Уволен'" [class.vacation]="emp.status === 'В отпуске'">
       <div class="card-top">
         <div class="staff-name">{{ emp.name }}</div>
         
@@ -57,19 +77,68 @@
       </div>
       
       <div class="card-info">
-        <div class="info-row">
+        <div class="info-row status-row">
           <span class="label">Статус:</span>
-          <span class="value" [class.text-danger]="emp.status === 'Уволен'" [class.text-success]="emp.status === 'Активен'">
+          <span class="value badge-like" 
+                [class.st-danger]="emp.status === 'Уволен'" 
+                [class.st-warning]="emp.status === 'В отпуске'"
+                [class.st-success]="emp.status === 'Активен'">
             {{ emp.status }}
           </span>
         </div>
-        <div class="info-row">
-          <span class="label">Нанят:</span>
-          <span class="value">{{ emp.hireDate | date:'dd.MM.yyyy' }}</span>
+        
+        <div class="dates-box">
+          <div class="date-item">
+            <span class="d-icon">💼</span>
+            <div class="d-text">
+              <span class="d-label">Нанят</span>
+              <span class="d-val">{{ emp.hireDate | date:'dd.MM.yyyy' }}</span>
+            </div>
+          </div>
+          
+          @if (emp.status === 'Активен') {
+            <div class="date-item shift-item" [class.shift-active]="emp.onShift">
+              <span class="d-icon">⏱️</span>
+              <div class="d-text" style="flex: 1;">
+                <span class="d-label">Смена</span>
+                <span class="d-val">
+                  @if (emp.onShift) { 
+                    Активна с {{ emp.shiftStartTime | date:'HH:mm' }} 
+                  } @else { 
+                    Вне смены 
+                  }
+                </span>
+              </div>
+              <button class="shift-btn" (click)="toggleShift(emp.id)">
+                @if (emp.onShift) { Закрыть } @else { Начать }
+              </button>
+            </div>
+          }
+          
+          @if (emp.status === 'Уволен' && emp.fireDate) {
+            <div class="date-item danger-item">
+              <span class="d-icon">🚫</span>
+              <div class="d-text">
+                <span class="d-label">Уволен</span>
+                <span class="d-val">{{ emp.fireDate | date:'dd.MM.yyyy' }}</span>
+              </div>
+            </div>
+          }
+          
+          @if (emp.status === 'В отпуске' && emp.vacationStart && emp.vacationEnd) {
+            <div class="date-item warning-item">
+              <span class="d-icon">🌴</span>
+              <div class="d-text">
+                <span class="d-label">Отпуск</span>
+                <span class="d-val">{{ emp.vacationStart | date:'dd.MM' }} - {{ emp.vacationEnd | date:'dd.MM' }}</span>
+              </div>
+            </div>
+          }
         </div>
       </div>
       
       <div class="card-actions">
+        <app-ui-button variant="secondary" size="sm" (click)="openEditModal(emp)">Редактировать</app-ui-button>
         @if (emp.status === 'Уволен') {
           <app-ui-button variant="success" size="sm" (click)="activateEmployee(emp.id)">Восстановить</app-ui-button>
         } @else {
@@ -79,3 +148,71 @@
     </app-ui-card>
   }
 </div>
+
+<!-- Модальное окно редактирования -->
+<app-ui-modal 
+  [isOpen]="selectedEditEmployee() !== null" 
+  [title]="'Редактирование сотрудника'"
+  (onClose)="closeEditModal()">
+  
+  @if (selectedEditEmployee(); as emp) {
+    <div class="edit-modal-content">
+      <form [formGroup]="editForm" (ngSubmit)="submitEdit()" class="add-form">
+        <div class="form-group">
+          <label>ФИО сотрудника</label>
+          <input type="text" formControlName="name" />
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label>Роль</label>
+            <select formControlName="role">
+              <option value="Менеджер">Менеджер</option>
+              <option value="Официант">Официант</option>
+              <option value="Повар">Повар</option>
+              <option value="Кассир">Кассир</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Статус</label>
+            <select formControlName="status">
+              <option value="Активен">Активен</option>
+              <option value="В отпуске">В отпуске</option>
+              <option value="Уволен">Уволен</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Дата найма</label>
+          <input type="date" formControlName="hireDate" />
+        </div>
+
+        @if (editForm.get('status')?.value === 'Уволен') {
+          <div class="form-group alert-group danger-group">
+            <label>Дата увольнения</label>
+            <input type="date" formControlName="fireDate" />
+          </div>
+        }
+
+        @if (editForm.get('status')?.value === 'В отпуске') {
+          <div class="form-row alert-group warning-group">
+            <div class="form-group">
+              <label>Отпуск с</label>
+              <input type="date" formControlName="vacationStart" />
+            </div>
+            <div class="form-group">
+              <label>Отпуск по</label>
+              <input type="date" formControlName="vacationEnd" />
+            </div>
+          </div>
+        }
+
+        <div class="form-actions">
+          <app-ui-button variant="secondary" type="button" (click)="closeEditModal()">Отмена</app-ui-button>
+          <app-ui-button variant="success" [disabled]="editForm.invalid" type="submit">Сохранить</app-ui-button>
+        </div>
+      </form>
+    </div>
+  }
+</app-ui-modal>

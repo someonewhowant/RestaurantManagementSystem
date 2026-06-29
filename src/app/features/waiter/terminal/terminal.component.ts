@@ -6,6 +6,7 @@ import { OrderService } from '../../../core/services/order.service';
 import { BudgetService } from '../../../core/services/budget.service';
 import { TablesService } from '../../../core/services/tables.service';
 import { InventoryService } from '../../../core/services/inventory.service';
+import { StaffService } from '../../../core/services/staff.service';
 import { UiButtonComponent } from '../../../core/ui/button/button.component';
 
 @Component({
@@ -23,9 +24,23 @@ export class WaiterTerminalComponent {
   public budgetService = inject(BudgetService);
   public tablesService = inject(TablesService);
   public inventoryService = inject(InventoryService);
+  public staffService = inject(StaffService);
   
   public tableId = signal<string | null>(null);
   public selectedCategory = signal<MenuCategory>('Популярное');
+
+  public tableInfo = computed(() => {
+    const tid = this.tableId();
+    if (!tid) return null;
+    return this.tablesService.tables().find(t => t.id === tid) || null;
+  });
+
+  public waiterName = computed(() => {
+    const table = this.tableInfo();
+    if (!table || !table.waiterId) return null;
+    const emp = this.staffService.staff().find(e => e.id === table.waiterId);
+    return emp ? emp.name : null;
+  });
 
   ngOnInit() {
     this.route.queryParams.subscribe(params => {
@@ -72,12 +87,13 @@ export class WaiterTerminalComponent {
     const total = this.orderTotal();
     
     // 1. Фиксируем выручку в бюджете
+    const wName = this.waiterName();
     this.budgetService.addTransaction({
       date: new Date().toISOString(),
       amount: total,
       type: 'Доход',
       category: 'Оплата заказа',
-      description: `Оплата заказа столика ID: ${tid}`
+      description: `Оплата заказа столика ID: ${tid}` + (wName ? `. Официант: ${wName}` : '')
     });
 
     // 2. Очищаем корзину
