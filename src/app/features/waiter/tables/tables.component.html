@@ -89,6 +89,19 @@
       </div>
     </div>
 
+    <div class="waiter-actions" style="margin-bottom: 24px;">
+      <h4>Назначить официанта</h4>
+      <select 
+        [ngModel]="table.waiterId || ''" 
+        (ngModelChange)="assignWaiter($event)" 
+        style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid rgba(0,0,0,0.1); outline: none; font-size: 14px; font-weight: 500;">
+        <option value="" disabled>Выберите официанта</option>
+        @for (w of activeWaiters(); track w.id) {
+          <option [value]="w.id">{{ w.name }}</option>
+        }
+      </select>
+    </div>
+
     <div class="order-actions">
       <app-ui-button variant="primary" class="full-width" (click)="goToOrder()">
         Перейти к заказу

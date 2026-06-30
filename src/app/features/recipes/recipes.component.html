@@ -214,23 +214,23 @@
         <!-- Боковая панель калькуляции -->
         <div style="display: flex; flex-direction: column; gap: 24px;">
           <!-- Экономика -->
-          <div class="builder-panel calc-panel" style="position: sticky; top: 24px;">
+          <div class="builder-panel calc-panel">
             <div class="panel-header">
               <span class="panel-icon">💰</span>
               <h3>Экономика блюда</h3>
             </div>
-            <div class="panel-body">
-              <div class="calc-row">
+            <div class="panel-body" style="display: flex; flex-direction: column; gap: 16px;">
+              <div class="calc-row" style="margin-bottom: 0;">
                 <span class="calc-label">Себестоимость (Food Cost)</span>
                 <span class="calc-value highlight">{{ foodCost() | currency:'RUB':'symbol-narrow':'1.0-2' }}</span>
               </div>
               
-              <div class="form-group" style="margin: 20px 0; padding: 16px; background: rgba(33,150,243,0.05); border-radius: 8px; border: 1px solid rgba(33,150,243,0.1);">
+              <div class="form-group" style="padding: 16px; background: rgba(33,150,243,0.05); border-radius: 8px; border: 1px solid rgba(33,150,243,0.1);">
                 <label style="display: flex; justify-content: space-between; margin-bottom: 8px; color: var(--color-primary); font-weight: 600;">
                   Цена продажи в меню
                 </label>
                 <div style="position: relative;">
-                  <input type="number" class="ui-input premium-input price-input" [ngModel]="newDishPrice()" (ngModelChange)="newDishPrice.set($event)">
+                  <input type="number" class="ui-input premium-input price-input" style="width: 100%;" [ngModel]="newDishPrice()" (ngModelChange)="newDishPrice.set($event)">
                   <span style="position: absolute; right: 16px; top: 50%; transform: translateY(-50%); font-size: 18px; color: var(--color-text-main); font-weight: 700;">₽</span>
                 </div>
               </div>

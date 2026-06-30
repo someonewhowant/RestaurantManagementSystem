@@ -25,7 +25,7 @@ export class WaiterTablesComponent {
   // Compute only waiters who are on shift
   public activeWaiters = computed(() => {
     return this.staffService.staff().filter(e => 
-      (e.role === 'Официант' || e.role === 'Менеджер') && e.onShift
+      e.role === 'Официант' && e.onShift
     );
   });
 
@@ -51,9 +51,19 @@ export class WaiterTablesComponent {
   changeTableStatus(newStatus: TableStatus) {
     const table = this.selectedTable();
     if (table) {
-      this.tablesService.changeStatus(table.id, newStatus, this.currentWaiterId() || undefined);
+      // Если у столика уже есть официант, сохраняем его, иначе назначаем текущего
+      const wId = table.waiterId || this.currentWaiterId() || undefined;
+      this.tablesService.changeStatus(table.id, newStatus, wId);
       // Обновляем локальный стейт модалки
-      this.selectedTable.set({ ...table, status: newStatus, waiterId: this.currentWaiterId() || table.waiterId });
+      this.selectedTable.set({ ...table, status: newStatus, waiterId: newStatus === 'Свободен' ? undefined : wId });
+    }
+  }
+
+  assignWaiter(waiterId: string) {
+    const table = this.selectedTable();
+    if (table) {
+      this.tablesService.assignWaiter(table.id, waiterId);
+      this.selectedTable.set({ ...table, waiterId });
     }
   }
 

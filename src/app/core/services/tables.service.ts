@@ -39,4 +39,10 @@ export class TablesService {
       })
     );
   }
+
+  assignWaiter(id: string, waiterId: string) {
+    this.tablesSignal.update(list => 
+      list.map(t => t.id === id ? { ...t, waiterId } : t)
+    );
+  }
 }

@@ -5,9 +5,9 @@
       <span class="logo-text">Vanilla CRM</span>
     </div>
     <nav class="nav">
-      <a href="#features">Возможности</a>
-      <a href="#dashboard">Единый дашборд</a>
-      <a href="#pricing">Тарифы</a>
+      <a href="#features" class="nav-link-anim">Возможности</a>
+      <a href="#dashboard" class="nav-link-anim">Единый дашборд</a>
+      <a href="#pricing" class="nav-link-anim">Тарифы</a>
     </nav>
     <div class="auth-actions">
       <!-- We will create Auth routes next step -->
@@ -22,16 +22,18 @@
       <app-ui-badge color="primary">B2B Software</app-ui-badge>
       <h1 class="hero-title">Облачная CRM для ресторанов нового поколения</h1>
       <p class="hero-subtitle">
-        Управляйте кассой, складом, персоналом и аналитикой в едином интерфейсе. Быстро, прозрачно и без скрытых платежей.
+        Управляйте кассой, складом, персоналом и аналитикой в едином интерфейсе. Быстро, прозрачно и без скрытых
+        платежей.
       </p>
-      
+
       <div class="hero-actions">
-        <app-ui-button routerLink="/auth/register" variant="primary" size="md" style="box-shadow: 0 10px 20px rgba(33,150,243,0.3);">
+        <app-ui-button class="btn-pulse" routerLink="/auth/register" variant="primary" size="md"
+          style="box-shadow: 0 10px 20px rgba(33,150,243,0.3);">
           Создать аккаунт (14 дней бесплатно)
         </app-ui-button>
       </div>
     </div>
-    
+
     <div class="hero-visual">
       <!-- B2B Dashboard Mockup -->
       <div class="macbook-mockup">
@@ -40,7 +42,9 @@
             <!-- Simulated sidebar -->
             <div class="preview-sidebar">
               <div style="margin-bottom: 12px;">
-                <div class="dot red"></div><div class="dot yellow"></div><div class="dot green"></div>
+                <div class="dot red"></div>
+                <div class="dot yellow"></div>
+                <div class="dot green"></div>
               </div>
               <div class="menu-item active"></div>
               <div class="menu-item"></div>
@@ -63,13 +67,66 @@
     </div>
   </main>
 
+  <!-- Social Proof -->
+  <section class="social-proof section-heading" style="padding: 60px 40px 20px; background: white; text-align: center;">
+    <p style="color: var(--color-text-muted); font-size: 14px; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; margin-bottom: 32px;">Нам доверяют более 500 ресторанов и кофеен</p>
+    
+    <div class="logo-marquee-wrapper">
+      <div class="logo-marquee">
+        <!-- Original set -->
+        <div class="logo-item" style="display: flex; align-items: center; gap: 10px; font-size: 24px; font-weight: 800; font-family: var(--font-secondary); text-transform: uppercase; letter-spacing: -0.5px; color: #1e293b;">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="8" y1="12" x2="16" y2="12"></line><line x1="8" y1="16" x2="16" y2="16"></line><line x1="8" y1="8" x2="16" y2="8"></line></svg>
+          Burger&amp;Beer
+        </div>
+        <div class="logo-item" style="display: flex; align-items: center; gap: 10px; font-size: 26px; font-weight: 700; font-family: Georgia, serif; font-style: italic; color: #1e293b;">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"></path><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path><line x1="6" y1="1" x2="6" y2="4"></line><line x1="10" y1="1" x2="10" y2="4"></line><line x1="14" y1="1" x2="14" y2="4"></line></svg>
+          CoffeeHouse
+        </div>
+        <div class="logo-item" style="display: flex; align-items: center; gap: 10px; font-size: 24px; font-weight: 600; font-family: sans-serif; letter-spacing: 2px; color: #1e293b;">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"></path><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"></path></svg>
+          VEGAN SPACE
+        </div>
+        <div class="logo-item" style="display: flex; align-items: center; gap: 10px; font-size: 26px; font-weight: 900; font-family: sans-serif; color: #1e293b;">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path><path d="M2 12h20"></path></svg>
+          SUSHI MASTER
+        </div>
+        <div class="logo-item" style="display: flex; align-items: center; gap: 10px; font-size: 28px; font-weight: 300; font-family: var(--font-secondary); letter-spacing: 1px; color: #1e293b;">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 22h8"></path><path d="M12 15v7"></path><path d="M12 15a7.5 7.5 0 0 0 7.5-7.5c0-1.5-1.5-3.5-3.5-4.5-2-1-3-3-4-4-1 1-2 3-4 4-2 1-3.5 3-3.5 4.5A7.5 7.5 0 0 0 12 15z"></path></svg>
+          GastroBar
+        </div>
+        
+        <!-- Duplicated for infinite scroll -->
+        <div class="logo-item" style="display: flex; align-items: center; gap: 10px; font-size: 24px; font-weight: 800; font-family: var(--font-secondary); text-transform: uppercase; letter-spacing: -0.5px; color: #1e293b;">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="8" y1="12" x2="16" y2="12"></line><line x1="8" y1="16" x2="16" y2="16"></line><line x1="8" y1="8" x2="16" y2="8"></line></svg>
+          Burger&amp;Beer
+        </div>
+        <div class="logo-item" style="display: flex; align-items: center; gap: 10px; font-size: 26px; font-weight: 700; font-family: Georgia, serif; font-style: italic; color: #1e293b;">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"></path><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path><line x1="6" y1="1" x2="6" y2="4"></line><line x1="10" y1="1" x2="10" y2="4"></line><line x1="14" y1="1" x2="14" y2="4"></line></svg>
+          CoffeeHouse
+        </div>
+        <div class="logo-item" style="display: flex; align-items: center; gap: 10px; font-size: 24px; font-weight: 600; font-family: sans-serif; letter-spacing: 2px; color: #1e293b;">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"></path><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"></path></svg>
+          VEGAN SPACE
+        </div>
+        <div class="logo-item" style="display: flex; align-items: center; gap: 10px; font-size: 26px; font-weight: 900; font-family: sans-serif; color: #1e293b;">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path><path d="M2 12h20"></path></svg>
+          SUSHI MASTER
+        </div>
+        <div class="logo-item" style="display: flex; align-items: center; gap: 10px; font-size: 28px; font-weight: 300; font-family: var(--font-secondary); letter-spacing: 1px; color: #1e293b;">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 22h8"></path><path d="M12 15v7"></path><path d="M12 15a7.5 7.5 0 0 0 7.5-7.5c0-1.5-1.5-3.5-3.5-4.5-2-1-3-3-4-4-1 1-2 3-4 4-2 1-3.5 3-3.5 4.5A7.5 7.5 0 0 0 12 15z"></path></svg>
+          GastroBar
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- Features B2B -->
   <section id="features" class="features">
     <div class="section-heading">
       <h2>Все инструменты в одном окне</h2>
       <p>Откажитесь от зоопарка сервисов. Vanilla CRM объединяет все процессы.</p>
     </div>
-    
+
     <div class="features-grid">
       <div class="feature-item">
         <div class="feature-icon" style="background: rgba(33,150,243,0.1); color: var(--color-primary);">💻</div>
@@ -79,7 +136,8 @@
       <div class="feature-item">
         <div class="feature-icon" style="background: rgba(76,175,80,0.1); color: var(--color-success);">⚡</div>
         <h3>Real-time синхронизация</h3>
-        <p>Официант пробивает чек, на кухне появляется заказ, а со склада списываются ингредиенты в реальном времени.</p>
+        <p>Официант пробивает чек, на кухне появляется заказ, а со склада списываются ингредиенты в реальном времени.
+        </p>
       </div>
       <div class="feature-item">
         <div class="feature-icon" style="background: rgba(255,152,0,0.1); color: var(--color-warning);">📦</div>
@@ -94,15 +152,54 @@
     </div>
   </section>
 
+  <!-- Formats Block -->
+  <section class="formats-section" style="padding: 100px 40px; background: white;">
+    <div class="section-heading">
+      <h2>Идеально подходит для любого формата</h2>
+      <p>Архитектура системы позволяет легко масштабироваться под ваши потребности.</p>
+    </div>
+    <div style="max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 24px;">
+      
+      <!-- Кофейни -->
+      <div class="feature-item" style="text-align: center; padding: 40px 24px; border: 1px solid #e2e8f0; border-radius: 20px; background: #fff; cursor: pointer;">
+        <div style="font-size: 48px; margin-bottom: 20px;">☕️</div>
+        <h3 style="font-size: 20px; color: #0f172a; margin-bottom: 12px;">Кофейни и пекарни</h3>
+        <p style="color: #64748b; font-size: 14px; line-height: 1.6;">Быстрые чеки, программа лояльности для постоянников и учет выпечки.</p>
+      </div>
+
+      <!-- Стрит-фуд -->
+      <div class="feature-item" style="text-align: center; padding: 40px 24px; border: 1px solid #e2e8f0; border-radius: 20px; background: #fff; cursor: pointer;">
+        <div style="font-size: 48px; margin-bottom: 20px;">🍔</div>
+        <h3 style="font-size: 20px; color: #0f172a; margin-bottom: 12px;">Стрит-фуд и фудтраки</h3>
+        <p style="color: #64748b; font-size: 14px; line-height: 1.6;">Компактный планшетный POS, экран повара (KDS) и учет модификаторов блюд.</p>
+      </div>
+
+      <!-- Рестораны -->
+      <div class="feature-item" style="text-align: center; padding: 40px 24px; border: 1px solid #e2e8f0; border-radius: 20px; background: #fff; cursor: pointer;">
+        <div style="font-size: 48px; margin-bottom: 20px;">🍽️</div>
+        <h3 style="font-size: 20px; color: #0f172a; margin-bottom: 12px;">Рестораны полного цикла</h3>
+        <p style="color: #64748b; font-size: 14px; line-height: 1.6;">Бронирование столов, маршрутизация заказов на кухню и сложные ТТК.</p>
+      </div>
+
+      <!-- Доставка -->
+      <div class="feature-item" style="text-align: center; padding: 40px 24px; border: 1px solid #e2e8f0; border-radius: 20px; background: #fff; cursor: pointer;">
+        <div style="font-size: 48px; margin-bottom: 20px;">🛵</div>
+        <h3 style="font-size: 20px; color: #0f172a; margin-bottom: 12px;">Доставка и Dark Kitchen</h3>
+        <p style="color: #64748b; font-size: 14px; line-height: 1.6;">Управление курьерами, интеграция с Delivery-сервисами и аналитика маржи.</p>
+      </div>
+
+    </div>
+  </section>
+
   <!-- Unified Dashboard Showcase -->
   <section id="dashboard" class="showcase" style="background: #f8fafc; padding: 100px 40px;">
     <div class="section-heading">
-      <h2>Единый супер-дашборд</h2>
+      <h2>Объединенный дашборд</h2>
       <p>Больше никаких разрозненных программ. Управляйте всем из одного интерфейса.</p>
     </div>
-    <div style="max-width: 1000px; margin: 0 auto; background: white; border-radius: 16px; box-shadow: 0 20px 40px rgba(0,0,0,0.05); overflow: hidden; border: 1px solid rgba(0,0,0,0.05);">
+    <div class="showcase-block-animated premium-showcase">
       <!-- Top bar -->
-      <div style="height: 48px; background: #f1f5f9; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; padding: 0 16px; gap: 8px;">
+      <div class="showcase-top-bar">
         <div style="width: 12px; height: 12px; border-radius: 50%; background: #ff5f56;"></div>
         <div style="width: 12px; height: 12px; border-radius: 50%; background: #ffbd2e;"></div>
         <div style="width: 12px; height: 12px; border-radius: 50%; background: #27c93f;"></div>
@@ -111,8 +208,11 @@
       <!-- Body -->
       <div style="display: flex; height: 500px;">
         <!-- Sidebar -->
-        <div style="width: 220px; border-right: 1px solid #e2e8f0; padding: 16px; display: flex; flex-direction: column; gap: 8px;">
-          <div style="padding: 8px 12px; background: #e0f2fe; color: #0284c7; border-radius: 8px; font-size: 14px; font-weight: 600;">📊 Дашборд</div>
+        <div
+          style="width: 220px; border-right: 1px solid #e2e8f0; padding: 16px; display: flex; flex-direction: column; gap: 8px;">
+          <div
+            style="padding: 8px 12px; background: #e0f2fe; color: #0284c7; border-radius: 8px; font-size: 14px; font-weight: 600;">
+            📊 Дашборд</div>
           <div style="padding: 8px 12px; color: #64748b; font-size: 14px; font-weight: 500;">💻 POS-терминал</div>
           <div style="padding: 8px 12px; color: #64748b; font-size: 14px; font-weight: 500;">📦 Склад</div>
           <div style="padding: 8px 12px; color: #64748b; font-size: 14px; font-weight: 500;">👥 Персонал</div>
@@ -136,7 +236,8 @@
             </div>
           </div>
           <!-- Chart mockup -->
-          <div style="background: white; height: 250px; border-radius: 8px; border: 1px solid #e2e8f0; margin-top: 16px; display: flex; align-items: flex-end; padding: 16px; gap: 16px;">
+          <div
+            style="background: white; height: 250px; border-radius: 8px; border: 1px solid #e2e8f0; margin-top: 16px; display: flex; align-items: flex-end; padding: 16px; gap: 16px;">
             <div style="flex: 1; background: #e0f2fe; height: 40%; border-radius: 4px 4px 0 0;"></div>
             <div style="flex: 1; background: #e0f2fe; height: 60%; border-radius: 4px 4px 0 0;"></div>
             <div style="flex: 1; background: #0284c7; height: 90%; border-radius: 4px 4px 0 0;"></div>
@@ -148,6 +249,276 @@
     </div>
   </section>
 
+  <!-- Inventory Showcase -->
+  <section id="inventory-showcase" class="showcase" style="background: white; padding: 100px 40px;">
+    <div class="section-heading">
+      <h2>Удобное управление складом</h2>
+      <p>Следите за остатками, управляйте поставками и автоматически списывайте продукты.</p>
+    </div>
+    <div class="showcase-block-animated premium-showcase">
+      <!-- Top bar -->
+      <div class="showcase-top-bar">
+        <div style="width: 12px; height: 12px; border-radius: 50%; background: #ff5f56;"></div>
+        <div style="width: 12px; height: 12px; border-radius: 50%; background: #ffbd2e;"></div>
+        <div style="width: 12px; height: 12px; border-radius: 50%; background: #27c93f;"></div>
+        <div style="margin-left: 16px; font-size: 13px; font-weight: 500; color: #64748b;">Vanilla CRM Workspace - Склад</div>
+      </div>
+      <!-- Body -->
+      <div style="display: flex; height: 450px;">
+        <!-- Content -->
+        <div style="flex: 1; padding: 24px; background: #fafafa;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+            <h2 style="margin: 0; font-size: 24px; color: #1e293b;">Склад</h2>
+            <div
+              style="background: var(--color-primary); color: white; padding: 8px 16px; border-radius: 8px; font-size: 14px; font-weight: 600;">
+              + Добавить позицию</div>
+          </div>
+
+          <div style="background: white; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden;">
+            <table style="width: 100%; border-collapse: collapse; text-align: left;">
+              <thead style="background: #f8fafc; border-bottom: 1px solid #e2e8f0;">
+                <tr>
+                  <th style="padding: 12px 16px; font-size: 13px; color: #64748b; font-weight: 600;">НАИМЕНОВАНИЕ</th>
+                  <th style="padding: 12px 16px; font-size: 13px; color: #64748b; font-weight: 600;">ОСТАТОК</th>
+                  <th style="padding: 12px 16px; font-size: 13px; color: #64748b; font-weight: 600;">ЦЕНА (ЗА ЕД.)</th>
+                  <th style="padding: 12px 16px; font-size: 13px; color: #64748b; font-weight: 600;">СТАТУС</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr style="border-bottom: 1px solid #f1f5f9;">
+                  <td style="padding: 16px; display: flex; align-items: center; gap: 12px;">
+                    <div
+                      style="width: 32px; height: 32px; background: #fef3c7; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px;">
+                      🧀</div>
+                    <span style="font-weight: 600; color: #0f172a;">Сыр Пармезан</span>
+                  </td>
+                  <td style="padding: 16px; color: #334155;">2.5 кг</td>
+                  <td style="padding: 16px; color: #334155;">1 200 ₽</td>
+                  <td style="padding: 16px;"><span
+                      style="background: #dcfce7; color: #166534; padding: 4px 8px; border-radius: 12px; font-size: 12px; font-weight: 600;">В
+                      норме</span></td>
+                </tr>
+                <tr style="border-bottom: 1px solid #f1f5f9;">
+                  <td style="padding: 16px; display: flex; align-items: center; gap: 12px;">
+                    <div
+                      style="width: 32px; height: 32px; background: #fee2e2; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px;">
+                      🍅</div>
+                    <span style="font-weight: 600; color: #0f172a;">Томаты Черри</span>
+                  </td>
+                  <td style="padding: 16px; color: #334155;">0.2 кг</td>
+                  <td style="padding: 16px; color: #334155;">350 ₽</td>
+                  <td style="padding: 16px;"><span
+                      style="background: #fee2e2; color: #991b1b; padding: 4px 8px; border-radius: 12px; font-size: 12px; font-weight: 600;">Заканчивается</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 16px; display: flex; align-items: center; gap: 12px;">
+                    <div
+                      style="width: 32px; height: 32px; background: #e0f2fe; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px;">
+                      🥩</div>
+                    <span style="font-weight: 600; color: #0f172a;">Мраморная говядина</span>
+                  </td>
+                  <td style="padding: 16px; color: #334155;">15 кг</td>
+                  <td style="padding: 16px; color: #334155;">2 500 ₽</td>
+                  <td style="padding: 16px;"><span
+                      style="background: #dcfce7; color: #166534; padding: 4px 8px; border-radius: 12px; font-size: 12px; font-weight: 600;">В
+                      норме</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Recipe Map Showcase -->
+  <section id="recipe-showcase" class="showcase" style="background: #f8fafc; padding: 100px 40px;">
+    <div class="section-heading">
+      <h2>Конструктор технологических карт</h2>
+      <p>Рассчитывайте себестоимость, маржинальность и КБЖУ в несколько кликов.</p>
+    </div>
+    <div class="showcase-block-animated premium-showcase">
+      <!-- Top bar -->
+      <div class="showcase-top-bar">
+        <div style="width: 12px; height: 12px; border-radius: 50%; background: #ff5f56;"></div>
+        <div style="width: 12px; height: 12px; border-radius: 50%; background: #ffbd2e;"></div>
+        <div style="width: 12px; height: 12px; border-radius: 50%; background: #27c93f;"></div>
+        <div style="margin-left: 16px; font-size: 13px; font-weight: 500; color: #64748b;">Vanilla CRM Workspace - Конструктор ТТК</div>
+      </div>
+      <!-- Body -->
+      <div style="display: flex; height: 500px; background: #fafafa; padding: 24px; gap: 24px;">
+        <!-- Left Side (Ingredients) -->
+        <div style="flex: 2; display: flex; flex-direction: column; gap: 16px;">
+          <div
+            style="background: white; border-radius: 12px; border: 1px solid #e2e8f0; padding: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.02);">
+            <div
+              style="font-weight: 600; color: #0f172a; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+              <span style="font-size: 20px;">⚖️</span> Ингредиенты (ТТК)
+            </div>
+
+            <div
+              style="display: flex; align-items: center; gap: 12px; background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 8px;">
+              <div style="flex: 1; color: #334155; font-size: 14px;">🥩 Мраморная говядина</div>
+              <div
+                style="width: 80px; background: white; border: 1px solid #cbd5e1; padding: 6px 12px; border-radius: 6px; text-align: right; font-size: 14px;">
+                0.2 кг</div>
+            </div>
+            <div
+              style="display: flex; align-items: center; gap: 12px; background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 8px;">
+              <div style="flex: 1; color: #334155; font-size: 14px;">🍅 Томаты Черри</div>
+              <div
+                style="width: 80px; background: white; border: 1px solid #cbd5e1; padding: 6px 12px; border-radius: 6px; text-align: right; font-size: 14px;">
+                0.05 кг</div>
+            </div>
+            <div
+              style="display: flex; align-items: center; gap: 12px; background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px dashed #cbd5e1; color: #64748b; font-size: 14px; justify-content: center;">
+              + Добавить ингредиент
+            </div>
+          </div>
+
+          <div
+            style="background: white; border-radius: 12px; border: 1px solid #e2e8f0; padding: 16px; flex: 1; box-shadow: 0 4px 6px rgba(0,0,0,0.02);">
+            <div
+              style="font-weight: 600; color: #0f172a; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+              <span style="font-size: 20px;">👨‍🍳</span> Технология приготовления
+            </div>
+            <div style="color: #64748b; font-size: 13px; line-height: 1.6;">
+              1. Обжарить говядину на гриле до степени medium rare.<br>
+              2. Нарезать слайсами.<br>
+              3. Украсить томатами и подавать.
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Side (Economics) -->
+        <div style="flex: 1; display: flex; flex-direction: column; gap: 16px;">
+          <div
+            style="background: white; border-radius: 12px; border: 1px solid #e2e8f0; padding: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.02);">
+            <div
+              style="font-weight: 600; color: #0f172a; margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
+              <span style="font-size: 20px;">💰</span> Экономика блюда
+            </div>
+            <div
+              style="display: flex; justify-content: space-between; border-bottom: 1px dashed #cbd5e1; padding-bottom: 12px; margin-bottom: 16px;">
+              <span style="color: #64748b; font-size: 14px;">Себестоимость</span>
+              <span style="font-weight: 700; color: #0f172a;">517 ₽</span>
+            </div>
+            <div
+              style="background: #eff6ff; border: 1px solid #bfdbfe; padding: 12px; border-radius: 8px; margin-bottom: 16px;">
+              <div style="color: #2563eb; font-weight: 600; font-size: 13px; margin-bottom: 4px;">Цена продажи</div>
+              <div style="font-size: 20px; font-weight: 700; color: #0f172a;">1 200 ₽</div>
+            </div>
+            <div
+              style="background: white; border: 1px solid #e2e8f0; padding: 12px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <span style="font-size: 13px; font-weight: 600;">Маржинальность</span>
+                <span
+                  style="background: #dcfce7; color: #166534; padding: 2px 6px; border-radius: 12px; font-size: 11px; font-weight: 700;">57%</span>
+              </div>
+              <div style="height: 6px; background: #f1f5f9; border-radius: 3px; overflow: hidden;">
+                <div style="height: 100%; width: 57%; background: #22c55e;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- POS Terminal Showcase -->
+  <section id="pos-showcase" class="showcase" style="background: white; padding: 100px 40px;">
+    <div class="section-heading">
+      <h2>Мобильный терминал официанта</h2>
+      <p>Пробивайте заказы в 2 тапа. Работает на любых планшетах и смартфонах без зависаний.</p>
+    </div>
+    
+    <div class="showcase-block-animated premium-showcase" style="max-width: 800px; margin: 0 auto; border-radius: 32px; padding: 12px; background: #1e293b; position: relative;">
+      <div style="background: #f1f5f9; border-radius: 24px; overflow: hidden; height: 500px; display: flex;">
+        <!-- POS Sidebar -->
+        <div style="width: 250px; background: white; border-right: 1px solid #e2e8f0; display: flex; flex-direction: column;">
+          <div style="padding: 16px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-weight: 700; font-size: 18px; color: #0f172a;">Стол 4</span>
+            <span style="background: #fef3c7; color: #b45309; padding: 4px 8px; border-radius: 8px; font-size: 12px; font-weight: 700;">Готовится</span>
+          </div>
+          <div style="flex: 1; padding: 16px; display: flex; flex-direction: column; gap: 12px;">
+            <div style="display: flex; justify-content: space-between; font-size: 14px; color: #0f172a;">
+              <span>2x Латте</span><span style="font-weight: 600;">400 ₽</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; font-size: 14px; color: #0f172a;">
+              <span>1x Стейк</span><span style="font-weight: 600;">1 500 ₽</span>
+            </div>
+          </div>
+          <div style="padding: 16px; background: #f8fafc; border-top: 1px solid #e2e8f0;">
+            <div style="display: flex; justify-content: space-between; font-weight: 700; font-size: 18px; margin-bottom: 16px; color: #0f172a;">
+              <span>Итого:</span><span style="color: var(--color-primary);">1 900 ₽</span>
+            </div>
+            <div style="background: var(--color-primary); color: white; text-align: center; padding: 16px; border-radius: 12px; font-weight: 600; cursor: pointer;">
+              Оплатить
+            </div>
+          </div>
+        </div>
+        <!-- POS Grid -->
+        <div style="flex: 1; padding: 16px; display: flex; flex-direction: column; gap: 16px;">
+          <div style="display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px;">
+            <div style="background: var(--color-primary); color: white; padding: 8px 16px; border-radius: 20px; font-weight: 600; white-space: nowrap;">Популярное</div>
+            <div style="background: white; border: 1px solid #cbd5e1; padding: 8px 16px; border-radius: 20px; font-weight: 600; white-space: nowrap; color: #334155;">Кофе</div>
+            <div style="background: white; border: 1px solid #cbd5e1; padding: 8px 16px; border-radius: 20px; font-weight: 600; white-space: nowrap; color: #334155;">Горячее</div>
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px;">
+            <div style="background: white; border-radius: 12px; padding: 16px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.02); border: 1px solid #e2e8f0;">
+              <div style="font-size: 32px; margin-bottom: 8px;">☕️</div>
+              <div style="font-weight: 600; font-size: 14px; color: #0f172a;">Латте</div>
+              <div style="color: #64748b; font-size: 13px;">200 ₽</div>
+            </div>
+            <div style="background: white; border-radius: 12px; padding: 16px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.02); border: 1px solid #e2e8f0;">
+              <div style="font-size: 32px; margin-bottom: 8px;">🍰</div>
+              <div style="font-weight: 600; font-size: 14px; color: #0f172a;">Чизкейк</div>
+              <div style="color: #64748b; font-size: 13px;">350 ₽</div>
+            </div>
+            <div style="background: white; border-radius: 12px; padding: 16px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.02); border: 1px solid #e2e8f0;">
+              <div style="font-size: 32px; margin-bottom: 8px;">🥗</div>
+              <div style="font-weight: 600; font-size: 14px; color: #0f172a;">Цезарь</div>
+              <div style="color: #64748b; font-size: 13px;">450 ₽</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ROI Calculator -->
+  <section id="roi-calculator" style="padding: 100px 40px; background: var(--color-bg);">
+    <div class="section-heading">
+      <h2>Калькулятор окупаемости</h2>
+      <p>Узнайте, сколько вы теряете каждый месяц без автоматизации.</p>
+    </div>
+    
+    <div class="showcase-block-animated premium-showcase" style="max-width: 800px; margin: 0 auto; padding: 40px; display: flex; gap: 40px; align-items: center; flex-wrap: wrap; background: white;">
+      <div style="flex: 1; min-width: 300px;">
+        <h3 style="font-size: 20px; margin-bottom: 24px; color: #0f172a;">Ваша выручка в месяц:</h3>
+        <div style="font-size: 32px; font-weight: 700; color: var(--color-primary); margin-bottom: 16px;">
+          {{ revenue() | number }} ₽
+        </div>
+        <input type="range" min="100000" max="10000000" step="100000" [value]="revenue()" (input)="onRevenueChange($event)" style="width: 100%; cursor: pointer;">
+        <div style="display: flex; justify-content: space-between; color: #64748b; font-size: 13px; margin-top: 8px;">
+          <span>100 тыс. ₽</span>
+          <span>10 млн ₽</span>
+        </div>
+      </div>
+      <div style="flex: 1; min-width: 300px; background: #f8fafc; padding: 32px; border-radius: 16px; border: 1px solid #e2e8f0;">
+        <h3 style="font-size: 18px; margin-bottom: 8px; color: #0f172a;">Вы теряете на списаниях и ошибках:</h3>
+        <div style="font-size: 40px; font-weight: 700; color: #ef4444; margin-bottom: 16px;">
+          ~{{ savings() | number }} ₽
+        </div>
+        <p style="color: #64748b; font-size: 14px; line-height: 1.5;">
+          По статистике, внедрение точных техкарт и умного склада возвращает в среднем 8% выручки. 
+          Система окупит себя уже в первую неделю.
+        </p>
+      </div>
+    </div>
+  </section>
+
   <!-- Pricing -->
   <section id="pricing" class="pricing" style="padding: 100px 40px; background: white;">
     <div class="section-heading">
@@ -155,53 +526,145 @@
       <p>Прозрачные цены для любого формата заведения. Никаких скрытых платежей.</p>
     </div>
     <div style="display: flex; gap: 32px; justify-content: center; max-width: 1000px; margin: 0 auto; flex-wrap: wrap;">
-      
-      <div style="flex: 1; min-width: 300px; border: 1px solid #e2e8f0; border-radius: 16px; padding: 40px; text-align: center; background: #f8fafc;">
+
+      <div class="pricing-card"
+        style="flex: 1; min-width: 300px; border: 1px solid #e2e8f0; border-radius: 16px; padding: 40px; text-align: center; background: #f8fafc;">
         <h3 style="font-size: 24px; color: #64748b; margin-bottom: 8px;">Базовый</h3>
-        <div style="font-size: 48px; font-weight: 700; color: #0f172a; margin: 16px 0;">1990 ₽ <span style="font-size: 16px; font-weight: 400; color: #64748b;">/мес</span></div>
+        <div style="font-size: 48px; font-weight: 700; color: #0f172a; margin: 16px 0;">1990 ₽ <span
+            style="font-size: 16px; font-weight: 400; color: #64748b;">/мес</span></div>
         <p style="color: #64748b; margin-bottom: 32px;">Для небольших кофеен и фаст-фуда</p>
-        <ul style="list-style: none; padding: 0; margin: 0 0 40px 0; text-align: left; color: #334155; line-height: 2.5; font-size: 15px;">
+        <ul
+          style="list-style: none; padding: 0; margin: 0 0 40px 0; text-align: left; color: #334155; line-height: 2.5; font-size: 15px;">
           <li>✔️ До 2 терминалов официанта</li>
           <li>✔️ Базовый склад и меню</li>
           <li>✔️ Поддержка по email</li>
           <li style="color: #94a3b8;">❌ Углубленная аналитика</li>
         </ul>
-        <app-ui-button variant="secondary" size="md" style="width: 100%; border-color: #cbd5e1; color: #475569;">Начать бесплатно</app-ui-button>
+        <app-ui-button variant="secondary" size="md" style="width: 100%; border-color: #cbd5e1; color: #475569;">Начать
+          бесплатно</app-ui-button>
       </div>
 
-      <div style="flex: 1; min-width: 300px; border: 2px solid var(--color-primary); border-radius: 16px; padding: 40px; text-align: center; position: relative; box-shadow: 0 20px 40px rgba(33,150,243,0.15); background: white; transform: scale(1.05);">
-        <div style="position: absolute; top: -14px; left: 50%; transform: translateX(-50%); background: var(--color-primary); color: white; padding: 6px 20px; border-radius: 20px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">ПОПУЛЯРНЫЙ</div>
+      <div class="pricing-card-pro"
+        style="flex: 1; min-width: 300px; border: 2px solid var(--color-primary); border-radius: 16px; padding: 40px; text-align: center; position: relative; box-shadow: 0 20px 40px rgba(33,150,243,0.15); background: white; transform: scale(1.05);">
+        <div
+          style="position: absolute; top: -14px; left: 50%; transform: translateX(-50%); background: var(--color-primary); color: white; padding: 6px 20px; border-radius: 20px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">
+          ПОПУЛЯРНЫЙ</div>
         <h3 style="font-size: 24px; color: var(--color-primary); margin-bottom: 8px;">Pro</h3>
-        <div style="font-size: 48px; font-weight: 700; color: #0f172a; margin: 16px 0;">4990 ₽ <span style="font-size: 16px; font-weight: 400; color: #64748b;">/мес</span></div>
+        <div style="font-size: 48px; font-weight: 700; color: #0f172a; margin: 16px 0;">4990 ₽ <span
+            style="font-size: 16px; font-weight: 400; color: #64748b;">/мес</span></div>
         <p style="color: #64748b; margin-bottom: 32px;">Для полноценных ресторанов и сетей</p>
-        <ul style="list-style: none; padding: 0; margin: 0 0 40px 0; text-align: left; color: #334155; line-height: 2.5; font-size: 15px;">
+        <ul
+          style="list-style: none; padding: 0; margin: 0 0 40px 0; text-align: left; color: #334155; line-height: 2.5; font-size: 15px;">
           <li>✔️ Неограниченно терминалов</li>
           <li>✔️ Умный склад (тех. карты)</li>
           <li>✔️ Полная финансовая аналитика</li>
           <li>✔️ Круглосуточная поддержка (24/7)</li>
         </ul>
-        <app-ui-button routerLink="/auth/register" variant="primary" size="md" style="width: 100%; box-shadow: 0 10px 20px rgba(33,150,243,0.3);">Попробовать бесплатно</app-ui-button>
+        <app-ui-button routerLink="/auth/register" variant="primary" size="md"
+          style="width: 100%; box-shadow: 0 10px 20px rgba(33,150,243,0.3);">Попробовать бесплатно</app-ui-button>
       </div>
 
     </div>
   </section>
 
-  <!-- CTA -->
-  <section class="cta-section" style="padding: 100px 40px; text-align: center; background: linear-gradient(135deg, var(--color-bg) 0%, #ffffff 100%);">
-    <h2 style="font-size: 36px; margin-bottom: 24px;">Готовы вывести бизнес на новый уровень?</h2>
-    <p style="color: var(--color-text-muted); font-size: 18px; max-width: 600px; margin: 0 auto 40px;">Присоединяйтесь к сотням заведений, которые уже автоматизировали свой бизнес с Vanilla CRM.</p>
-    <app-ui-button routerLink="/auth/register" variant="primary" size="md" style="padding: 16px 32px; font-size: 18px; box-shadow: 0 10px 20px rgba(33,150,243,0.2);">Создать аккаунт прямо сейчас</app-ui-button>
+  <!-- Onboarding / Guarantees -->
+  <section class="onboarding-section" style="padding: 100px 40px; background: white; border-top: 1px solid rgba(0,0,0,0.05);">
+    <div class="section-heading">
+      <h2>Плавный переход без стресса</h2>
+      <p>Внедряем систему, обучаем команду и остаемся на связи 24/7.</p>
+    </div>
+    
+    <div class="showcase-block-animated" style="max-width: 1000px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 32px;">
+      <div style="padding: 32px; background: #f8fafc; border-radius: 16px; border: 1px solid #e2e8f0; transition: transform 0.3s ease;" class="feature-item">
+        <div style="font-size: 32px; margin-bottom: 16px;">🔄</div>
+        <h3 style="font-size: 20px; margin-bottom: 12px; color: #0f172a;">Бесплатный перенос данных</h3>
+        <p style="color: #64748b; line-height: 1.5;">Наши инженеры бесплатно импортируют ваше меню, техкарты и остатки из iiko, r-keeper или Poster.</p>
+      </div>
+      <div style="padding: 32px; background: #f8fafc; border-radius: 16px; border: 1px solid #e2e8f0; transition: transform 0.3s ease;" class="feature-item">
+        <div style="font-size: 32px; margin-bottom: 16px;">👨‍🏫</div>
+        <h3 style="font-size: 20px; margin-bottom: 12px; color: #0f172a;">Персональный менеджер</h3>
+        <p style="color: #64748b; line-height: 1.5;">Выделенный специалист проведет онлайн-обучение для вашего персонала и настроит терминалы.</p>
+      </div>
+      <div style="padding: 32px; background: #f8fafc; border-radius: 16px; border: 1px solid #e2e8f0; transition: transform 0.3s ease;" class="feature-item">
+        <div style="font-size: 32px; margin-bottom: 16px;">🔒</div>
+        <h3 style="font-size: 20px; margin-bottom: 12px; color: #0f172a;">Банковская безопасность</h3>
+        <p style="color: #64748b; line-height: 1.5;">SLA 99.9%, ежедневные облачные бекапы и шифрование. Ваши коммерческие данные в безопасности.</p>
+      </div>
+    </div>
   </section>
 
-  <footer class="footer">
-    <div class="logo">
-      <span class="logo-icon" style="color: var(--color-primary); font-size: 20px;">💠</span>
-      <span class="logo-text">Vanilla CRM</span>
+  <!-- CTA -->
+  <section class="cta-section"
+    style="padding: 100px 40px; text-align: center; background: linear-gradient(135deg, var(--color-bg) 0%, #ffffff 100%);">
+    <h2 style="font-size: 36px; margin-bottom: 24px;">Готовы вывести бизнес на новый уровень?</h2>
+    <p style="color: var(--color-text-muted); font-size: 18px; max-width: 600px; margin: 0 auto 40px;">Присоединяйтесь к
+      сотням заведений, которые уже автоматизировали свой бизнес с Vanilla CRM.</p>
+    <app-ui-button routerLink="/auth/register" variant="primary" size="md"
+      style="padding: 16px 32px; font-size: 18px; box-shadow: 0 10px 20px rgba(33,150,243,0.2);">Создать аккаунт прямо
+      сейчас</app-ui-button>
+  </section>
+
+  <!-- Fat Footer -->
+  <footer style="background: #0f172a; color: #cbd5e1; padding: 80px 40px 40px; border-top: 1px solid #1e293b;">
+    <div style="max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 40px; margin-bottom: 60px;">
+      <!-- Brand & About -->
+      <div style="grid-column: span 2;">
+        <div style="display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 24px; color: white; margin-bottom: 20px;">
+          <span style="color: var(--color-primary); font-size: 28px;">💠</span> Vanilla CRM
+        </div>
+        <p style="color: #94a3b8; line-height: 1.6; margin-bottom: 24px; max-width: 400px;">Облачная система автоматизации для современного ресторанного бизнеса. Сделано с любовью к еде и технологиям.</p>
+        <div style="display: flex; gap: 16px;">
+          <a href="#" style="color: #94a3b8; transition: color 0.2s;" onmouseover="this.style.color='var(--color-primary)'" onmouseout="this.style.color='#94a3b8'"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"></path></svg></a>
+          <a href="#" style="color: #94a3b8; transition: color 0.2s;" onmouseover="this.style.color='var(--color-primary)'" onmouseout="this.style.color='#94a3b8'"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg></a>
+          <a href="#" style="color: #94a3b8; transition: color 0.2s;" onmouseover="this.style.color='var(--color-primary)'" onmouseout="this.style.color='#94a3b8'"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.15 4.88L2 12l4 2 2 7 3-4 6 5 4-17z"></path></svg></a>
+        </div>
+      </div>
+      <!-- Product -->
+      <div>
+        <h4 style="color: white; font-size: 16px; margin-bottom: 20px; font-weight: 600;">Продукт</h4>
+        <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 12px;">
+          <li><a href="#" style="color: #94a3b8; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='#94a3b8'">POS-Терминал</a></li>
+          <li><a href="#" style="color: #94a3b8; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='#94a3b8'">Умный склад</a></li>
+          <li><a href="#" style="color: #94a3b8; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='#94a3b8'">Финансы</a></li>
+          <li><a href="#" style="color: #94a3b8; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='#94a3b8'">Конструктор ТТК</a></li>
+        </ul>
+      </div>
+      <!-- Company -->
+      <div>
+        <h4 style="color: white; font-size: 16px; margin-bottom: 20px; font-weight: 600;">Компания</h4>
+        <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 12px;">
+          <li><a href="#" style="color: #94a3b8; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='#94a3b8'">О нас</a></li>
+          <li><a href="#" style="color: #94a3b8; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='#94a3b8'">Контакты</a></li>
+          <li><a href="#" style="color: #94a3b8; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='#94a3b8'">Блог</a></li>
+          <li><a href="#" style="color: #94a3b8; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='#94a3b8'">Партнерам</a></li>
+        </ul>
+      </div>
+      <!-- Subscribe -->
+      <div style="grid-column: span 2;">
+        <h4 style="color: white; font-size: 16px; margin-bottom: 20px; font-weight: 600;">Подписка на обновления</h4>
+        <p style="color: #94a3b8; font-size: 14px; margin-bottom: 16px;">Инсайты ресторанного бизнеса и анонсы фич.</p>
+        <div style="display: flex; gap: 8px;">
+          <input type="email" placeholder="Ваш Email" style="background: #1e293b; border: 1px solid #334155; padding: 12px 16px; border-radius: 8px; color: white; width: 100%; outline: none;">
+          <button style="background: var(--color-primary); color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: 600; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">Подписаться</button>
+        </div>
+      </div>
     </div>
-    <div style="display: flex; gap: 24px;">
-      <a href="#" style="color: var(--color-text-muted); text-decoration: none; font-size: 14px;">Пользовательское соглашение</a>
-      <a href="#" style="color: var(--color-text-muted); text-decoration: none; font-size: 14px;">Политика конфиденциальности</a>
+    <div style="max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #1e293b; padding-top: 24px; color: #64748b; font-size: 14px; flex-wrap: wrap; gap: 16px;">
+      <div>© 2026 Vanilla Restaurant Team. B2B Solutions.</div>
+      <div style="display: flex; gap: 24px;">
+        <a href="#" style="color: #64748b; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='#64748b'">Пользовательское соглашение</a>
+        <a href="#" style="color: #64748b; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='#64748b'">Политика конфиденциальности</a>
+      </div>
     </div>
-    <p>© 2026 Vanilla Restaurant Team. B2B Solutions.</p>
   </footer>
+
+  <!-- Floating Chat Widget -->
+  <div style="position: fixed; bottom: 32px; right: 32px; z-index: 9999; display: flex; align-items: center; gap: 16px; cursor: pointer;" class="chat-widget">
+    <div class="chat-text" style="background: white; padding: 12px 20px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); font-weight: 600; font-size: 14px; color: #0f172a; opacity: 0; transform: translateX(20px); transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);">
+      Задать вопрос 👋
+    </div>
+    <div class="chat-icon-container" style="width: 60px; height: 60px; background: var(--color-primary); border-radius: 50%; display: flex; justify-content: center; align-items: center; box-shadow: 0 10px 25px rgba(33, 150, 243, 0.4); color: white; transition: transform 0.2s ease;">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+    </div>
+  </div>
 </div>

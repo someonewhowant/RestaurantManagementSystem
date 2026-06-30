@@ -8,20 +8,22 @@ export interface InventoryItem {
   minStock: number;
   unit: string;
   pricePerUnit?: number;
+  expiresInDays?: number;
 }
 
 @Injectable({
   providedIn: 'root'
 })
 export class InventoryService {
-  // Инициализируем начальное состояние (как в старом inventory.json)
+  // Инициализируем начальное состояние
   private itemsSignal = signal<InventoryItem[]>([
-    { id: '1', name: 'Лосось', category: 'Морепродукты', currentStock: 2, minStock: 5, unit: 'кг', pricePerUnit: 1200 },
+    { id: '1', name: 'Лосось', category: 'Морепродукты', currentStock: 2, minStock: 5, unit: 'кг', pricePerUnit: 1200, expiresInDays: 2 },
     { id: '2', name: 'Говядина', category: 'Мясо', currentStock: 15, minStock: 10, unit: 'кг', pricePerUnit: 850 },
     { id: '3', name: 'Картофель', category: 'Овощи', currentStock: 40, minStock: 20, unit: 'кг', pricePerUnit: 40 },
-    { id: '4', name: 'Помидоры', category: 'Овощи', currentStock: 8, minStock: 15, unit: 'кг', pricePerUnit: 150 },
+    { id: '4', name: 'Помидоры', category: 'Овощи', currentStock: 18, minStock: 15, unit: 'кг', pricePerUnit: 150, expiresInDays: 1 },
     { id: '5', name: 'Оливковое масло', category: 'Бакалея', currentStock: 12, minStock: 5, unit: 'л', pricePerUnit: 800 },
     { id: '6', name: 'Соль', category: 'Бакалея', currentStock: 1, minStock: 3, unit: 'кг', pricePerUnit: 30 },
+    { id: '7', name: 'Сливки 33%', category: 'Молочка', currentStock: 5, minStock: 3, unit: 'л', pricePerUnit: 300, expiresInDays: 0 },
   ]);
 
   // Публичный сигнал для чтения
@@ -30,6 +32,13 @@ export class InventoryService {
   // Вычисляемый сигнал для получения позиций с низким запасом (дефицитом)
   public lowStockItems = computed(() => {
     return this.itemsSignal().filter(item => item.currentStock <= item.minStock);
+  });
+
+  // Вычисляемый сигнал для сроков годности (<= 3 дней)
+  public expiringItems = computed(() => {
+    return this.itemsSignal()
+      .filter(item => item.expiresInDays !== undefined && item.expiresInDays <= 3)
+      .sort((a, b) => (a.expiresInDays || 0) - (b.expiresInDays || 0));
   });
 
   // Добавление новой позиции
