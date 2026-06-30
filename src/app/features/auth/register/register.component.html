@@ -8,9 +8,19 @@
     <p class="subtitle">14 дней бесплатного доступа. Без привязки карты.</p>
     
     <form (submit)="onSubmit($event)" class="auth-form">
+      <div style="display: flex; gap: 16px;">
+        <div class="form-group" style="flex: 1;">
+          <label>Имя</label>
+          <input type="text" name="firstName" [(ngModel)]="firstName" placeholder="Иван" required>
+        </div>
+        <div class="form-group" style="flex: 1;">
+          <label>Фамилия</label>
+          <input type="text" name="lastName" [(ngModel)]="lastName" placeholder="Иванов" required>
+        </div>
+      </div>
       <div class="form-group">
-        <label>Имя или Название компании</label>
-        <input type="text" name="name" [(ngModel)]="name" placeholder="ООО Вкусная Еда" required>
+        <label>Название ресторана</label>
+        <input type="text" name="restaurantName" [(ngModel)]="restaurantName" placeholder="Вкусная Еда" required>
       </div>
       <div class="form-group">
         <label>Email</label>

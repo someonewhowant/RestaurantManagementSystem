@@ -148,6 +148,44 @@
     </div>
   </section>
 
+  <!-- Pricing -->
+  <section id="pricing" class="pricing" style="padding: 100px 40px; background: white;">
+    <div class="section-heading">
+      <h2>Тарифы</h2>
+      <p>Прозрачные цены для любого формата заведения. Никаких скрытых платежей.</p>
+    </div>
+    <div style="display: flex; gap: 32px; justify-content: center; max-width: 1000px; margin: 0 auto; flex-wrap: wrap;">
+      
+      <div style="flex: 1; min-width: 300px; border: 1px solid #e2e8f0; border-radius: 16px; padding: 40px; text-align: center; background: #f8fafc;">
+        <h3 style="font-size: 24px; color: #64748b; margin-bottom: 8px;">Базовый</h3>
+        <div style="font-size: 48px; font-weight: 700; color: #0f172a; margin: 16px 0;">1990 ₽ <span style="font-size: 16px; font-weight: 400; color: #64748b;">/мес</span></div>
+        <p style="color: #64748b; margin-bottom: 32px;">Для небольших кофеен и фаст-фуда</p>
+        <ul style="list-style: none; padding: 0; margin: 0 0 40px 0; text-align: left; color: #334155; line-height: 2.5; font-size: 15px;">
+          <li>✔️ До 2 терминалов официанта</li>
+          <li>✔️ Базовый склад и меню</li>
+          <li>✔️ Поддержка по email</li>
+          <li style="color: #94a3b8;">❌ Углубленная аналитика</li>
+        </ul>
+        <app-ui-button variant="secondary" size="md" style="width: 100%; border-color: #cbd5e1; color: #475569;">Начать бесплатно</app-ui-button>
+      </div>
+
+      <div style="flex: 1; min-width: 300px; border: 2px solid var(--color-primary); border-radius: 16px; padding: 40px; text-align: center; position: relative; box-shadow: 0 20px 40px rgba(33,150,243,0.15); background: white; transform: scale(1.05);">
+        <div style="position: absolute; top: -14px; left: 50%; transform: translateX(-50%); background: var(--color-primary); color: white; padding: 6px 20px; border-radius: 20px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">ПОПУЛЯРНЫЙ</div>
+        <h3 style="font-size: 24px; color: var(--color-primary); margin-bottom: 8px;">Pro</h3>
+        <div style="font-size: 48px; font-weight: 700; color: #0f172a; margin: 16px 0;">4990 ₽ <span style="font-size: 16px; font-weight: 400; color: #64748b;">/мес</span></div>
+        <p style="color: #64748b; margin-bottom: 32px;">Для полноценных ресторанов и сетей</p>
+        <ul style="list-style: none; padding: 0; margin: 0 0 40px 0; text-align: left; color: #334155; line-height: 2.5; font-size: 15px;">
+          <li>✔️ Неограниченно терминалов</li>
+          <li>✔️ Умный склад (тех. карты)</li>
+          <li>✔️ Полная финансовая аналитика</li>
+          <li>✔️ Круглосуточная поддержка (24/7)</li>
+        </ul>
+        <app-ui-button routerLink="/auth/register" variant="primary" size="md" style="width: 100%; box-shadow: 0 10px 20px rgba(33,150,243,0.3);">Попробовать бесплатно</app-ui-button>
+      </div>
+
+    </div>
+  </section>
+
   <!-- CTA -->
   <section class="cta-section" style="padding: 100px 40px; text-align: center; background: linear-gradient(135deg, var(--color-bg) 0%, #ffffff 100%);">
     <h2 style="font-size: 36px; margin-bottom: 24px;">Готовы вывести бизнес на новый уровень?</h2>

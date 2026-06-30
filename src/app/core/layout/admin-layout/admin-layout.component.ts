@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { UiBadgeComponent } from '../../ui/badge/badge.component';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-admin-layout',
@@ -10,4 +11,5 @@ import { UiBadgeComponent } from '../../ui/badge/badge.component';
   styleUrl: './admin-layout.component.scss'
 })
 export class AdminLayoutComponent {
+  public authService = inject(AuthService);
 }

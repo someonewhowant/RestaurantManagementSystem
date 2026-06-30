@@ -12,7 +12,9 @@ import { AuthService } from '../../../core/services/auth.service';
   styleUrl: '../login/login.component.scss' // Используем те же стили, что и для логина
 })
 export class RegisterComponent {
-  name = '';
+  firstName = '';
+  lastName = '';
+  restaurantName = '';
   email = '';
   password = '';
   
@@ -21,9 +23,9 @@ export class RegisterComponent {
 
   onSubmit(e: Event) {
     e.preventDefault();
-    if (this.name && this.email && this.password) {
-      this.authService.register(this.email, this.name);
-      this.router.navigate(['/admin']);
+    if (this.firstName && this.lastName && this.restaurantName && this.email && this.password) {
+      this.authService.register(this.email, this.firstName, this.lastName, this.restaurantName);
+      this.router.navigate(['/app']);
     }
   }
 }

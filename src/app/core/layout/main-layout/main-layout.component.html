@@ -1,0 +1,80 @@
+<div class="main-layout">
+  <!-- Боковая панель навигации -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <span class="logo-icon">💠</span>
+      <span class="logo-text">Vanilla CRM</span>
+    </div>
+    
+    <nav class="sidebar-nav">
+      
+      @if (authService.currentUser()?.role !== 'waiter') {
+        <div class="nav-group-title">Управление бизнесом</div>
+        
+        <a routerLink="/app/dashboard" routerLinkActive="active" class="nav-item">
+          <span class="icon">📊</span>
+          <span class="text">Сводка</span>
+        </a>
+        <a routerLink="/app/inventory" routerLinkActive="active" class="nav-item">
+          <span class="icon">📦</span>
+          <span class="text">Склад</span>
+        </a>
+        <a routerLink="/app/staff" routerLinkActive="active" class="nav-item">
+          <span class="icon">👥</span>
+          <span class="text">Персонал</span>
+        </a>
+        <a routerLink="/app/budget" routerLinkActive="active" class="nav-item">
+          <span class="icon">💵</span>
+          <span class="text">Финансы</span>
+        </a>
+
+        <div class="nav-group-divider"></div>
+      }
+      
+      <div class="nav-group-title">Операционка</div>
+      
+      <a routerLink="/app/pos" routerLinkActive="active" class="nav-item" [routerLinkActiveOptions]="{exact: false}">
+        <span class="icon">💻</span>
+        <span class="text">POS-Терминал (Зал)</span>
+      </a>
+      <a routerLink="/app/kitchen" routerLinkActive="active" class="nav-item">
+        <span class="icon">🍳</span>
+        <span class="text">Экран повара (Кухня)</span>
+      </a>
+      <a routerLink="/app/recipes" routerLinkActive="active" class="nav-item">
+        <span class="icon">📖</span>
+        <span class="text">Карта рецептов</span>
+      </a>
+      
+    </nav>
+    
+    <div class="sidebar-footer">
+      <a (click)="logout()" class="nav-item back-link" style="cursor: pointer;">
+        <span class="icon">🚪</span>
+        <span class="text">Выйти</span>
+      </a>
+    </div>
+  </aside>
+
+  <!-- Основная область с контентом -->
+  <div class="main-wrapper">
+    <header class="topbar">
+      <div class="page-title">
+        Управление
+        @if (authService.currentUser()?.restaurantName) {
+          <span class="restaurant-name">— {{ authService.currentUser()?.restaurantName }}</span>
+        }
+      </div>
+      
+      <div class="user-profile">
+        <span class="user-name">{{ authService.currentUser()?.name || 'Администратор' }}</span>
+        <app-ui-badge color="success">В сети</app-ui-badge>
+      </div>
+    </header>
+    
+    <main class="content-area">
+      <!-- Сюда загружаются все дочерние компоненты (Дашборд, Склад, POS и т.д.) -->
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>

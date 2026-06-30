@@ -1,0 +1,48 @@
+<div class="recipes-page">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Карта рецептов и меню</h1>
+      <p class="page-subtitle">Технологические карты, состав блюд и граммовки</p>
+    </div>
+    <button class="add-btn">+ Добавить блюдо</button>
+  </div>
+
+  <div class="recipe-grid">
+    @for (dish of menuService.menu(); track dish.id) {
+      <app-ui-card>
+        <div class="dish-card">
+          <div class="dish-header">
+            <span class="dish-icon">{{ dish.imageIcon }}</span>
+            <div class="dish-info">
+              <h3>{{ dish.name }}</h3>
+              <div class="dish-meta">
+                <span class="weight">{{ dish.weight }}</span>
+                <span class="dot">•</span>
+                <span class="category">{{ dish.category }}</span>
+              </div>
+            </div>
+            <div class="dish-price">{{ dish.price }} ₽</div>
+          </div>
+          
+          <div class="dish-recipe">
+            <h4>Технологическая карта:</h4>
+            @if (dish.recipe && dish.recipe.length > 0) {
+              <ul class="ingredient-list">
+                @for (ing of dish.recipe; track ing.ingredientId) {
+                  <li>
+                    <span class="ing-name">Ингредиент #{{ ing.ingredientId }}</span>
+                    <span class="ing-amount">{{ ing.amount }} ед.</span>
+                  </li>
+                }
+              </ul>
+            } @else {
+              <div class="empty-recipe">
+                Рецепт пока не заполнен
+              </div>
+            }
+          </div>
+        </div>
+      </app-ui-card>
+    }
+  </div>
+</div>

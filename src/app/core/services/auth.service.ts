@@ -3,6 +3,9 @@ import { Injectable, signal, computed } from '@angular/core';
 export interface User {
   id: string;
   name: string;
+  firstName?: string;
+  lastName?: string;
+  restaurantName?: string;
   email: string;
   role: 'owner' | 'waiter' | 'manager';
 }
@@ -23,10 +26,13 @@ export class AuthService {
     });
   }
 
-  register(email: string, name: string) {
+  register(email: string, firstName: string, lastName: string, restaurantName: string) {
     this.currentUser.set({
       id: Math.random().toString(36).substr(2, 9),
-      name,
+      name: `${firstName} ${lastName}`,
+      firstName,
+      lastName,
+      restaurantName,
       email,
       role: 'owner' // Регистрируется по умолчанию владелец
     });

@@ -36,11 +36,15 @@
   <!-- Основная область с контентом -->
   <div class="main-wrapper">
     <header class="topbar">
-      <!-- Название страницы можно будет потом делать динамическим -->
-      <div class="page-title">Панель управления</div>
+      <div class="page-title">
+        Панель управления 
+        @if (authService.currentUser()?.restaurantName) {
+          <span style="color: var(--color-text-muted); font-weight: 500; font-size: 16px;">— {{ authService.currentUser()?.restaurantName }}</span>
+        }
+      </div>
       
       <div class="user-profile">
-        <span style="font-size: 14px; font-weight: 500;">Александр (Менеджер)</span>
+        <span style="font-size: 14px; font-weight: 500;">{{ authService.currentUser()?.name || 'Администратор' }}</span>
         <app-ui-badge color="success">В сети</app-ui-badge>
       </div>
     </header>

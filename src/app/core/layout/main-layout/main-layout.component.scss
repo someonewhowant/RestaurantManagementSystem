@@ -1,0 +1,147 @@
+.main-layout {
+  display: flex;
+  height: 100vh;
+  background-color: var(--color-bg);
+  color: var(--color-text-main);
+  overflow: hidden;
+}
+
+.sidebar {
+  width: 260px;
+  background-color: white;
+  border-right: 1px solid rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+  z-index: 10;
+}
+
+.sidebar-header {
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--font-secondary);
+  font-weight: 700;
+  font-size: 20px;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+.logo-icon {
+  color: var(--color-primary);
+  font-size: 24px;
+}
+
+.sidebar-nav {
+  flex: 1;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  overflow-y: auto;
+}
+
+.nav-group-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: #94a3b8;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  margin: 16px 0 8px 12px;
+}
+
+.nav-group-title:first-child {
+  margin-top: 8px;
+}
+
+.nav-group-divider {
+  height: 1px;
+  background-color: rgba(0,0,0,0.06);
+  margin: 12px 16px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 16px;
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  color: var(--color-text-muted);
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.nav-item:hover {
+  background-color: var(--color-bg);
+  color: var(--color-text-main);
+}
+
+.nav-item.active {
+  background-color: rgba(33, 150, 243, 0.1);
+  color: var(--color-primary);
+}
+
+.nav-item .icon {
+  font-size: 20px;
+}
+
+.sidebar-footer {
+  padding: 16px;
+  border-top: 1px solid rgba(0,0,0,0.05);
+}
+
+.back-link {
+  color: var(--color-danger);
+}
+
+.back-link:hover {
+  background-color: rgba(244, 67, 54, 0.1);
+  color: var(--color-danger);
+}
+
+/* Wrapper and Topbar */
+.main-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.topbar {
+  height: 70px;
+  background-color: white;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 32px;
+}
+
+.page-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--color-text-main);
+}
+
+.restaurant-name {
+  color: var(--color-text-muted);
+  font-weight: 500;
+  font-size: 16px;
+}
+
+.user-profile {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.user-name {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.content-area {
+  flex: 1;
+  padding: 32px;
+  overflow-y: auto;
+}

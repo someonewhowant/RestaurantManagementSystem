@@ -80,4 +80,8 @@ export class AdminDashboardComponent {
 
   private inventoryService = inject(InventoryService);
   public lowStockItems = this.inventoryService.lowStockItems;
+
+  public recentTransactions = computed(() => {
+    return this.budgetService.transactions().slice(0, 5);
+  });
 }

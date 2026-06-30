@@ -10,7 +10,7 @@
 .auth-card {
   background: white;
   width: 100%;
-  max-width: 420px;
+  max-width: 480px;
   padding: 40px;
   border-radius: 16px;
   box-shadow: 0 20px 40px rgba(0,0,0,0.08);
@@ -67,6 +67,8 @@ h2 {
 }
 
 .form-group input {
+  width: 100%;
+  box-sizing: border-box;
   padding: 12px 16px;
   border: 1px solid rgba(0,0,0,0.15);
   border-radius: 8px;

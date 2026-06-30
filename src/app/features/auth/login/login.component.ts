@@ -8,7 +8,7 @@ import { UiButtonComponent } from '../../../core/ui/button/button.component';
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, UiButtonComponent],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss'
 })
@@ -25,9 +25,9 @@ export class LoginComponent {
       this.authService.login(this.email);
       // Если это официант, направим его в POS, иначе в админку
       if (this.authService.currentUser()?.role === 'waiter') {
-        this.router.navigate(['/waiter']);
+        this.router.navigate(['/app/pos']);
       } else {
-        this.router.navigate(['/admin']);
+        this.router.navigate(['/app']);
       }
     }
   }
