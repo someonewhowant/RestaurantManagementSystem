@@ -43,3 +43,42 @@ body {
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-secondary);
 }
+
+/* Global Premium Search Input */
+.global-search-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.global-search-icon {
+  position: absolute;
+  left: 14px;
+  color: var(--color-text-muted);
+  font-size: 16px;
+  pointer-events: none;
+}
+
+.global-search-input {
+  width: 100%;
+  padding: 12px 16px 12px 42px;
+  border: 1px solid rgba(0,0,0,0.08);
+  border-radius: 12px;
+  background: rgba(0,0,0,0.015);
+  font-size: 14px;
+  font-family: inherit;
+  color: var(--color-text-main);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.global-search-input:focus {
+  background: white;
+  border-color: var(--color-primary);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05), 0 0 0 3px rgba(230,81,0,0.1);
+  outline: none;
+}
+
+.global-search-input::placeholder {
+  color: #94a3b8;
+}

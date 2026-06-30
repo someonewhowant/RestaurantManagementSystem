@@ -23,6 +23,8 @@ export class RecipesComponent {
   // Filters
   public searchQuery = signal('');
   public selectedCategory = signal<MenuCategory | 'Все'>('Все');
+  
+  public editingDishId = signal<string | null>(null);
 
   public filteredMenu = computed(() => {
     let list = this.menuService.menu();
@@ -46,7 +48,14 @@ export class RecipesComponent {
   public newDishWeight = signal('');
   public newDishIcon = signal('🍲');
   
+  public newDishInstructions = signal('');
+  public newDishAllergens = signal<string[]>([]);
+  public newDishMacros = signal({ proteins: 0, fats: 0, carbs: 0, calories: 0 });
+  
   public selectedIngredients = signal<{ingredientId: string, amount: number}[]>([]);
+
+  // Known allergens
+  public knownAllergens = ['Глютен', 'Лактоза', 'Орехи', 'Морепродукты', 'Яйца', 'Соя', 'Мед'];
 
   public foodCost = computed(() => {
     let cost = 0;
@@ -67,15 +76,31 @@ export class RecipesComponent {
     return ((price - cost) / price) * 100;
   });
 
-  openBuilder() {
+  openBuilder(dish?: Dish) {
     this.isBuilderOpen.set(true);
-    // Reset form
-    this.newDishName.set('');
-    this.newDishCategory.set('Горячее');
-    this.newDishPrice.set(0);
-    this.newDishWeight.set('');
-    this.newDishIcon.set('🍲');
-    this.selectedIngredients.set([]);
+    if (dish) {
+      this.editingDishId.set(dish.id);
+      this.newDishName.set(dish.name);
+      this.newDishCategory.set(dish.category);
+      this.newDishPrice.set(dish.price);
+      this.newDishWeight.set(dish.weight);
+      this.newDishIcon.set(dish.imageIcon);
+      this.newDishInstructions.set(dish.instructions || '');
+      this.newDishAllergens.set(dish.allergens || []);
+      this.newDishMacros.set(dish.macros || { proteins: 0, fats: 0, carbs: 0, calories: 0 });
+      this.selectedIngredients.set(dish.recipe ? [...dish.recipe] : []);
+    } else {
+      this.editingDishId.set(null);
+      this.newDishName.set('');
+      this.newDishCategory.set('Горячее');
+      this.newDishPrice.set(0);
+      this.newDishWeight.set('');
+      this.newDishIcon.set('🍲');
+      this.newDishInstructions.set('');
+      this.newDishAllergens.set([]);
+      this.newDishMacros.set({ proteins: 0, fats: 0, carbs: 0, calories: 0 });
+      this.selectedIngredients.set([]);
+    }
   }
 
   closeBuilder() {
@@ -98,21 +123,50 @@ export class RecipesComponent {
     });
   }
 
+  updateMacros(field: 'proteins' | 'fats' | 'carbs' | 'calories', value: any) {
+    this.newDishMacros.update(m => ({ ...m, [field]: Number(value) }));
+  }
+
+  toggleAllergen(allergen: string) {
+    const current = this.newDishAllergens();
+    if (current.includes(allergen)) {
+      this.newDishAllergens.set(current.filter(a => a !== allergen));
+    } else {
+      this.newDishAllergens.set([...current, allergen]);
+    }
+  }
+
   saveDish() {
     if (!this.newDishName()) return;
     
     const validIngredients = this.selectedIngredients().filter(i => i.ingredientId && i.amount > 0);
     
-    this.menuService.addDish({
+    const dishData = {
       name: this.newDishName(),
       category: this.newDishCategory(),
       price: this.newDishPrice(),
       weight: this.newDishWeight() || '0г',
       imageIcon: this.newDishIcon(),
-      recipe: validIngredients.length > 0 ? validIngredients : undefined
-    });
+      recipe: validIngredients.length > 0 ? validIngredients : undefined,
+      instructions: this.newDishInstructions(),
+      allergens: this.newDishAllergens(),
+      macros: this.newDishMacros()
+    };
+
+    if (this.editingDishId()) {
+      this.menuService.updateDish(this.editingDishId()!, dishData);
+    } else {
+      this.menuService.addDish(dishData);
+    }
     
     this.closeBuilder();
+  }
+
+  deleteDish() {
+    if (this.editingDishId() && confirm('Вы уверены, что хотите удалить эту ТТК?')) {
+      this.menuService.deleteDish(this.editingDishId()!);
+      this.closeBuilder();
+    }
   }
 
   getIngredientName(id: string): string {

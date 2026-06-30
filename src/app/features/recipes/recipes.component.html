@@ -10,9 +10,9 @@
 
     <!-- Filters Section -->
     <div class="filters-bar" style="display: flex; gap: 16px; margin-bottom: 24px; align-items: center; background: white; padding: 12px 16px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.05);">
-      <div style="flex: 1; position: relative;">
-        <span style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 16px; color: var(--color-text-muted);">🔍</span>
-        <input type="text" class="ui-input" style="width: 100%; padding-left: 36px; border: none; background: rgba(0,0,0,0.03); font-size: 14px;" 
+      <div class="global-search-wrapper" style="flex: 1;">
+        <span class="global-search-icon">🔍</span>
+        <input type="text" class="global-search-input" 
                placeholder="Поиск по названию блюда..." 
                [ngModel]="searchQuery()" (ngModelChange)="searchQuery.set($event)">
       </div>
@@ -27,7 +27,7 @@
     <div class="recipe-grid">
       @for (dish of filteredMenu(); track dish.id) {
         <app-ui-card>
-          <div class="dish-card">
+          <div class="dish-card" (click)="openBuilder(dish)" style="cursor: pointer;">
             <div class="dish-header">
               <span class="dish-icon">{{ dish.imageIcon }}</span>
               <div class="dish-info">
@@ -54,7 +54,26 @@
                 </ul>
               } @else {
                 <div class="empty-recipe">
-                  Рецепт пока не заполнен
+                  Состав пока не заполнен
+                </div>
+              }
+
+              @if (dish.allergens && dish.allergens.length > 0) {
+                <div style="margin-top: 12px; display: flex; flex-wrap: wrap; gap: 4px;">
+                  @for (allergen of dish.allergens; track allergen) {
+                    <span style="font-size: 11px; padding: 2px 8px; background: rgba(244,67,54,0.1); color: var(--color-danger); border-radius: 12px; font-weight: 500;">
+                      ! {{ allergen }}
+                    </span>
+                  }
+                </div>
+              }
+
+              @if (dish.macros && (dish.macros.calories > 0 || dish.macros.proteins > 0)) {
+                <div style="margin-top: 12px; display: flex; justify-content: space-between; font-size: 11px; color: var(--color-text-muted); background: rgba(0,0,0,0.02); padding: 8px; border-radius: 6px;">
+                  <span>К: <strong>{{ dish.macros.calories }}</strong></span>
+                  <span>Б: <strong>{{ dish.macros.proteins }}</strong></span>
+                  <span>Ж: <strong>{{ dish.macros.fats }}</strong></span>
+                  <span>У: <strong>{{ dish.macros.carbs }}</strong></span>
                 </div>
               }
             </div>
@@ -75,11 +94,16 @@
             ←
           </button>
           <div>
-            <h1 class="page-title" style="margin: 0; font-size: 22px;">Создание новой ТТК</h1>
-            <p class="page-subtitle" style="margin-top: 2px;">Заполните профиль блюда и состав рецепта</p>
+            <h1 class="page-title" style="margin: 0; font-size: 22px;">{{ editingDishId() ? 'Редактирование ТТК' : 'Создание новой ТТК' }}</h1>
+            <p class="page-subtitle" style="margin-top: 2px;">Заполните профиль блюда, рецепт и инструкцию для поваров</p>
           </div>
         </div>
-        <div style="display: flex; gap: 12px;">
+        <div style="display: flex; gap: 12px; align-items: center;">
+          @if (editingDishId()) {
+            <button (click)="deleteDish()" style="background: none; border: none; color: var(--color-danger); cursor: pointer; font-size: 14px; font-weight: 500; padding: 8px 12px; transition: 0.2s;" onmouseover="this.style.background='rgba(244,67,54,0.1)'; this.style.borderRadius='8px';" onmouseout="this.style.background='none';">
+              🗑 Удалить
+            </button>
+          }
           <app-ui-button variant="secondary" (click)="closeBuilder()">Отмена</app-ui-button>
           <app-ui-button variant="primary" (click)="saveDish()" [disabled]="!newDishName()">Сохранить блюдо</app-ui-button>
         </div>
@@ -171,10 +195,25 @@
               </div>
             </div>
           </div>
+
+          <!-- Технология приготовления -->
+          <div class="builder-panel">
+            <div class="panel-header">
+              <span class="panel-icon">👨‍🍳</span>
+              <h3>Технология приготовления</h3>
+            </div>
+            <div class="panel-body">
+              <textarea class="ui-input premium-input" style="width: 100%; min-height: 120px; resize: vertical; line-height: 1.5;"
+                        placeholder="Опишите процесс приготовления шаг за шагом. Эти инструкции будут видеть повара на кухонном терминале."
+                        [ngModel]="newDishInstructions()" (ngModelChange)="newDishInstructions.set($event)"></textarea>
+            </div>
+          </div>
+
         </div>
 
         <!-- Боковая панель калькуляции -->
-        <div>
+        <div style="display: flex; flex-direction: column; gap: 24px;">
+          <!-- Экономика -->
           <div class="builder-panel calc-panel" style="position: sticky; top: 24px;">
             <div class="panel-header">
               <span class="panel-icon">💰</span>
@@ -212,6 +251,52 @@
                 <div style="margin-top: 12px; font-size: 13px; color: var(--color-text-muted); display: flex; justify-content: space-between;">
                   <span>Валовая прибыль:</span>
                   <span style="font-weight: 700; color: var(--color-text-main);">{{ (newDishPrice() - foodCost()) > 0 ? (newDishPrice() - foodCost()) : 0 | currency:'RUB':'symbol-narrow':'1.0-0' }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- БЖУ и Аллергены -->
+          <div class="builder-panel">
+            <div class="panel-header">
+              <span class="panel-icon">🔬</span>
+              <h3>БЖУ и Аллергены</h3>
+            </div>
+            <div class="panel-body">
+              <div style="margin-bottom: 20px;">
+                <label style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 12px; color: var(--color-text-main);">Пищевая ценность (на порцию)</label>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                  <div class="macro-input-group">
+                    <span>Ккал</span>
+                    <input type="number" [ngModel]="newDishMacros().calories" (ngModelChange)="updateMacros('calories', $event)">
+                  </div>
+                  <div class="macro-input-group">
+                    <span>Белки, г</span>
+                    <input type="number" [ngModel]="newDishMacros().proteins" (ngModelChange)="updateMacros('proteins', $event)">
+                  </div>
+                  <div class="macro-input-group">
+                    <span>Жиры, г</span>
+                    <input type="number" [ngModel]="newDishMacros().fats" (ngModelChange)="updateMacros('fats', $event)">
+                  </div>
+                  <div class="macro-input-group">
+                    <span>Углев, г</span>
+                    <input type="number" [ngModel]="newDishMacros().carbs" (ngModelChange)="updateMacros('carbs', $event)">
+                  </div>
+                </div>
+              </div>
+              
+              <hr style="border: 0; border-top: 1px dashed rgba(0,0,0,0.1); margin: 20px 0;">
+
+              <div>
+                <label style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 12px; color: var(--color-text-main);">Аллергены в составе</label>
+                <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                  @for (allergen of knownAllergens; track allergen) {
+                    <button class="allergen-toggle" 
+                            [class.active]="newDishAllergens().includes(allergen)"
+                            (click)="toggleAllergen(allergen)">
+                      {{ allergen }}
+                    </button>
+                  }
                 </div>
               </div>
             </div>

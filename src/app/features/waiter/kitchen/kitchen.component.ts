@@ -1,7 +1,8 @@
-import { Component, inject, computed } from '@angular/core';
+import { Component, inject, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { OrderService } from '../../../core/services/order.service';
 import { TablesService } from '../../../core/services/tables.service';
+import { InventoryService } from '../../../core/services/inventory.service';
 import { UiBadgeComponent } from '../../../core/ui/badge/badge.component';
 import { UiButtonComponent } from '../../../core/ui/button/button.component';
 
@@ -16,18 +17,46 @@ export class KitchenComponent {
   public orderService = inject(OrderService);
   public tablesService = inject(TablesService);
 
+  public inventoryService = inject(InventoryService);
+
+  public expandedItems = signal<Set<string>>(new Set());
+
   public activeItems = computed(() => {
     const list: any[] = [];
     const orders = this.orderService.orders();
     for (const [tableId, order] of Object.entries(orders)) {
       for (const item of order.items) {
         if (item.status === 'cooking' || item.status === 'ready') {
-          list.push({ tableId, item });
+          list.push({ 
+            tableId, 
+            item, 
+            key: `${tableId}-${item.dish.id}` 
+          });
         }
       }
     }
     return list;
   });
+
+  toggleDetails(key: string) {
+    const current = new Set(this.expandedItems());
+    if (current.has(key)) {
+      current.delete(key);
+    } else {
+      current.add(key);
+    }
+    this.expandedItems.set(current);
+  }
+
+  getIngredientName(id: string): string {
+    const item = this.inventoryService.items().find(i => i.id === id);
+    return item ? item.name : 'Неизвестно';
+  }
+
+  getIngredientUnit(id: string): string {
+    const item = this.inventoryService.items().find(i => i.id === id);
+    return item ? item.unit : '';
+  }
 
   markAsReady(tableId: string, dishId: string) {
     this.orderService.updateItemStatus(tableId, dishId, 'ready');

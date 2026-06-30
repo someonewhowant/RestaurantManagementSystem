@@ -43,11 +43,11 @@
   </div>
 }
 
-<div class="filters-panel" style="display: flex; gap: 16px; margin-bottom: 24px; padding: 16px; background: white; border-radius: var(--radius-md); box-shadow: 0 2px 8px rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.05); align-items: center; flex-wrap: wrap;">
-  <div style="flex: 1; min-width: 200px; position: relative;">
-    <span style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--color-text-muted);">🔍</span>
-    <input type="text" [ngModel]="searchQuery()" (ngModelChange)="searchQuery.set($event)" placeholder="Поиск по имени сотрудника..." style="width: 100%; padding: 10px 12px 10px 36px; border: 1px solid rgba(0,0,0,0.1); border-radius: 6px; outline: none; font-size: 14px; font-family: inherit; transition: all 0.2s;">
-  </div>
+<div class="card p-lg" style="margin-bottom: 24px;">
+    <div class="global-search-wrapper">
+      <span class="global-search-icon">🔍</span>
+      <input type="text" class="global-search-input" [ngModel]="searchQuery()" (ngModelChange)="searchQuery.set($event)" placeholder="Поиск по имени сотрудника...">
+    </div>
   <select [ngModel]="roleFilter()" (ngModelChange)="roleFilter.set($event)" style="padding: 10px 12px; border: 1px solid rgba(0,0,0,0.1); border-radius: 6px; outline: none; font-size: 14px; font-family: inherit; background: white;">
     <option value="Все">Все должности</option>
     <option value="Менеджер">Менеджер</option>

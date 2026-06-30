@@ -7,6 +7,7 @@ import { TablesService } from '../../../core/services/tables.service';
 import { OrderService } from '../../../core/services/order.service';
 import { StaffService } from '../../../core/services/staff.service';
 import { InventoryService } from '../../../core/services/inventory.service';
+import { MenuService } from '../../../core/services/menu.service';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -85,10 +86,40 @@ export class AdminDashboardComponent {
     return this.budgetService.transactions().slice(0, 5);
   });
 
-  public topDishes = [
-    { name: 'Стейк Рибай', count: 42, trend: '+12%', category: 'Горячее' },
-    { name: 'Капучино', count: 86, trend: '+5%', category: 'Напитки' },
-    { name: 'Цезарь с курицей', count: 34, trend: '-2%', category: 'Закуски' },
-    { name: 'Паста Карбонара', count: 28, trend: '+8%', category: 'Горячее' }
-  ].sort((a, b) => b.count - a.count);
+  private menuService = inject(MenuService);
+
+  public topDishes = computed(() => {
+    const transactions = this.budgetService.transactions();
+    const oneWeekAgo = new Date();
+    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+
+    const dishCounts: Record<string, number> = {};
+
+    transactions.forEach(t => {
+      if (t.type === 'Доход' && t.category === 'Оплата заказа' && t.items) {
+        const txDate = new Date(t.date);
+        if (txDate >= oneWeekAgo) {
+          t.items.forEach(item => {
+            dishCounts[item.dishId] = (dishCounts[item.dishId] || 0) + item.quantity;
+          });
+        }
+      }
+    });
+
+    const menu = this.menuService.menu();
+    
+    return Object.entries(dishCounts)
+      .map(([dishId, count]) => {
+        const dish = menu.find(d => d.id === dishId);
+        return {
+          name: dish ? dish.name : 'Удаленное блюдо',
+          count: count,
+          trend: '+5%', // Mock trend for now
+          category: dish ? dish.category : 'Разное',
+          icon: dish ? dish.imageIcon : '🍽️'
+        };
+      })
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 5); // Top 5
+  });
 }

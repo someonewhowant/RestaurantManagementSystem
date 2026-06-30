@@ -10,6 +10,14 @@ export interface Dish {
   weight: string;
   imageIcon: string;
   recipe?: { ingredientId: string; amount: number }[];
+  instructions?: string;
+  allergens?: string[];
+  macros?: {
+    proteins: number;
+    fats: number;
+    carbs: number;
+    calories: number;
+  };
 }
 
 @Injectable({
@@ -50,5 +58,13 @@ export class MenuService {
       id: Math.random().toString(36).substr(2, 9)
     };
     this.menuSignal.update(menu => [newDish, ...menu]);
+  }
+
+  updateDish(id: string, updates: Partial<Dish>) {
+    this.menuSignal.update(menu => menu.map(d => d.id === id ? { ...d, ...updates } : d));
+  }
+
+  deleteDish(id: string) {
+    this.menuSignal.update(menu => menu.filter(d => d.id !== id));
   }
 }

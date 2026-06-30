@@ -88,12 +88,14 @@ export class WaiterTerminalComponent {
     
     // 1. Фиксируем выручку в бюджете
     const wName = this.waiterName();
+    const items = this.currentOrderItems().map(item => ({ dishId: item.dish.id, quantity: item.quantity }));
     this.budgetService.addTransaction({
       date: new Date().toISOString(),
       amount: total,
       type: 'Доход',
       category: 'Оплата заказа',
-      description: `Оплата заказа столика ID: ${tid}` + (wName ? `. Официант: ${wName}` : '')
+      description: `Оплата заказа столика ID: ${tid}` + (wName ? `. Официант: ${wName}` : ''),
+      items
     });
 
     // 2. Очищаем корзину
