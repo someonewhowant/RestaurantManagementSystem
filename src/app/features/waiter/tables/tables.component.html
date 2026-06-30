@@ -31,8 +31,9 @@
         <app-ui-badge [color]="getStatusColor(table.status)">{{ table.status }}</app-ui-badge>
       </div>
       @if (table.waiterId) {
-        <div class="assigned-waiter" style="margin-top: auto; font-size: 12px; color: var(--color-text-muted); border-top: 1px dashed rgba(0,0,0,0.1); padding-top: 12px; text-align: center;">
-          Официант: <strong>{{ getWaiterName(table.waiterId) }}</strong>
+        <div class="assigned-waiter" style="margin-top: auto; font-size: 12px; color: var(--color-text-muted); border-top: 1px dashed rgba(0,0,0,0.1); padding-top: 12px; display: flex; justify-content: space-between; align-items: center;">
+          <span>Официант: <strong>{{ getWaiterName(table.waiterId) }}</strong></span>
+          <span style="font-weight: 600; color: var(--color-primary);" *ngIf="getDuration(table)">⏱ {{ getDuration(table) }}</span>
         </div>
       }
     </div>
@@ -60,6 +61,10 @@
           <span class="value">{{ getWaiterName(table.waiterId) }}</span>
         </div>
       }
+      <div class="info-group" *ngIf="getDuration(table)">
+        <span class="label">Время обслуживания:</span>
+        <span class="value" style="color: var(--color-primary); font-weight: 600;">{{ getDuration(table) }}</span>
+      </div>
     </div>
 
     <div class="status-actions">

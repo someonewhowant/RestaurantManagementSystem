@@ -45,7 +45,7 @@ export class AdminDashboardComponent {
   });
 
   public activeOrdersCount = computed(() => {
-    return Object.keys(this.orderService.orders()).length;
+    return Object.values(this.orderService.orders()).filter(o => o.items && o.items.length > 0).length;
   });
 
   private staffService = inject(StaffService);
@@ -84,4 +84,11 @@ export class AdminDashboardComponent {
   public recentTransactions = computed(() => {
     return this.budgetService.transactions().slice(0, 5);
   });
+
+  public topDishes = [
+    { name: 'Стейк Рибай', count: 42, trend: '+12%', category: 'Горячее' },
+    { name: 'Капучино', count: 86, trend: '+5%', category: 'Напитки' },
+    { name: 'Цезарь с курицей', count: 34, trend: '-2%', category: 'Закуски' },
+    { name: 'Паста Карбонара', count: 28, trend: '+8%', category: 'Горячее' }
+  ].sort((a, b) => b.count - a.count);
 }

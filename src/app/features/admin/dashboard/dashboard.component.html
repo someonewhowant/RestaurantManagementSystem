@@ -85,19 +85,19 @@
   </app-ui-card>
 </div>
 
-<div class="alerts-section" style="margin-top: 16px;">
-  <app-ui-card class="stat-card" style="border: 1px solid rgba(244,67,54,0.3); background: rgba(244,67,54,0.02);">
+<div class="alerts-section" style="margin-top: 16px; display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 16px;">
+  <app-ui-card class="stat-card" style="border: 1px solid rgba(244,67,54,0.3); background: rgba(244,67,54,0.02); height: 100%;">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
       <h3 style="font-size: 16px; font-weight: 600; color: var(--color-danger); margin: 0; display: flex; align-items: center; gap: 8px;">
         <span>⚠️</span> Дефицит на складе
       </h3>
-      <a routerLink="/admin/inventory" style="font-size: 13px; color: var(--color-primary); text-decoration: none; font-weight: 600; background: rgba(33,150,243,0.1); padding: 4px 10px; border-radius: 6px; transition: background 0.2s;">
-        Перейти в склад →
+      <a routerLink="/app/inventory" style="font-size: 13px; color: var(--color-primary); text-decoration: none; font-weight: 600; background: rgba(33,150,243,0.1); padding: 4px 10px; border-radius: 6px; transition: background 0.2s;">
+        Склад →
       </a>
     </div>
     
     @if (lowStockItems().length > 0) {
-      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 12px;">
+      <div style="display: flex; flex-direction: column; gap: 8px;">
         @for (item of lowStockItems(); track item.id) {
           <div style="display: flex; justify-content: space-between; align-items: center; background: white; padding: 10px 14px; border-radius: 8px; border: 1px solid rgba(244,67,54,0.15); box-shadow: 0 2px 4px rgba(244,67,54,0.05);">
             <div style="display: flex; align-items: center; gap: 12px;">
@@ -125,6 +125,39 @@
         <span style="font-size: 18px;">✅</span> Все продукты в достаточном количестве. Закупки не требуются.
       </div>
     }
+  </app-ui-card>
+
+  <!-- Топ популярных блюд -->
+  <app-ui-card class="stat-card" style="height: 100%;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+      <h3 style="font-size: 16px; font-weight: 600; color: var(--color-text-main); margin: 0; display: flex; align-items: center; gap: 8px;">
+        <span>🔥</span> Популярные блюда
+      </h3>
+      <a routerLink="/app/recipes" style="font-size: 13px; color: var(--color-primary); text-decoration: none; font-weight: 600; background: rgba(33,150,243,0.1); padding: 4px 10px; border-radius: 6px; transition: background 0.2s;">
+        Карта рецептов →
+      </a>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 8px;">
+      @for (dish of topDishes; track dish.name; let i = $index) {
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid rgba(0,0,0,0.04);">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div style="font-size: 14px; font-weight: 700; color: var(--color-text-muted); width: 16px;">{{ i + 1 }}</div>
+            <div>
+              <div style="font-size: 14px; font-weight: 600; color: var(--color-text-main);">{{ dish.name }}</div>
+              <div style="font-size: 11px; color: var(--color-text-muted); text-transform: uppercase;">{{ dish.category }}</div>
+            </div>
+          </div>
+          <div style="text-align: right;">
+            <div style="font-size: 14px; font-weight: 700;">{{ dish.count }} порц.</div>
+            <div style="font-size: 12px; font-weight: 600;" 
+                 [style.color]="dish.trend.startsWith('+') ? 'var(--color-success)' : 'var(--color-danger)'">
+              {{ dish.trend }}
+            </div>
+          </div>
+        </div>
+      }
+    </div>
   </app-ui-card>
 </div>
 

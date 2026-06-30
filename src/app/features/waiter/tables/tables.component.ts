@@ -83,4 +83,11 @@ export class WaiterTablesComponent {
       default: return 'primary';
     }
   }
+
+  getDuration(table: Table): string {
+    if (table.status === 'Свободен' || !table.statusUpdatedAt) return '';
+    const diff = Date.now() - table.statusUpdatedAt.getTime();
+    const minutes = Math.floor(diff / 60000);
+    return `${minutes} мин`;
+  }
 }
