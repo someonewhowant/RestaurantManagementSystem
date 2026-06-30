@@ -7,6 +7,7 @@ export interface InventoryItem {
   currentStock: number;
   minStock: number;
   unit: string;
+  pricePerUnit?: number;
 }
 
 @Injectable({
@@ -15,12 +16,12 @@ export interface InventoryItem {
 export class InventoryService {
   // Инициализируем начальное состояние (как в старом inventory.json)
   private itemsSignal = signal<InventoryItem[]>([
-    { id: '1', name: 'Лосось', category: 'Морепродукты', currentStock: 2, minStock: 5, unit: 'кг' },
-    { id: '2', name: 'Говядина', category: 'Мясо', currentStock: 15, minStock: 10, unit: 'кг' },
-    { id: '3', name: 'Картофель', category: 'Овощи', currentStock: 40, minStock: 20, unit: 'кг' },
-    { id: '4', name: 'Помидоры', category: 'Овощи', currentStock: 8, minStock: 15, unit: 'кг' },
-    { id: '5', name: 'Оливковое масло', category: 'Бакалея', currentStock: 12, minStock: 5, unit: 'л' },
-    { id: '6', name: 'Соль', category: 'Бакалея', currentStock: 1, minStock: 3, unit: 'кг' },
+    { id: '1', name: 'Лосось', category: 'Морепродукты', currentStock: 2, minStock: 5, unit: 'кг', pricePerUnit: 1200 },
+    { id: '2', name: 'Говядина', category: 'Мясо', currentStock: 15, minStock: 10, unit: 'кг', pricePerUnit: 850 },
+    { id: '3', name: 'Картофель', category: 'Овощи', currentStock: 40, minStock: 20, unit: 'кг', pricePerUnit: 40 },
+    { id: '4', name: 'Помидоры', category: 'Овощи', currentStock: 8, minStock: 15, unit: 'кг', pricePerUnit: 150 },
+    { id: '5', name: 'Оливковое масло', category: 'Бакалея', currentStock: 12, minStock: 5, unit: 'л', pricePerUnit: 800 },
+    { id: '6', name: 'Соль', category: 'Бакалея', currentStock: 1, minStock: 3, unit: 'кг', pricePerUnit: 30 },
   ]);
 
   // Публичный сигнал для чтения

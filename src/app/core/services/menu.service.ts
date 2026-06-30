@@ -43,4 +43,12 @@ export class MenuService {
     }
     return this.menuSignal().filter(d => d.category === category);
   }
+
+  addDish(dish: Omit<Dish, 'id'>) {
+    const newDish: Dish = {
+      ...dish,
+      id: Math.random().toString(36).substr(2, 9)
+    };
+    this.menuSignal.update(menu => [newDish, ...menu]);
+  }
 }

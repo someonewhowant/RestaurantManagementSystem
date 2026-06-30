@@ -143,3 +143,172 @@
   background: #f8fafc;
   border-radius: 6px;
 }
+
+/* Filters */
+.pill-btn {
+  background: rgba(0,0,0,0.03);
+  border: 1px solid rgba(0,0,0,0.05);
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+
+.pill-btn:hover {
+  background: rgba(0,0,0,0.06);
+}
+
+.pill-btn.active {
+  background: var(--color-primary);
+  color: white;
+  border-color: var(--color-primary);
+}
+
+/* Builder Redesign */
+.builder-wrapper {
+  animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.builder-panel {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+  border: 1px solid rgba(0,0,0,0.04);
+  overflow: hidden;
+}
+
+.panel-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.panel-icon {
+  font-size: 20px;
+  background: rgba(0,0,0,0.03);
+  width: 36px;
+  height: 36px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
+}
+
+.panel-header h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-text-main);
+}
+
+.panel-body {
+  padding: 24px;
+}
+
+.premium-input {
+  border: 1px solid rgba(0,0,0,0.08);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 14px;
+  background: rgba(0,0,0,0.01);
+  transition: all 0.2s;
+}
+
+.premium-input:focus {
+  background: white;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(33,150,243,0.1);
+  outline: none;
+}
+
+.required {
+  color: var(--color-danger);
+}
+
+.ingredient-row {
+  display: flex; 
+  gap: 12px; 
+  align-items: center; 
+  background: white; 
+  padding: 12px; 
+  border-radius: 10px; 
+  border: 1px solid rgba(0,0,0,0.06);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+  transition: transform 0.2s;
+}
+
+.ingredient-row:hover {
+  transform: translateY(-1px);
+  border-color: rgba(0,0,0,0.1);
+}
+
+.remove-ing-btn {
+  background: rgba(244,67,54,0.05);
+  border: 1px solid rgba(244,67,54,0.1);
+  color: var(--color-danger);
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 20px;
+  line-height: 1;
+  transition: all 0.2s;
+}
+
+.remove-ing-btn:hover {
+  background: var(--color-danger);
+  color: white;
+}
+
+.empty-ingredients {
+  text-align: center;
+  padding: 40px 20px;
+  background: white;
+  border: 1px dashed rgba(0,0,0,0.15);
+  border-radius: 10px;
+  color: var(--color-text-muted);
+}
+
+/* Economy Panel */
+.calc-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 16px;
+  border-bottom: 1px dashed rgba(0,0,0,0.1);
+}
+
+.calc-label {
+  color: var(--color-text-muted);
+  font-size: 14px;
+}
+
+.calc-value {
+  font-weight: 700;
+  font-size: 18px;
+  color: var(--color-text-main);
+}
+
+.price-input {
+  font-size: 20px;
+  font-weight: bold;
+  color: var(--color-primary);
+  padding: 12px 16px;
+}
+
+.margin-box {
+  background: white;
+  border: 1px solid rgba(0,0,0,0.06);
+  padding: 16px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+}
