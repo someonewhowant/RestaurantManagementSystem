@@ -24,8 +24,15 @@ export class RegisterComponent {
   onSubmit(e: Event) {
     e.preventDefault();
     if (this.firstName && this.lastName && this.restaurantName && this.email && this.password) {
-      this.authService.register(this.email, this.firstName, this.lastName, this.restaurantName);
-      this.router.navigate(['/app']);
+      this.authService.register(this.email, this.firstName, this.lastName, this.restaurantName, this.password).subscribe({
+        next: () => {
+          this.router.navigate(['/app']);
+        },
+        error: (err) => {
+          console.error('Registration failed', err);
+          alert('Ошибка регистрации. Возможно, такой email уже используется.');
+        }
+      });
     }
   }
 }

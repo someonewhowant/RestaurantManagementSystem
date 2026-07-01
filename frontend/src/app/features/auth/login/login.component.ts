@@ -22,13 +22,19 @@ export class LoginComponent {
   onSubmit(e: Event) {
     e.preventDefault();
     if (this.email && this.password) {
-      this.authService.login(this.email);
-      // Если это официант, направим его в POS, иначе в админку
-      if (this.authService.currentUser()?.role === 'waiter') {
-        this.router.navigate(['/app/pos']);
-      } else {
-        this.router.navigate(['/app']);
-      }
+      this.authService.login(this.email, this.password).subscribe({
+        next: (res) => {
+          if (res.user.role === 'WAITER') {
+            this.router.navigate(['/app/pos']);
+          } else {
+            this.router.navigate(['/app']);
+          }
+        },
+        error: (err) => {
+          console.error('Login failed', err);
+          alert('Ошибка входа. Проверьте email и пароль.');
+        }
+      });
     }
   }
 }

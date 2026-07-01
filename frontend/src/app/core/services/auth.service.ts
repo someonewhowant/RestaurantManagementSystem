@@ -1,4 +1,6 @@
-import { Injectable, signal, computed } from '@angular/core';
+import { Injectable, signal, computed, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { tap } from 'rxjs';
 
 export interface User {
   id: string;
@@ -7,38 +9,58 @@ export interface User {
   lastName?: string;
   restaurantName?: string;
   email: string;
-  role: 'owner' | 'waiter' | 'manager';
+  role: 'OWNER' | 'WAITER' | 'MANAGER';
+}
+
+export interface AuthResponse {
+  token: string;
+  user: User;
 }
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  public currentUser = signal<User | null>(null);
+  private http = inject(HttpClient);
   
+  public currentUser = signal<User | null>(null);
   public isAuthenticated = computed(() => this.currentUser() !== null);
-
-  login(email: string) {
-    // Имитация успешного входа (в реальном приложении здесь будет HTTP-запрос)
-    this.currentUser.set({
-      id: Math.random().toString(36).substr(2, 9),
-      name: email === 'waiter@restaurant.com' ? 'Иван Официант' : 'Владелец Ресторана',
-      email,
-      role: email === 'waiter@restaurant.com' ? 'waiter' : 'owner'
-    });
+  
+  constructor() {
+    // Try to load user from local storage token on init
+    const token = localStorage.getItem('token');
+    if (token) {
+      this.fetchCurrentUser();
+    }
   }
 
-  register(email: string, firstName: string, lastName: string, restaurantName: string) {
-    this.currentUser.set({
-      id: Math.random().toString(36).substr(2, 9),
-      name: `${firstName} ${lastName}`,
-      firstName,
-      lastName,
-      restaurantName,
-      email,
-      role: 'owner' // Регистрируется по умолчанию владелец
+  login(email: string, password: string = '123456') {
+    return this.http.post<AuthResponse>('/api/auth/login', { email, password }).pipe(
+      tap(res => {
+        localStorage.setItem('token', res.token);
+        this.currentUser.set(res.user);
+      })
+    );
+  }
+
+  register(email: string, firstName: string, lastName: string, restaurantName: string, password: string = '123456') {
+    return this.http.post<AuthResponse>('/api/auth/register', { 
+      email, firstName, lastName, restaurantName, password 
+    }).pipe(
+      tap(res => {
+        localStorage.setItem('token', res.token);
+        this.currentUser.set(res.user);
+      })
+    );
+  }
+
+  private fetchCurrentUser() {
+    this.http.get<User>('/api/auth/me').subscribe({
+      next: (user) => this.currentUser.set(user),
+      error: () => this.logout() // Token might be expired
     });
   }
 
   logout() {
+    localStorage.removeItem('token');
     this.currentUser.set(null);
   }
 }

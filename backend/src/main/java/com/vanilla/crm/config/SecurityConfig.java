@@ -1,5 +1,7 @@
 package com.vanilla.crm.config;
 
+import com.vanilla.crm.security.JwtAuthenticationFilter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -11,16 +13,17 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 /**
  * Spring Security configuration.
- * 
- * Stage 1: All endpoints are open for initial scaffolding.
- * Stage 2: JWT filter will be added, and endpoints will be secured.
  */
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
+
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -33,17 +36,18 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 // Public endpoints
                 .requestMatchers("/auth/**").permitAll()
+                .requestMatchers("/health").permitAll()
                 .requestMatchers("/h2-console/**").permitAll()
                 .requestMatchers("/swagger-ui/**", "/api-docs/**", "/swagger-ui.html").permitAll()
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                // All other endpoints — will be secured by JWT in Stage 2
-                // For now, permit all to enable testing
-                .anyRequest().permitAll()
+                // All other endpoints are secured
+                .anyRequest().authenticated()
             )
             // Allow H2 Console frames
             .headers(headers -> headers
                 .frameOptions(frame -> frame.sameOrigin())
-            );
+            )
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
