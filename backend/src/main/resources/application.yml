@@ -1,0 +1,54 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+
+spring:
+  application:
+    name: vanilla-crm
+
+  # H2 Database (embedded, file-based for persistence)
+  datasource:
+    url: jdbc:h2:file:./data/vanilla-crm;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  # JPA / Hibernate
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+
+  # H2 Console (dev only)
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+      settings:
+        web-allow-others: false
+
+# JWT Configuration
+app:
+  jwt:
+    secret: VanillaCrmSuperSecretKeyForJwtTokenGeneration2026MustBeAtLeast256BitsLong!
+    expiration-ms: 86400000  # 24 hours
+
+# SpringDoc / Swagger
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: method
+
+# Logging
+logging:
+  level:
+    com.vanilla.crm: DEBUG
+    org.springframework.security: INFO
+    org.hibernate.SQL: INFO
