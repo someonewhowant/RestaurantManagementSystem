@@ -1,13 +1,19 @@
 package com.vanilla.crm.config;
 
+import com.vanilla.crm.inventory.InventoryRepository;
+import com.vanilla.crm.inventory.entity.InventoryItem;
 import com.vanilla.crm.menu.MenuRepository;
 import com.vanilla.crm.menu.entity.Dish;
+import com.vanilla.crm.staff.StaffRepository;
+import com.vanilla.crm.staff.entity.Employee;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.time.Instant;
+import java.time.LocalDate;
 import java.util.List;
 
 @Component
@@ -16,15 +22,39 @@ import java.util.List;
 public class DataInitializer implements CommandLineRunner {
 
     private final MenuRepository menuRepository;
+    private final InventoryRepository inventoryRepository;
+    private final StaffRepository staffRepository;
 
     @Override
     public void run(String... args) throws Exception {
         if (menuRepository.count() == 0) {
-            log.info("Database is empty. Seeding initial data...");
+            log.info("Database is empty. Seeding menu data...");
             seedMenu();
-        } else {
-            log.info("Database already contains data. Skipping seed.");
         }
+        
+        if (inventoryRepository.count() == 0) {
+            log.info("Database is empty. Seeding inventory data...");
+            seedInventory();
+        }
+
+        if (staffRepository.count() == 0) {
+            log.info("Database is empty. Seeding staff data...");
+            seedStaff();
+        }
+    }
+
+    private void seedInventory() {
+        List<InventoryItem> items = List.of(
+            InventoryItem.builder().name("Лосось").category("Морепродукты").currentStock(2.0).minStock(5.0).unit("кг").pricePerUnit(new BigDecimal("1200")).expiresInDays(2).build(),
+            InventoryItem.builder().name("Говядина").category("Мясо").currentStock(15.0).minStock(10.0).unit("кг").pricePerUnit(new BigDecimal("850")).build(),
+            InventoryItem.builder().name("Картофель").category("Овощи").currentStock(40.0).minStock(20.0).unit("кг").pricePerUnit(new BigDecimal("40")).build(),
+            InventoryItem.builder().name("Помидоры").category("Овощи").currentStock(18.0).minStock(15.0).unit("кг").pricePerUnit(new BigDecimal("150")).expiresInDays(1).build(),
+            InventoryItem.builder().name("Оливковое масло").category("Бакалея").currentStock(12.0).minStock(5.0).unit("л").pricePerUnit(new BigDecimal("800")).build(),
+            InventoryItem.builder().name("Соль").category("Бакалея").currentStock(1.0).minStock(3.0).unit("кг").pricePerUnit(new BigDecimal("30")).build(),
+            InventoryItem.builder().name("Сливки 33%").category("Молочка").currentStock(5.0).minStock(3.0).unit("л").pricePerUnit(new BigDecimal("300")).expiresInDays(0).build()
+        );
+        inventoryRepository.saveAll(items);
+        log.info("Seeded {} inventory items.", items.size());
     }
 
     private void seedMenu() {
@@ -42,5 +72,16 @@ public class DataInitializer implements CommandLineRunner {
 
         menuRepository.saveAll(initialDishes);
         log.info("Seeded {} dishes.", initialDishes.size());
+    }
+
+    private void seedStaff() {
+        List<Employee> employees = List.of(
+            Employee.builder().name("Александр Иванов").role(Employee.EmployeeRole.MANAGER).status(Employee.EmployeeStatus.ACTIVE).hireDate(LocalDate.of(2025, 1, 15)).onShift(true).shiftStartTime(Instant.now()).build(),
+            Employee.builder().name("Мария Смирнова").role(Employee.EmployeeRole.WAITER).status(Employee.EmployeeStatus.ACTIVE).hireDate(LocalDate.of(2025, 3, 22)).onShift(false).build(),
+            Employee.builder().name("Дмитрий Кузнецов").role(Employee.EmployeeRole.COOK).status(Employee.EmployeeStatus.ON_VACATION).hireDate(LocalDate.of(2024, 11, 5)).vacationStart(LocalDate.of(2026, 6, 1)).vacationEnd(LocalDate.of(2026, 6, 30)).onShift(false).build(),
+            Employee.builder().name("Анна Попова").role(Employee.EmployeeRole.CASHIER).status(Employee.EmployeeStatus.ACTIVE).hireDate(LocalDate.of(2026, 2, 10)).onShift(true).shiftStartTime(Instant.now().minusSeconds(3600)).build()
+        );
+        staffRepository.saveAll(employees);
+        log.info("Seeded {} employees.", employees.size());
     }
 }

@@ -1,4 +1,5 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, signal, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 
 export interface Employee {
   id: string;
@@ -17,48 +18,53 @@ export interface Employee {
   providedIn: 'root'
 })
 export class StaffService {
-  private staffSignal = signal<Employee[]>([
-    { id: '1', name: 'Александр Иванов', role: 'Менеджер', status: 'Активен', hireDate: '2025-01-15', onShift: true, shiftStartTime: new Date().toISOString() },
-    { id: '2', name: 'Мария Смирнова', role: 'Официант', status: 'Активен', hireDate: '2025-03-22', onShift: false },
-    { id: '3', name: 'Дмитрий Кузнецов', role: 'Повар', status: 'В отпуске', hireDate: '2024-11-05', vacationStart: '2026-06-01', vacationEnd: '2026-06-30' },
-    { id: '4', name: 'Анна Попова', role: 'Кассир', status: 'Активен', hireDate: '2026-02-10', onShift: true, shiftStartTime: new Date(Date.now() - 3600000).toISOString() },
-  ]);
+  private http = inject(HttpClient);
 
+  private staffSignal = signal<Employee[]>([]);
   public staff = this.staffSignal.asReadonly();
 
+  constructor() {
+    this.fetchStaff();
+  }
+
+  fetchStaff() {
+    this.http.get<Employee[]>('/api/staff').subscribe({
+      next: (staff) => this.staffSignal.set(staff),
+      error: (err) => console.error('Failed to fetch staff', err)
+    });
+  }
+
   addEmployee(employee: Omit<Employee, 'id'>) {
-    const newEmployee: Employee = {
-      ...employee,
-      id: Math.random().toString(36).substr(2, 9)
-    };
-    this.staffSignal.update(list => [...list, newEmployee]);
+    this.http.post<Employee>('/api/staff', employee).subscribe({
+      next: (created) => this.staffSignal.update(list => [...list, created]),
+      error: (err) => console.error('Failed to create employee', err)
+    });
   }
 
   changeStatus(id: string, newStatus: Employee['status']) {
-    this.staffSignal.update(list => 
-      list.map(emp => emp.id === id ? { ...emp, status: newStatus } : emp)
-    );
+    this.http.patch<Employee>(`/api/staff/${id}/status`, { status: newStatus }).subscribe({
+      next: (updated) => this.staffSignal.update(list =>
+        list.map(emp => emp.id === id ? updated : emp)
+      ),
+      error: (err) => console.error('Failed to change status', err)
+    });
   }
 
   updateEmployee(id: string, partial: Partial<Employee>) {
-    this.staffSignal.update(list =>
-      list.map(emp => emp.id === id ? { ...emp, ...partial } : emp)
-    );
+    this.http.put<Employee>(`/api/staff/${id}`, partial).subscribe({
+      next: (updated) => this.staffSignal.update(list =>
+        list.map(emp => emp.id === id ? updated : emp)
+      ),
+      error: (err) => console.error('Failed to update employee', err)
+    });
   }
 
   toggleShift(id: string) {
-    this.staffSignal.update(list =>
-      list.map(emp => {
-        if (emp.id === id) {
-          const isNowOnShift = !emp.onShift;
-          return {
-            ...emp,
-            onShift: isNowOnShift,
-            shiftStartTime: isNowOnShift ? new Date().toISOString() : undefined
-          };
-        }
-        return emp;
-      })
-    );
+    this.http.patch<Employee>(`/api/staff/${id}/shift`, {}).subscribe({
+      next: (updated) => this.staffSignal.update(list =>
+        list.map(emp => emp.id === id ? updated : emp)
+      ),
+      error: (err) => console.error('Failed to toggle shift', err)
+    });
   }
 }
