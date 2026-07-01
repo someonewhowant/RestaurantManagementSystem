@@ -1,5 +1,7 @@
 package com.vanilla.crm.config;
 
+import com.vanilla.crm.budget.TransactionRepository;
+import com.vanilla.crm.budget.entity.Transaction;
 import com.vanilla.crm.inventory.InventoryRepository;
 import com.vanilla.crm.inventory.entity.InventoryItem;
 import com.vanilla.crm.menu.MenuRepository;
@@ -24,6 +26,7 @@ public class DataInitializer implements CommandLineRunner {
     private final MenuRepository menuRepository;
     private final InventoryRepository inventoryRepository;
     private final StaffRepository staffRepository;
+    private final TransactionRepository transactionRepository;
 
     @Override
     public void run(String... args) throws Exception {
@@ -40,6 +43,11 @@ public class DataInitializer implements CommandLineRunner {
         if (staffRepository.count() == 0) {
             log.info("Database is empty. Seeding staff data...");
             seedStaff();
+        }
+
+        if (transactionRepository.count() == 0) {
+            log.info("Database is empty. Seeding budget data...");
+            seedBudget();
         }
     }
 
@@ -83,5 +91,16 @@ public class DataInitializer implements CommandLineRunner {
         );
         staffRepository.saveAll(employees);
         log.info("Seeded {} employees.", employees.size());
+    }
+
+    private void seedBudget() {
+        List<Transaction> txs = List.of(
+            Transaction.builder().date(Instant.now().minusSeconds(86400 * 2)).amount(new BigDecimal("1500")).type(Transaction.TransactionType.INCOME).category("Оплата заказа").description("Выручка за смену").build(),
+            Transaction.builder().date(Instant.now().minusSeconds(86400)).amount(new BigDecimal("300")).type(Transaction.TransactionType.EXPENSE).category("Закупки").description("Закупка овощей").build(),
+            Transaction.builder().date(Instant.now()).amount(new BigDecimal("2100")).type(Transaction.TransactionType.INCOME).category("Оплата заказа").description("Выручка за смену").build(),
+            Transaction.builder().date(Instant.now()).amount(new BigDecimal("500")).type(Transaction.TransactionType.EXPENSE).category("Коммуналка").description("Оплата электричества").build()
+        );
+        transactionRepository.saveAll(txs);
+        log.info("Seeded {} transactions.", txs.size());
     }
 }

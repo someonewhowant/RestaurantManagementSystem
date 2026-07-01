@@ -1,4 +1,5 @@
-import { Injectable, signal, computed } from '@angular/core';
+import { Injectable, signal, computed, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 
 export interface Transaction {
   id: string;
@@ -10,32 +11,28 @@ export interface Transaction {
   items?: { dishId: string, quantity: number }[];
 }
 
+export interface BudgetSummary {
+  totalIncome: number;
+  totalExpense: number;
+  balance: number;
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class BudgetService {
-  private transactionsSignal = signal<Transaction[]>([
-    { 
-      id: '1', date: new Date(Date.now() - 86400000 * 2).toISOString(), amount: 1500, type: 'Доход', category: 'Оплата заказа', description: 'Выручка за смену',
-      items: [{ dishId: 'm1', quantity: 2 }, { dishId: 'm4', quantity: 1 }]
-    },
-    { id: '2', date: new Date(Date.now() - 86400000 * 1).toISOString(), amount: 300, type: 'Расход', category: 'Закупки', description: 'Закупка овощей' },
-    { 
-      id: '3', date: new Date().toISOString(), amount: 2100, type: 'Доход', category: 'Оплата заказа', description: 'Выручка за смену',
-      items: [{ dishId: 'm1', quantity: 1 }, { dishId: 'm2', quantity: 3 }, { dishId: 'm6', quantity: 4 }]
-    },
-    { id: '4', date: new Date().toISOString(), amount: 500, type: 'Расход', category: 'Коммуналка', description: 'Оплата электричества' }
-  ]);
+  private http = inject(HttpClient);
 
+  private transactionsSignal = signal<Transaction[]>([]);
   public transactions = this.transactionsSignal.asReadonly();
 
-  public totalIncome = computed(() => 
+  public totalIncome = computed(() =>
     this.transactionsSignal()
       .filter(t => t.type === 'Доход')
       .reduce((sum, t) => sum + t.amount, 0)
   );
 
-  public totalExpense = computed(() => 
+  public totalExpense = computed(() =>
     this.transactionsSignal()
       .filter(t => t.type === 'Расход')
       .reduce((sum, t) => sum + t.amount, 0)
@@ -43,11 +40,21 @@ export class BudgetService {
 
   public totalBalance = computed(() => this.totalIncome() - this.totalExpense());
 
+  constructor() {
+    this.fetchTransactions();
+  }
+
+  fetchTransactions() {
+    this.http.get<Transaction[]>('/api/budget/transactions').subscribe({
+      next: (txs) => this.transactionsSignal.set(txs),
+      error: (err) => console.error('Failed to fetch transactions', err)
+    });
+  }
+
   addTransaction(transaction: Omit<Transaction, 'id'>) {
-    const newTx: Transaction = {
-      ...transaction,
-      id: Math.random().toString(36).substr(2, 9)
-    };
-    this.transactionsSignal.update(list => [newTx, ...list]); // Добавляем в начало
+    this.http.post<Transaction>('/api/budget/transactions', transaction).subscribe({
+      next: (created) => this.transactionsSignal.update(list => [created, ...list]),
+      error: (err) => console.error('Failed to create transaction', err)
+    });
   }
 }
