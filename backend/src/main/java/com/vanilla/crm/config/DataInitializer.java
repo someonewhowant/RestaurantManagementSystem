@@ -8,6 +8,8 @@ import com.vanilla.crm.menu.MenuRepository;
 import com.vanilla.crm.menu.entity.Dish;
 import com.vanilla.crm.staff.StaffRepository;
 import com.vanilla.crm.staff.entity.Employee;
+import com.vanilla.crm.tables.TableRepository;
+import com.vanilla.crm.tables.entity.RestaurantTable;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
@@ -27,6 +29,7 @@ public class DataInitializer implements CommandLineRunner {
     private final InventoryRepository inventoryRepository;
     private final StaffRepository staffRepository;
     private final TransactionRepository transactionRepository;
+    private final TableRepository tableRepository;
 
     @Override
     public void run(String... args) throws Exception {
@@ -48,6 +51,11 @@ public class DataInitializer implements CommandLineRunner {
         if (transactionRepository.count() == 0) {
             log.info("Database is empty. Seeding budget data...");
             seedBudget();
+        }
+
+        if (tableRepository.count() == 0) {
+            log.info("Database is empty. Seeding tables data...");
+            seedTables();
         }
     }
 
@@ -102,5 +110,20 @@ public class DataInitializer implements CommandLineRunner {
         );
         transactionRepository.saveAll(txs);
         log.info("Seeded {} transactions.", txs.size());
+    }
+
+    private void seedTables() {
+        List<RestaurantTable> tables = List.of(
+            RestaurantTable.builder().number(1).capacity(2).status(RestaurantTable.TableStatus.FREE).build(),
+            RestaurantTable.builder().number(2).capacity(2).status(RestaurantTable.TableStatus.OCCUPIED).statusUpdatedAt(Instant.now().minusSeconds(15 * 60)).build(),
+            RestaurantTable.builder().number(3).capacity(4).status(RestaurantTable.TableStatus.AWAITING_FOOD).statusUpdatedAt(Instant.now().minusSeconds(25 * 60)).build(),
+            RestaurantTable.builder().number(4).capacity(4).status(RestaurantTable.TableStatus.FREE).build(),
+            RestaurantTable.builder().number(5).capacity(6).status(RestaurantTable.TableStatus.PAYMENT).statusUpdatedAt(Instant.now().minusSeconds(5 * 60)).build(),
+            RestaurantTable.builder().number(6).capacity(8).status(RestaurantTable.TableStatus.FREE).build(),
+            RestaurantTable.builder().number(7).capacity(2).status(RestaurantTable.TableStatus.OCCUPIED).statusUpdatedAt(Instant.now().minusSeconds(40 * 60)).build(),
+            RestaurantTable.builder().number(8).capacity(4).status(RestaurantTable.TableStatus.FREE).build()
+        );
+        tableRepository.saveAll(tables);
+        log.info("Seeded {} tables.", tables.size());
     }
 }
