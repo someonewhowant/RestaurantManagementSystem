@@ -1,0 +1,48 @@
+package com.vanilla.crm.menu.entity;
+
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.UUID;
+
+@Entity
+@Table(name = "dishes")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class Dish {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
+
+    @Column(nullable = false)
+    private String name;
+
+    @Column(nullable = false)
+    private String category; // e.g. "Популярное", "Горячее", "Закуски", "Напитки", "Десерты"
+
+    @Column(nullable = false)
+    private BigDecimal price;
+
+    private String weight;
+
+    private String imageIcon;
+
+    @Column(columnDefinition = "TEXT")
+    private String instructions;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "dish_allergens", joinColumns = @JoinColumn(name = "dish_id"))
+    @Column(name = "allergen")
+    private List<String> allergens;
+
+    @Embedded
+    private Macros macros;
+
+    // Note: The 'recipe' relationship will be mapped in Stage 9 when RecipeIngredient is created.
+}
