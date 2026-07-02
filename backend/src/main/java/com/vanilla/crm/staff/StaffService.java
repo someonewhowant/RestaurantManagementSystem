@@ -31,12 +31,12 @@ public class StaffService {
                 .name(dto.getName())
                 .role(EmployeeDto.toRoleEnum(dto.getRole()))
                 .status(EmployeeDto.toStatusEnum(dto.getStatus()))
-                .hireDate(dto.getHireDate() != null ? LocalDate.parse(dto.getHireDate()) : LocalDate.now())
+                .hireDate(dto.getHireDate() != null && !dto.getHireDate().isEmpty() ? LocalDate.parse(dto.getHireDate()) : LocalDate.now())
                 .onShift(dto.getOnShift() != null ? dto.getOnShift() : false)
                 .build();
 
-        if (dto.getVacationStart() != null) employee.setVacationStart(LocalDate.parse(dto.getVacationStart()));
-        if (dto.getVacationEnd() != null) employee.setVacationEnd(LocalDate.parse(dto.getVacationEnd()));
+        if (dto.getVacationStart() != null && !dto.getVacationStart().isEmpty()) employee.setVacationStart(LocalDate.parse(dto.getVacationStart()));
+        if (dto.getVacationEnd() != null && !dto.getVacationEnd().isEmpty()) employee.setVacationEnd(LocalDate.parse(dto.getVacationEnd()));
 
         return EmployeeDto.fromEntity(staffRepository.save(employee));
     }
@@ -48,9 +48,32 @@ public class StaffService {
 
         if (dto.getName() != null) employee.setName(dto.getName());
         if (dto.getRole() != null) employee.setRole(EmployeeDto.toRoleEnum(dto.getRole()));
-        if (dto.getHireDate() != null) employee.setHireDate(LocalDate.parse(dto.getHireDate()));
-        if (dto.getVacationStart() != null) employee.setVacationStart(LocalDate.parse(dto.getVacationStart()));
-        if (dto.getVacationEnd() != null) employee.setVacationEnd(LocalDate.parse(dto.getVacationEnd()));
+        if (dto.getHireDate() != null && !dto.getHireDate().isEmpty()) {
+            employee.setHireDate(LocalDate.parse(dto.getHireDate()));
+        }
+
+        if (dto.getStatus() != null) {
+            Employee.EmployeeStatus newStatus = EmployeeDto.toStatusEnum(dto.getStatus());
+            employee.setStatus(newStatus);
+            if (newStatus == Employee.EmployeeStatus.FIRED) {
+                employee.setOnShift(false);
+                employee.setShiftStartTime(null);
+            } else if (newStatus == Employee.EmployeeStatus.ACTIVE) {
+                employee.setFireDate(null);
+                employee.setVacationStart(null);
+                employee.setVacationEnd(null);
+            }
+        }
+
+        if (dto.getFireDate() != null) {
+            employee.setFireDate(dto.getFireDate().isEmpty() ? null : LocalDate.parse(dto.getFireDate()));
+        }
+        if (dto.getVacationStart() != null) {
+            employee.setVacationStart(dto.getVacationStart().isEmpty() ? null : LocalDate.parse(dto.getVacationStart()));
+        }
+        if (dto.getVacationEnd() != null) {
+            employee.setVacationEnd(dto.getVacationEnd().isEmpty() ? null : LocalDate.parse(dto.getVacationEnd()));
+        }
 
         return EmployeeDto.fromEntity(staffRepository.save(employee));
     }

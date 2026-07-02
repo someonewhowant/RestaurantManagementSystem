@@ -65,10 +65,12 @@ public class EmployeeDto {
     }
 
     public static Employee.EmployeeRole toRoleEnum(String role) {
+        if (role == null) return Employee.EmployeeRole.WAITER;
         return ROLE_MAP.getOrDefault(role, Employee.EmployeeRole.WAITER);
     }
 
     public static Employee.EmployeeStatus toStatusEnum(String status) {
+        if (status == null) return Employee.EmployeeStatus.ACTIVE;
         return STATUS_MAP.getOrDefault(status, Employee.EmployeeStatus.ACTIVE);
     }
 }
