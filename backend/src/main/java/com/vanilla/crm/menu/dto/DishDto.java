@@ -16,6 +16,7 @@ public class DishDto {
     private String name;
     private String category;
     private BigDecimal price;
+    private String status;
     private String weight;
     private String imageIcon;
     private String instructions;
@@ -29,6 +30,7 @@ public class DishDto {
                 .name(dish.getName())
                 .category(dish.getCategory())
                 .price(dish.getPrice())
+                .status(dish.getStatus() != null ? dish.getStatus().name().toLowerCase() : "available")
                 .weight(dish.getWeight())
                 .imageIcon(dish.getImageIcon())
                 .instructions(dish.getInstructions())

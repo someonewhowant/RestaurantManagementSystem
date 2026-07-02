@@ -1,0 +1,29 @@
+# =============================================
+#  PROD Profile — PostgreSQL
+# =============================================
+spring:
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:vanilla_crm}
+    driver-class-name: org.postgresql.Driver
+    username: ${DB_USER:vanilla}
+    password: ${DB_PASS:vanilla_secret}
+
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: validate  # In production, use Flyway/Liquibase for migrations
+
+  h2:
+    console:
+      enabled: false
+
+# Override JWT secret via environment variable in production
+app:
+  jwt:
+    secret: ${JWT_SECRET:VanillaCrmSuperSecretKeyForJwtTokenGeneration2026MustBeAtLeast256BitsLong!}
+
+logging:
+  level:
+    com.vanilla.crm: INFO
+    org.springframework.security: WARN
+    org.hibernate.SQL: WARN

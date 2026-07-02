@@ -30,6 +30,11 @@ public class Dish {
     @Column(nullable = false)
     private BigDecimal price;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    @Builder.Default
+    private DishStatus status = DishStatus.AVAILABLE;
+
     private String weight;
 
     private String imageIcon;
@@ -48,4 +53,9 @@ public class Dish {
     @OneToMany(mappedBy = "dish", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @Builder.Default
     private List<RecipeIngredient> recipe = new ArrayList<>();
+
+    public enum DishStatus {
+        AVAILABLE,
+        STOP_LIST
+    }
 }

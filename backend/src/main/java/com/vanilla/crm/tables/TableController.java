@@ -3,6 +3,9 @@ package com.vanilla.crm.tables;
 import com.vanilla.crm.tables.dto.TableDto;
 import com.vanilla.crm.tables.dto.TableStatusRequest;
 import com.vanilla.crm.tables.dto.WaiterAssignRequest;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,20 +16,29 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/tables")
 @RequiredArgsConstructor
+@Tag(name = "Столики", description = "Управление столиками зала: статусы, назначение официантов")
 public class TableController {
 
     private final TableService tableService;
 
+    @Operation(summary = "Все столики", description = "Возвращает список всех столиков с их текущим статусом и назначенным официантом.")
+    @ApiResponse(responseCode = "200", description = "Список столиков")
     @GetMapping
     public ResponseEntity<List<TableDto>> getAllTables() {
         return ResponseEntity.ok(tableService.getAllTables());
     }
 
+    @Operation(summary = "Изменить статус столика", description = "Обновляет статус столика (free, occupied, awaiting_food, payment).")
+    @ApiResponse(responseCode = "200", description = "Обновлённый столик")
+    @ApiResponse(responseCode = "404", description = "Столик не найден")
     @PatchMapping("/{id}/status")
     public ResponseEntity<TableDto> changeStatus(@PathVariable UUID id, @RequestBody TableStatusRequest request) {
         return ResponseEntity.ok(tableService.changeStatus(id, request.getStatus(), request.getWaiterId()));
     }
 
+    @Operation(summary = "Назначить официанта", description = "Привязывает официанта к столику.")
+    @ApiResponse(responseCode = "200", description = "Обновлённый столик")
+    @ApiResponse(responseCode = "404", description = "Столик не найден")
     @PatchMapping("/{id}/waiter")
     public ResponseEntity<TableDto> assignWaiter(@PathVariable UUID id, @RequestBody WaiterAssignRequest request) {
         return ResponseEntity.ok(tableService.assignWaiter(id, request.getWaiterId()));

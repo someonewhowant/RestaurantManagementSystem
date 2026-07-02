@@ -12,8 +12,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Macros {
-    private Integer proteins;
-    private Integer fats;
-    private Integer carbs;
-    private Integer calories;
+    private Double protein;
+    private Double fats;
+    private Double carbs;
+    private Double calories;
 }

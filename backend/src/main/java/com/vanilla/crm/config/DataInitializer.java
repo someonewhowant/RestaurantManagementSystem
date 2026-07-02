@@ -1,5 +1,7 @@
 package com.vanilla.crm.config;
 
+import com.vanilla.crm.auth.UserRepository;
+import com.vanilla.crm.auth.entity.User;
 import com.vanilla.crm.budget.TransactionRepository;
 import com.vanilla.crm.budget.entity.Transaction;
 import com.vanilla.crm.inventory.InventoryRepository;
@@ -11,6 +13,7 @@ import com.vanilla.crm.staff.StaffRepository;
 import com.vanilla.crm.staff.entity.Employee;
 import com.vanilla.crm.tables.TableRepository;
 import com.vanilla.crm.tables.entity.RestaurantTable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
@@ -31,6 +34,8 @@ public class DataInitializer implements CommandLineRunner {
     private final StaffRepository staffRepository;
     private final TransactionRepository transactionRepository;
     private final TableRepository tableRepository;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public void run(String... args) throws Exception {
@@ -57,6 +62,11 @@ public class DataInitializer implements CommandLineRunner {
         if (transactionRepository.count() == 0) {
             log.info("Database is empty. Seeding budget data...");
             seedBudget();
+        }
+
+        if (userRepository.count() == 0) {
+            log.info("Database is empty. Seeding admin user...");
+            seedUsers();
         }
 
         if (tableRepository.count() == 0) {
@@ -87,7 +97,7 @@ public class DataInitializer implements CommandLineRunner {
                 .status(Dish.DishStatus.AVAILABLE)
                 .instructions("Прожарка medium rare, подавать с чесночным маслом")
                 .allergens(List.of("Мясо"))
-                .macros(com.vanilla.crm.menu.entity.Macros.builder().calories(650).protein(45.0).carbs(0.0).fats(50.0).build())
+                .macros(com.vanilla.crm.menu.entity.Macros.builder().calories(650.0).protein(45.0).carbs(0.0).fats(50.0).build())
                 .build();
 
         Dish dish2 = Dish.builder()
@@ -97,7 +107,7 @@ public class DataInitializer implements CommandLineRunner {
                 .status(Dish.DishStatus.AVAILABLE)
                 .instructions("Соус отдельно")
                 .allergens(List.of("Яйцо", "Глютен"))
-                .macros(com.vanilla.crm.menu.entity.Macros.builder().calories(320).protein(12.0).carbs(15.0).fats(25.0).build())
+                .macros(com.vanilla.crm.menu.entity.Macros.builder().calories(320.0).protein(12.0).carbs(15.0).fats(25.0).build())
                 .build();
 
         List<Dish> dishes = menuRepository.saveAll(List.of(dish1, dish2));
@@ -156,5 +166,18 @@ public class DataInitializer implements CommandLineRunner {
         );
         tableRepository.saveAll(tables);
         log.info("Seeded {} tables.", tables.size());
+    }
+
+    private void seedUsers() {
+        User admin = User.builder()
+                .email("admin@vanilla.crm")
+                .passwordHash(passwordEncoder.encode("admin"))
+                .firstName("Иван")
+                .lastName("Иванов")
+                .restaurantName("Ресторан Vanilla")
+                .role(User.Role.OWNER)
+                .build();
+        userRepository.save(admin);
+        log.info("Seeded default admin user (admin@vanilla.crm / admin).");
     }
 }

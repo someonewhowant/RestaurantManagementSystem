@@ -8,7 +8,7 @@
     
     <nav class="sidebar-nav">
       
-      @if (authService.currentUser()?.role !== 'waiter') {
+      @if (authService.currentUser()?.role !== 'WAITER') {
         <div class="nav-group-title">Управление бизнесом</div>
         
         <a routerLink="/app/dashboard" routerLinkActive="active" class="nav-item">
