@@ -1,6 +1,7 @@
 package com.vanilla.crm.menu;
 
 import com.vanilla.crm.menu.dto.DishDto;
+import com.vanilla.crm.menu.dto.RecipeRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -37,5 +38,10 @@ public class MenuController {
     public ResponseEntity<Void> deleteDish(@PathVariable UUID id) {
         menuService.deleteDish(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{id}/recipe")
+    public ResponseEntity<DishDto> setRecipe(@PathVariable UUID id, @RequestBody List<RecipeRequest> recipeRequests) {
+        return ResponseEntity.ok(menuService.setRecipe(id, recipeRequests));
     }
 }

@@ -1,7 +1,11 @@
 package com.vanilla.crm.menu;
 
 import com.vanilla.crm.menu.dto.DishDto;
+import com.vanilla.crm.menu.dto.RecipeRequest;
 import com.vanilla.crm.menu.entity.Dish;
+import com.vanilla.crm.menu.entity.RecipeIngredient;
+import com.vanilla.crm.inventory.InventoryRepository;
+import com.vanilla.crm.inventory.entity.InventoryItem;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +19,7 @@ import java.util.stream.Collectors;
 public class MenuService {
 
     private final MenuRepository menuRepository;
+    private final InventoryRepository inventoryRepository;
 
     @Transactional(readOnly = true)
     public List<DishDto> getAllDishes() {
@@ -65,6 +70,19 @@ public class MenuService {
         if (dto.getInstructions() != null) dish.setInstructions(dto.getInstructions());
         if (dto.getAllergens() != null) dish.setAllergens(dto.getAllergens());
         if (dto.getMacros() != null) dish.setMacros(dto.getMacros());
+        
+        if (dto.getRecipe() != null) {
+            dish.getRecipe().clear();
+            for (var recDto : dto.getRecipe()) {
+                InventoryItem item = inventoryRepository.findById(recDto.getIngredientId())
+                        .orElseThrow(() -> new RuntimeException("Ingredient not found"));
+                dish.getRecipe().add(RecipeIngredient.builder()
+                        .dish(dish)
+                        .inventoryItem(item)
+                        .amount(recDto.getAmount())
+                        .build());
+            }
+        }
 
         return DishDto.fromEntity(menuRepository.save(dish));
     }
@@ -72,5 +90,27 @@ public class MenuService {
     @Transactional
     public void deleteDish(UUID id) {
         menuRepository.deleteById(id);
+    }
+
+    @Transactional
+    public DishDto setRecipe(UUID dishId, List<RecipeRequest> recipeRequests) {
+        Dish dish = menuRepository.findById(dishId)
+                .orElseThrow(() -> new RuntimeException("Dish not found"));
+
+        dish.getRecipe().clear();
+
+        for (RecipeRequest req : recipeRequests) {
+            InventoryItem item = inventoryRepository.findById(req.getIngredientId())
+                    .orElseThrow(() -> new RuntimeException("Ingredient not found"));
+            
+            RecipeIngredient recipeIngredient = RecipeIngredient.builder()
+                    .dish(dish)
+                    .inventoryItem(item)
+                    .amount(req.getAmount())
+                    .build();
+            dish.getRecipe().add(recipeIngredient);
+        }
+
+        return DishDto.fromEntity(menuRepository.save(dish));
     }
 }

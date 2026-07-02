@@ -6,6 +6,7 @@ import com.vanilla.crm.inventory.InventoryRepository;
 import com.vanilla.crm.inventory.entity.InventoryItem;
 import com.vanilla.crm.menu.MenuRepository;
 import com.vanilla.crm.menu.entity.Dish;
+import com.vanilla.crm.menu.entity.RecipeIngredient;
 import com.vanilla.crm.staff.StaffRepository;
 import com.vanilla.crm.staff.entity.Employee;
 import com.vanilla.crm.tables.TableRepository;
@@ -33,14 +34,19 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        if (menuRepository.count() == 0) {
-            log.info("Database is empty. Seeding menu data...");
-            seedMenu();
-        }
-        
-        if (inventoryRepository.count() == 0) {
-            log.info("Database is empty. Seeding inventory data...");
+        if (menuRepository.count() == 0 && inventoryRepository.count() == 0) {
+            log.info("Database is empty. Seeding inventory and menu data...");
             seedInventory();
+            seedMenuAndRecipes();
+        } else {
+            if (inventoryRepository.count() == 0) {
+                log.info("Database is empty. Seeding inventory data...");
+                seedInventory();
+            }
+            if (menuRepository.count() == 0) {
+                log.info("Database is empty. Seeding menu data...");
+                seedMenuAndRecipes();
+            }
         }
 
         if (staffRepository.count() == 0) {
@@ -73,21 +79,46 @@ public class DataInitializer implements CommandLineRunner {
         log.info("Seeded {} inventory items.", items.size());
     }
 
-    private void seedMenu() {
-        List<Dish> initialDishes = List.of(
-            Dish.builder().name("Стейк Рибай").category("Горячее").price(new BigDecimal("2500")).weight("350г").imageIcon("🥩").build(),
-            Dish.builder().name("Паста Карбонара").category("Горячее").price(new BigDecimal("650")).weight("300г").imageIcon("🍝").build(),
-            Dish.builder().name("Бургер классический").category("Горячее").price(new BigDecimal("550")).weight("400г").imageIcon("🍔").build(),
-            Dish.builder().name("Цезарь с курицей").category("Закуски").price(new BigDecimal("480")).weight("250г").imageIcon("🥗").build(),
-            Dish.builder().name("Сырная тарелка").category("Закуски").price(new BigDecimal("850")).weight("200г").imageIcon("🧀").build(),
-            Dish.builder().name("Лимонад").category("Напитки").price(new BigDecimal("250")).weight("400мл").imageIcon("🍹").build(),
-            Dish.builder().name("Капучино").category("Напитки").price(new BigDecimal("220")).weight("250мл").imageIcon("☕").build(),
-            Dish.builder().name("Чизкейк").category("Десерты").price(new BigDecimal("380")).weight("150г").imageIcon("🍰").build(),
-            Dish.builder().name("Тирамису").category("Десерты").price(new BigDecimal("420")).weight("180г").imageIcon("🍮").build()
-        );
+    private void seedMenuAndRecipes() {
+        Dish dish1 = Dish.builder()
+                .name("Стейк Рибай")
+                .category("Горячее")
+                .price(new BigDecimal("2500"))
+                .status(Dish.DishStatus.AVAILABLE)
+                .instructions("Прожарка medium rare, подавать с чесночным маслом")
+                .allergens(List.of("Мясо"))
+                .macros(com.vanilla.crm.menu.entity.Macros.builder().calories(650).protein(45.0).carbs(0.0).fats(50.0).build())
+                .build();
 
-        menuRepository.saveAll(initialDishes);
-        log.info("Seeded {} dishes.", initialDishes.size());
+        Dish dish2 = Dish.builder()
+                .name("Салат Цезарь")
+                .category("Салаты")
+                .price(new BigDecimal("450"))
+                .status(Dish.DishStatus.AVAILABLE)
+                .instructions("Соус отдельно")
+                .allergens(List.of("Яйцо", "Глютен"))
+                .macros(com.vanilla.crm.menu.entity.Macros.builder().calories(320).protein(12.0).carbs(15.0).fats(25.0).build())
+                .build();
+
+        List<Dish> dishes = menuRepository.saveAll(List.of(dish1, dish2));
+
+        List<InventoryItem> items = inventoryRepository.findAll();
+        if (!items.isEmpty()) {
+            InventoryItem meat = items.stream().filter(i -> i.getName().equals("Говядина")).findFirst().orElse(items.get(0));
+            InventoryItem lettuce = items.stream().filter(i -> i.getName().equals("Помидоры")).findFirst().orElse(items.get(0));
+            InventoryItem tomatoes = items.stream().filter(i -> i.getName().equals("Помидоры")).findFirst().orElse(items.get(0));
+
+            Dish savedDish1 = dishes.get(0);
+            savedDish1.getRecipe().add(RecipeIngredient.builder().dish(savedDish1).inventoryItem(meat).amount(0.3).build());
+            
+            Dish savedDish2 = dishes.get(1);
+            savedDish2.getRecipe().add(RecipeIngredient.builder().dish(savedDish2).inventoryItem(lettuce).amount(0.1).build());
+            savedDish2.getRecipe().add(RecipeIngredient.builder().dish(savedDish2).inventoryItem(tomatoes).amount(0.05).build());
+
+            menuRepository.saveAll(dishes);
+        }
+
+        log.info("Seeded {} dishes with recipes.", dishes.size());
     }
 
     private void seedStaff() {

@@ -5,6 +5,7 @@ import com.vanilla.crm.budget.dto.TransactionDto;
 import com.vanilla.crm.inventory.InventoryService;
 import com.vanilla.crm.menu.MenuRepository;
 import com.vanilla.crm.menu.entity.Dish;
+import com.vanilla.crm.menu.entity.RecipeIngredient;
 import com.vanilla.crm.orders.dto.OrderDto;
 import com.vanilla.crm.orders.dto.OrderItemDto;
 import com.vanilla.crm.orders.entity.Order;
@@ -208,6 +209,17 @@ public class OrderService {
                 .description("Заказ стол №" + order.getTable().getNumber())
                 .build();
         budgetService.createTransaction(txDto);
+
+        // Deduct inventory!
+        order.getItems().forEach(orderItem -> {
+            Dish dish = orderItem.getDish();
+            if (dish.getRecipe() != null) {
+                dish.getRecipe().forEach(recipeIngredient -> {
+                    double totalAmountToConsume = recipeIngredient.getAmount() * orderItem.getQuantity();
+                    inventoryService.consume(recipeIngredient.getInventoryItem().getId(), totalAmountToConsume);
+                });
+            }
+        });
 
         log.info("Order {} closed. Total: {} ₽", orderId, total);
 

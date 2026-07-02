@@ -21,6 +21,7 @@ public class DishDto {
     private String instructions;
     private List<String> allergens;
     private Macros macros;
+    private List<RecipeIngredientDto> recipe;
 
     public static DishDto fromEntity(Dish dish) {
         return DishDto.builder()
@@ -33,6 +34,8 @@ public class DishDto {
                 .instructions(dish.getInstructions())
                 .allergens(dish.getAllergens())
                 .macros(dish.getMacros())
+                .recipe(dish.getRecipe() != null ? 
+                    dish.getRecipe().stream().map(RecipeIngredientDto::fromEntity).toList() : null)
                 .build();
     }
 }

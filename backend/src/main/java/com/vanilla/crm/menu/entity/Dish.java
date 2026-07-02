@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -44,5 +45,7 @@ public class Dish {
     @Embedded
     private Macros macros;
 
-    // Note: The 'recipe' relationship will be mapped in Stage 9 when RecipeIngredient is created.
+    @OneToMany(mappedBy = "dish", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @Builder.Default
+    private List<RecipeIngredient> recipe = new ArrayList<>();
 }
