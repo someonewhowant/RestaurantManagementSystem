@@ -9,6 +9,10 @@ export class SettingsService {
   
   public currency = this.currencySignal.asReadonly();
 
+  constructor() {
+    this.applyTheme();
+  }
+
   public setCurrency(newCurrency: string) {
     this.currencySignal.set(newCurrency);
     localStorage.setItem('app_currency', newCurrency);
@@ -20,4 +24,22 @@ export class SettingsService {
     { code: 'EUR', symbol: '€' },
     { code: 'GBP', symbol: '£' }
   ];
+
+  private themeSignal = signal<'light' | 'dark'>((localStorage.getItem('app_theme') as 'light' | 'dark') || 'light');
+  public theme = this.themeSignal.asReadonly();
+
+  public toggleTheme() {
+    const newTheme = this.themeSignal() === 'light' ? 'dark' : 'light';
+    this.themeSignal.set(newTheme);
+    localStorage.setItem('app_theme', newTheme);
+    this.applyTheme(newTheme);
+  }
+
+  public applyTheme(theme: 'light' | 'dark' = this.themeSignal()) {
+    if (theme === 'dark') {
+      document.body.classList.add('dark-theme');
+    } else {
+      document.body.classList.remove('dark-theme');
+    }
+  }
 }

@@ -47,33 +47,120 @@
       </a>
       
     </nav>
-    
-    <div class="sidebar-footer">
-      <a (click)="logout()" class="nav-item back-link" style="cursor: pointer;">
-        <span class="icon">🚪</span>
-        <span class="text">Выйти</span>
-      </a>
-    </div>
   </aside>
 
   <!-- Основная область с контентом -->
   <div class="main-wrapper">
     <header class="topbar">
       <div class="page-title">
-        Управление
+        {{ pageTitle() }}
         @if (authService.currentUser()?.restaurantName) {
           <span class="restaurant-name">— {{ authService.currentUser()?.restaurantName }}</span>
         }
       </div>
-      
-      <div class="user-profile" style="display: flex; align-items: center; gap: 1rem;">
-        <select class="currency-select" [value]="settingsService.currency()" (change)="onCurrencyChange($event)" style="padding: 4px 8px; border-radius: 4px; border: 1px solid var(--color-border); background: var(--color-surface); color: var(--color-text);">
-          @for (c of settingsService.availableCurrencies; track c.code) {
-            <option [value]="c.code">{{ c.symbol }} {{ c.code }}</option>
+      <div class="topbar-actions">
+        <!-- Date and Time -->
+        <div class="header-clock">
+          <span class="clock-time">{{ currentTime() | date:'HH:mm:ss' }}</span>
+          <span class="clock-date">{{ currentTime() | date:'dd.MM.yyyy' }}</span>
+        </div>
+
+        <!-- Styled Currency Selector -->
+        <div class="currency-selector-wrapper">
+          <select class="currency-select" [value]="settingsService.currency()" (change)="onCurrencyChange($event)">
+            @for (c of settingsService.availableCurrencies; track c.code) {
+              <option [value]="c.code">{{ c.symbol }} {{ c.code }}</option>
+            }
+          </select>
+          <span class="currency-chevron">▼</span>
+        </div>
+
+        <div class="header-divider"></div>
+        
+        <!-- Theme Toggle -->
+        <button class="theme-toggle-btn" (click)="settingsService.toggleTheme()" title="Сменить тему">
+          @if (settingsService.theme() === 'dark') {
+            <span class="icon">☀️</span>
+          } @else {
+            <span class="icon">🌙</span>
           }
-        </select>
-        <span class="user-name">{{ authService.currentUser()?.name || 'Администратор' }}</span>
-        <app-ui-badge color="success">В сети</app-ui-badge>
+        </button>
+
+        <!-- Notifications -->
+        <div class="notifications-wrapper">
+          <button class="notification-btn" (click)="toggleNotificationsMenu()" [class.has-unread]="notificationService.unreadCount() > 0">
+            <span class="icon">🔔</span>
+            @if (notificationService.unreadCount() > 0) {
+              <span class="notification-badge">{{ notificationService.unreadCount() }}</span>
+            }
+          </button>
+
+          @if (isNotificationsOpen()) {
+            <div class="notifications-dropdown-menu">
+              <div class="dropdown-header">
+                <strong>Уведомления</strong>
+                @if (notificationService.unreadCount() > 0) {
+                  <span class="mark-all-read" (click)="notificationService.markAllAsRead()">Прочитать все</span>
+                }
+              </div>
+              <div class="notifications-list">
+                @for (notif of notificationService.notifications(); track notif.id) {
+                  <div class="notification-item" [class.unread]="!notif.read" (click)="notificationService.markAsRead(notif.id)">
+                    <div class="notification-icon">
+                      @if (notif.type === 'inventory') { <span class="icon text-warning">📦</span> }
+                      @if (notif.type === 'kitchen') { <span class="icon text-danger">🍳</span> }
+                      @if (notif.type === 'staff') { <span class="icon text-info">👥</span> }
+                      @if (notif.type === 'system') { <span class="icon text-primary">ℹ️</span> }
+                    </div>
+                    <div class="notification-content">
+                      <strong class="notification-title">{{ notif.title }}</strong>
+                      <span class="notification-message">{{ notif.message }}</span>
+                      <span class="notification-time">{{ notif.time | date:'HH:mm' }}</span>
+                    </div>
+                  </div>
+                } @empty {
+                  <div class="notification-empty">Нет новых уведомлений</div>
+                }
+              </div>
+            </div>
+          }
+        </div>
+
+        <!-- User Profile Dropdown -->
+        <div class="user-profile-wrapper">
+          <div class="user-profile-trigger" (click)="toggleProfileMenu()">
+            <div class="user-avatar">
+              {{ (authService.currentUser()?.name || 'A').charAt(0).toUpperCase() }}
+            </div>
+            <div class="user-info-text">
+              <span class="user-name">{{ authService.currentUser()?.name || 'Администратор' }}</span>
+              <span class="user-role-badge">В сети</span>
+            </div>
+            <span class="dropdown-chevron" [class.open]="isProfileMenuOpen()">▼</span>
+          </div>
+
+          @if (isProfileMenuOpen()) {
+            <div class="profile-dropdown-menu">
+              <div class="dropdown-header">
+                <strong>{{ authService.currentUser()?.name || 'Администратор' }}</strong>
+                <span>{{ authService.currentUser()?.role || 'Admin' }}</span>
+              </div>
+              <div class="dropdown-body">
+                <a class="dropdown-item">
+                  <span class="icon">👤</span> Мой профиль
+                </a>
+                <a class="dropdown-item">
+                  <span class="icon">⚙️</span> Настройки
+                </a>
+              </div>
+              <div class="dropdown-footer">
+                <a class="dropdown-item text-danger" (click)="logout()">
+                  <span class="icon">🚪</span> Выйти из системы
+                </a>
+              </div>
+            </div>
+          }
+        </div>
       </div>
     </header>
     

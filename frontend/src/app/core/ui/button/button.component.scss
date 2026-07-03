@@ -33,7 +33,7 @@
 
 .btn-primary {
   background-color: var(--color-primary);
-  color: white;
+  color: var(--color-text-inverse);
 }
 .btn-primary:hover {
   background-color: var(--color-primary-hover);
@@ -41,7 +41,7 @@
 
 .btn-danger {
   background-color: var(--color-danger);
-  color: white;
+  color: var(--color-text-inverse);
 }
 .btn-danger:hover {
   background-color: var(--color-danger-hover);
@@ -49,7 +49,7 @@
 
 .btn-success {
   background-color: var(--color-success);
-  color: white;
+  color: var(--color-text-inverse);
 }
 .btn-success:hover {
   background-color: var(--color-success-hover);
@@ -57,7 +57,7 @@
 
 .btn-warning {
   background-color: var(--color-warning);
-  color: white;
+  color: var(--color-text-inverse);
 }
 .btn-warning:hover:not(:disabled) {
   background-color: #f57c00;
@@ -66,8 +66,8 @@
 .btn-secondary {
   background-color: var(--color-bg);
   color: var(--color-text-main);
-  border: 1px solid rgba(0,0,0,0.1);
+  border: 1px solid var(--color-border);
 }
 .btn-secondary:hover:not(:disabled) {
-  background-color: rgba(0,0,0,0.05);
+  background-color: var(--color-border);
 }

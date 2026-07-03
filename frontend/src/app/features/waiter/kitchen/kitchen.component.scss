@@ -21,14 +21,14 @@
 }
 
 .dish-card {
-  background: white;
+  background: var(--color-surface);
   border-radius: var(--radius-lg);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+  box-shadow: var(--shadow-md);
   display: flex;
   flex-direction: column;
   overflow: hidden;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
-  border: 1px solid rgba(0,0,0,0.05);
+  border: 1px solid var(--color-border);
 }
 .dish-card:hover {
   transform: translateY(-4px);
@@ -99,9 +99,9 @@
   align-items: center;
   justify-content: center;
   padding: 64px 24px;
-  background: rgba(0,0,0,0.02);
+  background: var(--color-bg-hover);
   border-radius: var(--radius-lg);
-  border: 2px dashed rgba(0,0,0,0.05);
+  border: 2px dashed var(--color-border);
   text-align: center;
 }
 .empty-icon {
@@ -128,7 +128,7 @@
   padding: 8px 0;
   width: 100%;
   text-align: left;
-  border-top: 1px dashed rgba(0,0,0,0.1);
+  border-top: 1px dashed var(--color-border);
   margin-top: 8px;
   transition: color 0.2s;
 }
@@ -138,7 +138,7 @@
 
 .dish-full-details {
   background: rgba(0,0,0,0.015);
-  border: 1px solid rgba(0,0,0,0.05);
+  border: 1px solid var(--color-border);
   border-radius: 8px;
   padding: 16px;
   margin-top: 8px;
@@ -176,7 +176,7 @@
   display: flex;
   justify-content: space-between;
   font-size: 13px;
-  border-bottom: 1px dotted rgba(0,0,0,0.1);
+  border-bottom: 1px dotted var(--color-border);
   padding-bottom: 4px;
 }
 

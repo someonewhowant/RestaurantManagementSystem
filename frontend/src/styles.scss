@@ -13,7 +13,6 @@
   --color-surface: #FFFFFF;
   --color-text-main: #212529;
   --color-text-muted: #6c757d;
-
   // Типографика
   --font-primary: 'Inter', sans-serif;
   --font-secondary: 'Roboto', sans-serif;
@@ -24,12 +23,41 @@
   --spacing-sm: 8px;
   --spacing-md: 16px;
   --spacing-lg: 24px;
+
+  // Тени и анимации
+  --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
+  --transition-smooth: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  
+  // Дополнительные цвета
+  --color-text-inverse: #FFFFFF;
+  --color-bg-hover: rgba(0,0,0,0.03);
+  --color-border-light: rgba(0,0,0,0.05);
+}
+
+body.dark-theme {
+  --color-primary: #FF9800;
+  --color-primary-hover: #FFA726;
+  --color-bg: #121212;
+  --color-surface: #1E1E1E;
+  --color-text-main: #E0E0E0;
+  --color-text-muted: #9E9E9E;
+  --color-border: rgba(255,255,255,0.1);
+  --color-border-light: rgba(255,255,255,0.05);
+  --color-bg-hover: rgba(255,255,255,0.05);
+  
+  --shadow-sm: 0 2px 4px rgba(0,0,0,0.3);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.4);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,0.5);
+  --color-text-inverse: #121212;
 }
 
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
 }
 
 body {
@@ -63,9 +91,9 @@ h1, h2, h3, h4, h5, h6 {
 .global-search-input {
   width: 100%;
   padding: 12px 16px 12px 42px;
-  border: 1px solid rgba(0,0,0,0.08);
+  border: 1px solid var(--color-border);
   border-radius: 12px;
-  background: rgba(0,0,0,0.015);
+  background: var(--color-bg-hover);
   font-size: 14px;
   font-family: inherit;
   color: var(--color-text-main);
@@ -73,12 +101,12 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .global-search-input:focus {
-  background: white;
+  background: var(--color-surface);
   border-color: var(--color-primary);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05), 0 0 0 3px rgba(230,81,0,0.1);
+  box-shadow: var(--shadow-sm), 0 0 0 3px rgba(230,81,0,0.1);
   outline: none;
 }
 
 .global-search-input::placeholder {
-  color: #94a3b8;
+  color: var(--color-text-muted);
 }

@@ -17,12 +17,12 @@
 
 /* Add Form */
 .add-form-container {
-  background: white;
+  background: var(--color-surface);
   padding: 24px;
   border-radius: var(--radius-lg);
   margin-bottom: 24px;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.02);
-  border: 1px solid rgba(0,0,0,0.05);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--color-border);
 }
 
 .add-form-container h3 {
@@ -61,13 +61,13 @@
 .form-group input,
 .form-group select {
   padding: 10px 12px;
-  border: 1px solid rgba(0,0,0,0.1);
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   font-family: var(--font-primary);
   font-size: 14px;
   outline: none;
   transition: border-color 0.2s ease;
-  background-color: white;
+  background-color: var(--color-surface);
 }
 
 .form-group input:focus,
@@ -123,7 +123,7 @@
 }
 .category-badge {
   display: inline-block;
-  background: rgba(0,0,0,0.05);
+  background: var(--color-border);
   padding: 2px 8px;
   border-radius: 4px;
   font-size: 12px;
@@ -193,13 +193,13 @@
   display: flex;
   justify-content: flex-end;
   gap: 12px;
-  border-top: 1px solid rgba(0,0,0,0.05);
+  border-top: 1px solid var(--color-border);
   padding-top: 20px;
   margin-top: 8px;
 }
 
 .table-container {
-  background: white; border-radius: var(--radius-lg); box-shadow: 0 4px 6px rgba(0,0,0,0.02); overflow: hidden;
+  background: var(--color-surface); border-radius: var(--radius-lg); box-shadow: var(--shadow-md); overflow: hidden;
 }
 
 .filters-bar {
@@ -207,7 +207,7 @@
   gap: 16px;
   padding: 16px 24px;
   background: rgba(0,0,0,0.01);
-  border-bottom: 1px solid rgba(0,0,0,0.05);
+  border-bottom: 1px solid var(--color-border);
 }
 .search-input {
   position: relative;
@@ -223,7 +223,7 @@
 .search-input input {
   width: 100%;
   padding: 10px 12px 10px 36px;
-  border: 1px solid rgba(0,0,0,0.1);
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   outline: none;
   font-family: var(--font-primary);
@@ -233,7 +233,7 @@
 
 .category-select {
   padding: 10px 12px;
-  border: 1px solid rgba(0,0,0,0.1);
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   outline: none;
   font-family: var(--font-primary);
@@ -250,7 +250,7 @@
 .inventory-table th,
 .inventory-table td {
   padding: 16px 24px;
-  border-bottom: 1px solid rgba(0,0,0,0.05);
+  border-bottom: 1px solid var(--color-border);
 }
 
 .inventory-table th {
@@ -302,7 +302,7 @@
 }
 .progress-bar-container {
   height: 6px;
-  background: rgba(0,0,0,0.05);
+  background: var(--color-border);
   border-radius: 4px;
   overflow: hidden;
   width: 100%;
@@ -320,10 +320,10 @@
 .actions-group { display: flex; align-items: center; gap: 8px; }
 .icon-btn { background: transparent; border: none; font-size: 16px; cursor: pointer; opacity: 0.7; transition: opacity 0.2s; padding: 4px; }
 .icon-btn:hover { opacity: 1; }
-.related-dishes-box { background: rgba(0,0,0,0.02); padding: 16px; border-radius: var(--radius-md); margin-top: 8px; border: 1px dashed rgba(0,0,0,0.1); }
+.related-dishes-box { background: var(--color-bg-hover); padding: 16px; border-radius: var(--radius-md); margin-top: 8px; border: 1px dashed var(--color-border); }
 .related-dishes-box h4 { margin: 0 0 12px 0; font-size: 14px; color: var(--color-text-main); }
 .related-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; }
 .related-list li { display: flex; justify-content: space-between; align-items: center; font-size: 13px; }
-.dish-cat { font-size: 10px; background: rgba(0,0,0,0.05); color: var(--color-text-muted); }
+.dish-cat { font-size: 10px; background: var(--color-border); color: var(--color-text-muted); }
 .empty-hint { margin: 0; font-size: 13px; color: var(--color-text-muted); }
 
