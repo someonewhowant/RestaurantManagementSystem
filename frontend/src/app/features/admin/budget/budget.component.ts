@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { BudgetService, Transaction } from '../../../core/services/budget.service';
@@ -22,6 +22,24 @@ export class AdminBudgetComponent {
 
   public showAddForm = signal(false);
   public selectedTransaction = signal<Transaction | null>(null);
+
+  private intervalId: any;
+
+  ngOnInit() {
+    this.intervalId = setInterval(() => {
+      this.budgetService.fetchSummary();
+      // Auto-refresh the first page only if the user hasn't loaded more pages
+      if (this.budgetService.currentPage() === 0) {
+        this.budgetService.fetchTransactions(0);
+      }
+    }, 5000);
+  }
+
+  ngOnDestroy() {
+    if (this.intervalId) {
+      clearInterval(this.intervalId);
+    }
+  }
 
   openTransactionDetails(transaction: Transaction) {
     this.selectedTransaction.set(transaction);

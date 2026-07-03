@@ -11,6 +11,8 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 @Service
 @RequiredArgsConstructor
@@ -19,10 +21,9 @@ public class BudgetService {
     private final TransactionRepository transactionRepository;
 
     @Transactional(readOnly = true)
-    public List<TransactionDto> getAllTransactions() {
-        return transactionRepository.findAllByOrderByDateDesc().stream()
-                .map(TransactionDto::fromEntity)
-                .collect(Collectors.toList());
+    public Page<TransactionDto> getTransactions(Pageable pageable) {
+        return transactionRepository.findAllByOrderByDateDesc(pageable)
+                .map(TransactionDto::fromEntity);
     }
 
     @Transactional(readOnly = true)

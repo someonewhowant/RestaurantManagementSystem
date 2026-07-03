@@ -14,7 +14,10 @@ export class SettingsService {
     localStorage.setItem('app_currency', newCurrency);
   }
   
-  public getAvailableCurrencies(): string[] {
-    return ['RUB', 'USD', 'EUR', 'GBP'];
-  }
+  public availableCurrencies = [
+    { code: 'RUB', symbol: '₽' },
+    { code: 'USD', symbol: '$' },
+    { code: 'EUR', symbol: '€' },
+    { code: 'GBP', symbol: '£' }
+  ];
 }

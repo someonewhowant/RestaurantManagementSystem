@@ -45,8 +45,8 @@
       
       <div class="user-profile" style="display: flex; align-items: center; gap: 1rem;">
         <select class="currency-select" [value]="settingsService.currency()" (change)="onCurrencyChange($event)" style="padding: 4px 8px; border-radius: 4px; border: 1px solid var(--color-border); background: var(--color-surface); color: var(--color-text);">
-          @for (c of settingsService.getAvailableCurrencies(); track c) {
-            <option [value]="c">{{ c }}</option>
+          @for (c of settingsService.getAvailableCurrencies(); track c.code) {
+            <option [value]="c.code">{{ c.symbol }} {{ c.code }}</option>
           }
         </select>
         <span style="font-size: 14px; font-weight: 500;">{{ authService.currentUser()?.name || 'Администратор' }}</span>

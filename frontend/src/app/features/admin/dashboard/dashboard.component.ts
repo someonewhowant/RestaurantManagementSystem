@@ -52,15 +52,11 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   }
 
   public totalRevenue = computed(() => {
-    return this.budgetService.transactions()
-      .filter(t => t.type === 'Доход')
-      .reduce((sum, t) => sum + t.amount, 0);
+    return this.budgetService.totalIncome();
   });
 
   public totalExpenses = computed(() => {
-    return this.budgetService.transactions()
-      .filter(t => t.type === 'Расход')
-      .reduce((sum, t) => sum + t.amount, 0);
+    return this.budgetService.totalExpense();
   });
 
   public profit = computed(() => {
@@ -69,9 +65,9 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
 
   // KPI Metrics for Dashboard
   public averageCheck = computed(() => {
-    const orders = this.budgetService.transactions().filter(t => t.type === 'Доход');
-    if (orders.length === 0) return 0;
-    return this.totalRevenue() / orders.length;
+    const rev = this.totalRevenue();
+    const guests = this.guestCount();
+    return guests > 0 ? rev / guests : 0;
   });
 
   public guestCount = computed(() => {

@@ -9,7 +9,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import jakarta.validation.Valid;
 
 @RestController
@@ -20,11 +22,12 @@ public class BudgetController {
 
     private final BudgetService budgetService;
 
-    @Operation(summary = "Все транзакции", description = "Возвращает полную историю финансовых операций (доходы и расходы).")
-    @ApiResponse(responseCode = "200", description = "Список транзакций")
+    @Operation(summary = "Все транзакции", description = "Возвращает историю финансовых операций постранично.")
+    @ApiResponse(responseCode = "200", description = "Страница транзакций")
     @GetMapping("/transactions")
-    public ResponseEntity<List<TransactionDto>> getAllTransactions() {
-        return ResponseEntity.ok(budgetService.getAllTransactions());
+    public ResponseEntity<Page<TransactionDto>> getTransactions(
+            @PageableDefault(size = 20, sort = "date", direction = org.springframework.data.domain.Sort.Direction.DESC) Pageable pageable) {
+        return ResponseEntity.ok(budgetService.getTransactions(pageable));
     }
 
     @Operation(summary = "Финансовая сводка", description = "Возвращает агрегированные данные: общий доход, расход и баланс.")

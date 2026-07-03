@@ -13,21 +13,21 @@
   <app-ui-card class="summary-card balance">
     <div class="label">Общий баланс</div>
     <div class="value" [class.negative]="budgetService.totalBalance() < 0">
-      {{ budgetService.totalBalance() | currency:settingsService.currency() }}
+      {{ budgetService.totalBalance() | currency:settingsService.currency():'symbol-narrow':'1.0-0' }}
     </div>
   </app-ui-card>
 
   <app-ui-card class="summary-card income">
     <div class="label">Всего доходов</div>
     <div class="value text-success">
-      +{{ budgetService.totalIncome() | currency:settingsService.currency() }}
+      +{{ budgetService.totalIncome() | currency:settingsService.currency():'symbol-narrow':'1.0-0' }}
     </div>
   </app-ui-card>
 
   <app-ui-card class="summary-card expense">
     <div class="label">Всего расходов</div>
     <div class="value text-danger">
-      -{{ budgetService.totalExpense() | currency:settingsService.currency() }}
+      -{{ budgetService.totalExpense() | currency:settingsService.currency():'symbol-narrow':'1.0-0' }}
     </div>
   </app-ui-card>
 </div>
@@ -109,6 +109,13 @@
       }
     </tbody>
   </table>
+  @if (budgetService.hasMore()) {
+    <div style="text-align: center; margin-top: 16px;">
+      <app-ui-button variant="secondary" (click)="budgetService.loadMore()">
+        Загрузить еще
+      </app-ui-button>
+    </div>
+  }
 </div>
 
 <app-ui-modal 
