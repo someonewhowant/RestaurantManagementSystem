@@ -98,4 +98,20 @@ export class InventoryService {
        this.consume(ingredientId, amount);
     });
   }
+
+  exportCsv() {
+    this.http.get('/api/inventory/export/csv', { responseType: 'blob' }).subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'inventory_report.csv';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+      },
+      error: (err) => console.error('Failed to export CSV', err)
+    });
+  }
 }

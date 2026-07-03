@@ -3,9 +3,14 @@
     <h2>Персонал</h2>
     <p>Управление сотрудниками, ролями и доступами.</p>
   </div>
-  <app-ui-button variant="primary" (click)="toggleAddForm()">
-    @if (showAddForm()) { Отмена } @else { Нанять сотрудника }
-  </app-ui-button>
+  <div style="display: flex; gap: 12px;">
+    <app-ui-button variant="secondary" (click)="staffService.exportCsv()">
+      Экспорт (CSV)
+    </app-ui-button>
+    <app-ui-button variant="primary" (click)="toggleAddForm()">
+      @if (showAddForm()) { Отмена } @else { Нанять сотрудника }
+    </app-ui-button>
+  </div>
 </div>
 
 @if (showAddForm()) {

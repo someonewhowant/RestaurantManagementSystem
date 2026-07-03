@@ -35,6 +35,9 @@ public class Transaction {
 
     private String description;
 
+    @Column(name = "order_id")
+    private UUID orderId;
+
     @PrePersist
     protected void onCreate() {
         if (this.date == null) {

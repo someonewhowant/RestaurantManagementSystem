@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
+import java.io.StringWriter;
 
 @RestController
 @RequestMapping("/staff")
@@ -65,5 +66,36 @@ public class StaffController {
     public ResponseEntity<Void> deleteEmployee(@PathVariable UUID id) {
         staffService.deleteEmployee(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @Operation(summary = "Экспорт в CSV", description = "Скачать список персонала в формате CSV.")
+    @GetMapping("/export/csv")
+    public ResponseEntity<byte[]> exportCsv() {
+        List<EmployeeDto> employees = staffService.getAllEmployees();
+        StringWriter writer = new StringWriter();
+        writer.append("ID;Имя;Роль;Статус;На смене\n");
+        for (EmployeeDto emp : employees) {
+            writer.append(String.format("%s;%s;%s;%s;%s\n",
+                    emp.getId(),
+                    emp.getName() != null ? emp.getName().replace(";", " ") : "",
+                    emp.getRole() != null ? emp.getRole().replace(";", " ") : "",
+                    emp.getStatus() != null ? emp.getStatus().replace(";", " ") : "",
+                    Boolean.TRUE.equals(emp.getOnShift()) ? "Да" : "Нет"));
+        }
+
+        byte[] textBytes = writer.toString().getBytes(java.nio.charset.StandardCharsets.UTF_8);
+        byte[] csvBytes = new byte[textBytes.length + 3];
+        csvBytes[0] = (byte) 0xEF;
+        csvBytes[1] = (byte) 0xBB;
+        csvBytes[2] = (byte) 0xBF;
+        System.arraycopy(textBytes, 0, csvBytes, 3, textBytes.length);
+
+        org.springframework.http.HttpHeaders headers = new org.springframework.http.HttpHeaders();
+        headers.setContentType(org.springframework.http.MediaType.parseMediaType("text/csv"));
+        headers.setContentDispositionFormData("attachment", "staff_report.csv");
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(csvBytes);
     }
 }

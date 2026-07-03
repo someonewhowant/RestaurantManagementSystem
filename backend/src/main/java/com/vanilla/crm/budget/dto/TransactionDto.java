@@ -28,6 +28,8 @@ public class TransactionDto {
 
     private String description;
 
+    private UUID orderId;
+
     private static final java.util.Map<String, Transaction.TransactionType> TYPE_MAP = java.util.Map.of(
             "Доход", Transaction.TransactionType.INCOME,
             "Расход", Transaction.TransactionType.EXPENSE
@@ -46,6 +48,7 @@ public class TransactionDto {
                 .type(TYPE_REVERSE.getOrDefault(tx.getType(), tx.getType().name()))
                 .category(tx.getCategory())
                 .description(tx.getDescription())
+                .orderId(tx.getOrderId())
                 .build();
     }
 

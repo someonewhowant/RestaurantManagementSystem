@@ -67,4 +67,20 @@ export class StaffService {
       error: (err) => console.error('Failed to toggle shift', err)
     });
   }
+
+  exportCsv() {
+    this.http.get('/api/staff/export/csv', { responseType: 'blob' }).subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'staff_report.csv';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+      },
+      error: (err) => console.error('Failed to export CSV', err)
+    });
+  }
 }

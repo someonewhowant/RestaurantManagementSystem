@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
+import java.io.StringWriter;
 
 @RestController
 @RequestMapping("/inventory")
@@ -79,5 +80,38 @@ public class InventoryController {
     public ResponseEntity<Void> deleteItem(@PathVariable UUID id) {
         inventoryService.deleteItem(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @Operation(summary = "Экспорт в CSV", description = "Скачать остатки на складе в формате CSV.")
+    @GetMapping("/export/csv")
+    public ResponseEntity<byte[]> exportCsv() {
+        List<InventoryItemDto> items = inventoryService.getAllItems();
+        StringWriter writer = new StringWriter();
+        writer.append("ID;Название;Категория;Текущий остаток;Мин. остаток;Единица;Цена за ед.\n");
+        for (InventoryItemDto item : items) {
+            writer.append(String.format("%s;%s;%s;%s;%s;%s;%s\n",
+                    item.getId(),
+                    item.getName() != null ? item.getName().replace(";", " ") : "",
+                    item.getCategory() != null ? item.getCategory().replace(";", " ") : "",
+                    item.getCurrentStock(),
+                    item.getMinStock(),
+                    item.getUnit() != null ? item.getUnit().replace(";", " ") : "",
+                    item.getPricePerUnit()));
+        }
+
+        byte[] textBytes = writer.toString().getBytes(java.nio.charset.StandardCharsets.UTF_8);
+        byte[] csvBytes = new byte[textBytes.length + 3];
+        csvBytes[0] = (byte) 0xEF;
+        csvBytes[1] = (byte) 0xBB;
+        csvBytes[2] = (byte) 0xBF;
+        System.arraycopy(textBytes, 0, csvBytes, 3, textBytes.length);
+
+        org.springframework.http.HttpHeaders headers = new org.springframework.http.HttpHeaders();
+        headers.setContentType(org.springframework.http.MediaType.parseMediaType("text/csv"));
+        headers.setContentDispositionFormData("attachment", "inventory_report.csv");
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(csvBytes);
     }
 }

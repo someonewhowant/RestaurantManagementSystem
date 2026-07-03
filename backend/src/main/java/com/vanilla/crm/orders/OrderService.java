@@ -205,20 +205,11 @@ public class OrderService {
         order.setClosedAt(Instant.now());
 
         // Create income transaction in budget
-        String description = "Заказ стол №" + order.getTable().getNumber();
-        
-        if (order.getTable().getWaiterId() != null) {
-            staffRepository.findById(order.getTable().getWaiterId()).ifPresent(emp -> {
-                description.concat(" (Официант: " + emp.getName() + ")");
-            });
-        }
-        
-        // Fix string concatenation side effect
-        String finalDescription = description;
+        String finalDescription = "Заказ стол №" + order.getTable().getNumber();
         if (order.getTable().getWaiterId() != null) {
             Employee waiter = staffRepository.findById(order.getTable().getWaiterId()).orElse(null);
             if (waiter != null) {
-                finalDescription = "Заказ стол №" + order.getTable().getNumber() + " | Официант: " + waiter.getName();
+                finalDescription = finalDescription + " | Официант: " + waiter.getName();
             }
         }
 
@@ -227,6 +218,7 @@ public class OrderService {
                 .type("Доход")
                 .category("Оплата заказа")
                 .description(finalDescription)
+                .orderId(order.getId())
                 .build();
         budgetService.createTransaction(txDto);
 

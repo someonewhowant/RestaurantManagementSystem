@@ -3,9 +3,14 @@
     <h2>Управление складом</h2>
     <p>Текущие остатки ингредиентов. Красным выделены позиции, требующие закупки.</p>
   </div>
-  <app-ui-button variant="primary" (click)="toggleAddForm()">
-    @if (showAddForm()) { Отмена } @else { Новая позиция }
-  </app-ui-button>
+  <div style="display: flex; gap: 12px;">
+    <app-ui-button variant="secondary" (click)="inventoryService.exportCsv()">
+      Экспорт (CSV)
+    </app-ui-button>
+    <app-ui-button variant="primary" (click)="toggleAddForm()">
+      @if (showAddForm()) { Отмена } @else { Новая позиция }
+    </app-ui-button>
+  </div>
 </div>
 
 @if (showAddForm()) {

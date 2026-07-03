@@ -1,5 +1,5 @@
-import { Component, inject, signal, OnInit, OnDestroy } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Component, inject, signal, OnInit, OnDestroy, computed } from '@angular/core';
+import { FormBuilder, ReactiveFormsModule, Validators, FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { BudgetService, Transaction } from '../../../core/services/budget.service';
 import { SettingsService } from '../../../core/services/settings.service';
@@ -11,7 +11,7 @@ import { UiModalComponent } from '../../../core/ui/modal/modal.component';
 @Component({
   selector: 'app-admin-budget',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, UiCardComponent, UiBadgeComponent, UiButtonComponent, UiModalComponent],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, UiCardComponent, UiBadgeComponent, UiButtonComponent, UiModalComponent],
   templateUrl: './budget.component.html',
   styleUrl: './budget.component.scss'
 })
@@ -45,8 +45,56 @@ export class AdminBudgetComponent {
     this.selectedTransaction.set(transaction);
   }
 
+  onStartDateChange(date: string) {
+    this.budgetService.setDateRange(date, this.budgetService.dateRange().end);
+  }
+
+  onEndDateChange(date: string) {
+    this.budgetService.setDateRange(this.budgetService.dateRange().start, date);
+  }
+
+  clearFilters() {
+    this.budgetService.setDateRange(null, null);
+  }
+
+  hasExpenses = computed(() => {
+    return this.budgetService.totalExpense() > 0;
+  });
+
+  expenseCategories = computed(() => {
+    const expensesMap = this.budgetService.expenseByCategory();
+    const total = this.budgetService.totalExpense();
+    if (total === 0) return [];
+    
+    return Object.entries(expensesMap).map(([name, amount]) => {
+      return {
+        name,
+        amount,
+        percent: Math.round((amount / total) * 100)
+      };
+    }).sort((a, b) => b.amount - a.amount);
+  });
+
+  getCategoryColor(category: string): string {
+    const colors: Record<string, string> = {
+      'Продажи': '#4CAF50',
+      'Закупки': '#FF9800',
+      'Зарплата': '#F44336',
+      'Коммуналка': '#2196F3',
+      'Прочее': '#9E9E9E'
+    };
+    return colors[category] || '#9E9E9E';
+  }
+
   closeModal() {
     this.selectedTransaction.set(null);
+  }
+
+  refundTransaction(transactionId: string) {
+    if (confirm('Вы уверены, что хотите оформить возврат? Эта операция вернет ингредиенты на склад.')) {
+      this.budgetService.refundTransaction(transactionId);
+      this.closeModal();
+    }
   }
 
   public txForm = this.fb.nonNullable.group({

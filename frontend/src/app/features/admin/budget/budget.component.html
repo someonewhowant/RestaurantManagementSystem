@@ -3,9 +3,27 @@
     <h2>Бюджет и финансы</h2>
     <p>Отслеживание доходов, расходов и баланса заведения.</p>
   </div>
-  <app-ui-button variant="primary" (click)="toggleAddForm()">
-    @if (showAddForm()) { Отмена } @else { Добавить транзакцию }
-  </app-ui-button>
+  <div style="display: flex; gap: 12px;">
+    <app-ui-button variant="secondary" (click)="budgetService.exportCsv()">
+      Экспорт (CSV)
+    </app-ui-button>
+    <app-ui-button variant="primary" (click)="toggleAddForm()">
+      @if (showAddForm()) { Отмена } @else { Добавить транзакцию }
+    </app-ui-button>
+  </div>
+</div>
+
+<!-- Filters Bar -->
+<div class="filters-bar" style="display: flex; gap: 16px; margin-bottom: 24px; align-items: flex-end; background: white; padding: 16px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.05);">
+  <div class="form-group" style="margin-bottom: 0; min-width: 150px;">
+    <label style="font-size: 13px; margin-bottom: 4px;">С даты</label>
+    <input type="date" [ngModel]="budgetService.dateRange().start" (ngModelChange)="onStartDateChange($event)" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid rgba(0,0,0,0.1);" />
+  </div>
+  <div class="form-group" style="margin-bottom: 0; min-width: 150px;">
+    <label style="font-size: 13px; margin-bottom: 4px;">По дату</label>
+    <input type="date" [ngModel]="budgetService.dateRange().end" (ngModelChange)="onEndDateChange($event)" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid rgba(0,0,0,0.1);" />
+  </div>
+  <app-ui-button variant="secondary" (click)="clearFilters()">Сбросить</app-ui-button>
 </div>
 
 <!-- Summary Cards -->
@@ -31,6 +49,36 @@
     </div>
   </app-ui-card>
 </div>
+
+<!-- Analytics (Category Breakdown) -->
+@if (budgetService.dateRange().start || budgetService.dateRange().end) {
+  <app-ui-card style="margin-bottom: 24px;">
+    <h3 style="margin-top: 0; margin-bottom: 16px;">Структура расходов</h3>
+    @if (hasExpenses()) {
+      <div style="display: flex; gap: 32px; align-items: center; flex-wrap: wrap;">
+        <!-- Simple Bar Chart -->
+        <div style="flex: 1; display: flex; flex-direction: column; gap: 12px;">
+          @for (cat of expenseCategories(); track cat.name) {
+            <div>
+              <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 4px; font-weight: 500;">
+                <span>{{ cat.name }}</span>
+                <span>{{ cat.amount | currency:settingsService.currency():'symbol-narrow':'1.0-0' }} ({{ cat.percent }}%)</span>
+              </div>
+              <div style="width: 100%; height: 8px; background: rgba(0,0,0,0.05); border-radius: 4px; overflow: hidden;">
+                <div style="height: 100%; border-radius: 4px; transition: width 0.3s;"
+                     [style.width.%]="cat.percent"
+                     [style.background]="getCategoryColor(cat.name)">
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    } @else {
+      <div class="empty-state">Нет расходов за выбранный период</div>
+    }
+  </app-ui-card>
+}
 
 <!-- Add Form -->
 @if (showAddForm()) {
@@ -153,8 +201,11 @@
         </div>
       </div>
 
-      <div class="receipt-footer">
-        <app-ui-button variant="primary" class="full-width" (click)="closeModal()">Отлично</app-ui-button>
+      <div class="receipt-footer" style="display: flex; gap: 12px;">
+        @if (tx.type === 'Доход') {
+          <app-ui-button variant="danger" style="flex: 1" (click)="refundTransaction(tx.id)">Возврат (Сторно)</app-ui-button>
+        }
+        <app-ui-button variant="primary" style="flex: 1" (click)="closeModal()">Отлично</app-ui-button>
       </div>
     </div>
   }
