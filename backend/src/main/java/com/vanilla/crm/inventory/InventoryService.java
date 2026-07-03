@@ -69,21 +69,20 @@ public class InventoryService {
 
     @Transactional
     public InventoryItemDto restock(UUID id, Double amount) {
+        if (amount == null || amount <= 0) throw new IllegalArgumentException("Amount must be positive");
+        inventoryRepository.restockItem(id, amount);
         InventoryItem item = inventoryRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Item not found"));
-        
-        item.setCurrentStock(item.getCurrentStock() + amount);
-        return InventoryItemDto.fromEntity(inventoryRepository.save(item));
+        return InventoryItemDto.fromEntity(item);
     }
 
     @Transactional
     public InventoryItemDto consume(UUID id, Double amount) {
+        if (amount == null || amount <= 0) return inventoryRepository.findById(id).map(InventoryItemDto::fromEntity).orElseThrow();
+        inventoryRepository.consumeItem(id, amount);
         InventoryItem item = inventoryRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Item not found"));
-        
-        double newStock = item.getCurrentStock() - amount;
-        item.setCurrentStock(Math.max(0, newStock));
-        return InventoryItemDto.fromEntity(inventoryRepository.save(item));
+        return InventoryItemDto.fromEntity(item);
     }
 
     @Transactional

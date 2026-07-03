@@ -45,6 +45,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     this.tablesService.fetchTables();
     this.staffService.fetchStaff();
     this.menuService.fetchMenu();
+    this.inventoryService.fetchItems();
     // order items update automatically when table statuses change or are refreshed by order component
   }
 
