@@ -27,7 +27,7 @@
             <h4>{{ dish.name }}</h4>
             <span class="weight">{{ dish.weight }}</span>
           </div>
-          <div class="dish-price">{{ dish.price | currency:'RUB':'symbol-narrow':'1.0-0' }}</div>
+          <div class="dish-price">{{ dish.price | currency:settingsService.currency():'symbol-narrow':'1.0-0' }}</div>
         </div>
       }
     </div>
@@ -56,7 +56,7 @@
           <div class="cart-item">
             <div class="item-details">
               <span class="item-name">{{ item.dish.name }}</span>
-              <span class="item-price">{{ item.dish.price | currency:'RUB':'symbol-narrow':'1.0-0' }}</span>
+              <span class="item-price">{{ item.dish.price | currency:settingsService.currency():'symbol-narrow':'1.0-0' }}</span>
             </div>
             
             <div class="item-controls">
@@ -76,7 +76,7 @@
     <div class="cart-footer">
       <div class="total-row">
         <span>Итого:</span>
-        <span class="total-sum">{{ orderTotal() | currency:'RUB':'symbol-narrow':'1.0-0' }}</span>
+        <span class="total-sum">{{ orderTotal() | currency:settingsService.currency():'symbol-narrow':'1.0-0' }}</span>
       </div>
       
       <div class="action-buttons">

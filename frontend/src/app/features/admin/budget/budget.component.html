@@ -13,21 +13,21 @@
   <app-ui-card class="summary-card balance">
     <div class="label">Общий баланс</div>
     <div class="value" [class.negative]="budgetService.totalBalance() < 0">
-      {{ budgetService.totalBalance() | currency:'USD' }}
+      {{ budgetService.totalBalance() | currency:settingsService.currency() }}
     </div>
   </app-ui-card>
 
   <app-ui-card class="summary-card income">
     <div class="label">Всего доходов</div>
     <div class="value text-success">
-      +{{ budgetService.totalIncome() | currency:'USD' }}
+      +{{ budgetService.totalIncome() | currency:settingsService.currency() }}
     </div>
   </app-ui-card>
 
   <app-ui-card class="summary-card expense">
     <div class="label">Всего расходов</div>
     <div class="value text-danger">
-      -{{ budgetService.totalExpense() | currency:'USD' }}
+      -{{ budgetService.totalExpense() | currency:settingsService.currency() }}
     </div>
   </app-ui-card>
 </div>
@@ -38,7 +38,7 @@
     <h3>Новая транзакция</h3>
     <form [formGroup]="txForm" (ngSubmit)="onSubmitTx()" class="add-form">
       <div class="form-group">
-        <label>Сумма ($)</label>
+        <label>Сумма ({{ settingsService.currency() }})</label>
         <input type="number" formControlName="amount" step="0.01" />
       </div>
       <div class="form-group">
@@ -99,7 +99,7 @@
           <td>{{ tx.category }}</td>
           <td>{{ tx.description }}</td>
           <td class="text-right tx-amount" [class.text-success]="tx.type === 'Доход'" [class.text-danger]="tx.type === 'Расход'">
-            {{ tx.type === 'Доход' ? '+' : '-' }}{{ tx.amount | currency:'RUB':'symbol-narrow':'1.0-0' }}
+            {{ tx.type === 'Доход' ? '+' : '-' }}{{ tx.amount | currency:settingsService.currency():'symbol-narrow':'1.0-0' }}
           </td>
         </tr>
       } @empty {
@@ -123,7 +123,7 @@
           {{ tx.type === 'Доход' ? '↑' : '↓' }}
         </div>
         <h2>{{ tx.type === 'Доход' ? 'Успешное пополнение' : 'Успешное списание' }}</h2>
-        <div class="receipt-amount">{{ tx.type === 'Доход' ? '+' : '-' }}{{ tx.amount | currency:'RUB':'symbol-narrow':'1.0-0' }}</div>
+        <div class="receipt-amount">{{ tx.type === 'Доход' ? '+' : '-' }}{{ tx.amount | currency:settingsService.currency():'symbol-narrow':'1.0-0' }}</div>
       </div>
 
       <div class="receipt-body">

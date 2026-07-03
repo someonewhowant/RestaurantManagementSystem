@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { InventoryService, InventoryItem } from '../../../core/services/inventory.service';
 import { BudgetService } from '../../../core/services/budget.service';
 import { MenuService, Dish } from '../../../core/services/menu.service';
+import { SettingsService } from '../../../core/services/settings.service';
 import { UiBadgeComponent } from '../../../core/ui/badge/badge.component';
 import { UiButtonComponent } from '../../../core/ui/button/button.component';
 import { UiModalComponent } from '../../../core/ui/modal/modal.component';
@@ -19,6 +20,7 @@ export class AdminInventoryComponent {
   public inventoryService = inject(InventoryService);
   public budgetService = inject(BudgetService);
   public menuService = inject(MenuService);
+  public settingsService = inject(SettingsService);
   private fb = inject(FormBuilder);
 
   public showAddForm = signal(false);

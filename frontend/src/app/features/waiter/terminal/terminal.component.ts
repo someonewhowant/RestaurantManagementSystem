@@ -7,6 +7,7 @@ import { BudgetService } from '../../../core/services/budget.service';
 import { TablesService } from '../../../core/services/tables.service';
 import { InventoryService } from '../../../core/services/inventory.service';
 import { StaffService } from '../../../core/services/staff.service';
+import { SettingsService } from '../../../core/services/settings.service';
 import { UiButtonComponent } from '../../../core/ui/button/button.component';
 
 @Component({
@@ -25,6 +26,7 @@ export class WaiterTerminalComponent {
   public tablesService = inject(TablesService);
   public inventoryService = inject(InventoryService);
   public staffService = inject(StaffService);
+  public settingsService = inject(SettingsService);
   
   public tableId = signal<string | null>(null);
   public selectedCategory = signal<MenuCategory>('Популярное');

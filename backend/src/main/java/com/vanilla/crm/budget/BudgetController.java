@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/budget")
@@ -36,7 +37,7 @@ public class BudgetController {
     @Operation(summary = "Создать транзакцию", description = "Ручное добавление финансовой операции (доход или расход).")
     @ApiResponse(responseCode = "200", description = "Созданная транзакция")
     @PostMapping("/transactions")
-    public ResponseEntity<TransactionDto> createTransaction(@RequestBody TransactionDto dto) {
+    public ResponseEntity<TransactionDto> createTransaction(@Valid @RequestBody TransactionDto dto) {
         return ResponseEntity.ok(budgetService.createTransaction(dto));
     }
 }

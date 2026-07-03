@@ -1,21 +1,23 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 import { BudgetService, Transaction } from '../../../core/services/budget.service';
+import { SettingsService } from '../../../core/services/settings.service';
 import { UiCardComponent } from '../../../core/ui/card/card.component';
 import { UiBadgeComponent } from '../../../core/ui/badge/badge.component';
 import { UiButtonComponent } from '../../../core/ui/button/button.component';
 import { UiModalComponent } from '../../../core/ui/modal/modal.component';
-import { DatePipe, CurrencyPipe } from '@angular/common';
 
 @Component({
   selector: 'app-admin-budget',
   standalone: true,
-  imports: [UiCardComponent, UiBadgeComponent, UiButtonComponent, ReactiveFormsModule, DatePipe, CurrencyPipe, UiModalComponent],
+  imports: [CommonModule, ReactiveFormsModule, UiCardComponent, UiBadgeComponent, UiButtonComponent, UiModalComponent],
   templateUrl: './budget.component.html',
   styleUrl: './budget.component.scss'
 })
 export class AdminBudgetComponent {
   public budgetService = inject(BudgetService);
+  public settingsService = inject(SettingsService);
   private fb = inject(FormBuilder);
 
   public showAddForm = signal(false);

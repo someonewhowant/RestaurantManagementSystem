@@ -11,7 +11,7 @@
       <div>
         <h3 style="font-size: 14px; font-weight: 500; color: var(--color-text-muted); margin: 0;">Выручка</h3>
         <div class="value" style="font-size: 26px; font-weight: 700; color: var(--color-text-main); margin-top: 4px; letter-spacing: -0.5px;">
-          {{ totalRevenue() | currency:'RUB':'symbol-narrow':'1.0-0' }}
+          {{ totalRevenue() | currency:settingsService.currency():'symbol-narrow':'1.0-0' }}
         </div>
       </div>
       <div class="trend" [style.color]="trends.revenue.isPositive ? 'var(--color-success)' : 'var(--color-danger)'" [style.background]="trends.revenue.isPositive ? 'rgba(76,175,80,0.1)' : 'rgba(244,67,54,0.1)'" style="font-size: 13px; font-weight: 600; padding: 4px 8px; border-radius: 6px;">
@@ -33,7 +33,7 @@
       <div>
         <h3 style="font-size: 14px; font-weight: 500; color: var(--color-text-muted); margin: 0;">Средний чек</h3>
         <div class="value" style="font-size: 26px; font-weight: 700; color: var(--color-text-main); margin-top: 4px; letter-spacing: -0.5px;">
-          {{ averageCheck() | currency:'RUB':'symbol-narrow':'1.0-0' }}
+          {{ averageCheck() | currency:settingsService.currency():'symbol-narrow':'1.0-0' }}
         </div>
       </div>
       <div class="trend" [style.color]="trends.averageCheck.isPositive ? 'var(--color-success)' : 'var(--color-danger)'" [style.background]="trends.averageCheck.isPositive ? 'rgba(76,175,80,0.1)' : 'rgba(244,67,54,0.1)'" style="font-size: 13px; font-weight: 600; padding: 4px 8px; border-radius: 6px;">
@@ -127,7 +127,7 @@
             
             <!-- Revenue -->
             <div style="text-align: right;">
-              <div style="font-size: 15px; font-weight: 700; color: var(--color-success);">{{ waiter.revenue | currency:'RUB':'symbol-narrow':'1.0-0' }}</div>
+              <div style="font-size: 15px; font-weight: 700; color: var(--color-success);">{{ waiter.revenue | currency:settingsService.currency():'symbol-narrow':'1.0-0' }}</div>
             </div>
           </div>
         }
@@ -275,7 +275,7 @@
                   </div>
                 </div>
                 <div style="text-align: right;">
-                  <div style="font-size: 13px; font-weight: 700; color: var(--color-success);">{{ dish.revenue | currency:'RUB':'symbol-narrow':'1.0-0' }}</div>
+                  <div style="font-size: 13px; font-weight: 700; color: var(--color-success);">{{ dish.revenue | currency:settingsService.currency():'symbol-narrow':'1.0-0' }}</div>
                   <div style="font-size: 11px; color: var(--color-text-muted);">{{ dish.count }} порц.</div>
                 </div>
               </div>
@@ -298,7 +298,7 @@
                   </div>
                 </div>
                 <div style="text-align: right;">
-                  <div style="font-size: 13px; font-weight: 700; color: var(--color-text-main); opacity: 0.8;">{{ dish.revenue | currency:'RUB':'symbol-narrow':'1.0-0' }}</div>
+                  <div style="font-size: 13px; font-weight: 700; color: var(--color-text-main); opacity: 0.8;">{{ dish.revenue | currency:settingsService.currency():'symbol-narrow':'1.0-0' }}</div>
                   <div style="font-size: 11px; color: var(--color-text-muted);">{{ dish.count }} порц.</div>
                 </div>
               </div>
@@ -339,7 +339,7 @@
               <div style="font-size: 14px; font-weight: 600; color: var(--color-text-main);">{{ tx.category }}</div>
               <div style="font-size: 15px; font-weight: 700;"
                    [style.color]="tx.type === 'Доход' ? 'var(--color-success)' : 'var(--color-text-main)'">
-                {{ tx.type === 'Доход' ? '+' : '-' }} {{ tx.amount | currency:'RUB':'symbol-narrow':'1.0-0' }}
+                {{ tx.type === 'Доход' ? '+' : '-' }} {{ tx.amount | currency:settingsService.currency():'symbol-narrow':'1.0-0' }}
               </div>
             </div>
             <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px;">
@@ -381,13 +381,13 @@
             <!-- Expense Bar -->
             <div style="width: 35%; max-width: 28px; background: rgba(244,67,54,0.7); border-radius: 4px 4px 0 0; transition: height 0.8s cubic-bezier(0.16, 1, 0.3, 1);"
                  [style.height.%]="(point.expense / chartMax()) * 100"
-                 [title]="'Расход: ' + (point.expense | currency:'RUB':'symbol-narrow':'1.0-0')">
+                 [title]="'Расход: ' + (point.expense | currency:settingsService.currency():'symbol-narrow':'1.0-0')">
             </div>
             
             <!-- Revenue Bar -->
             <div style="width: 35%; max-width: 28px; background: var(--color-primary); border-radius: 4px 4px 0 0; transition: height 0.8s cubic-bezier(0.16, 1, 0.3, 1);"
                  [style.height.%]="(point.revenue / chartMax()) * 100"
-                 [title]="'Доход: ' + (point.revenue | currency:'RUB':'symbol-narrow':'1.0-0')">
+                 [title]="'Доход: ' + (point.revenue | currency:settingsService.currency():'symbol-narrow':'1.0-0')">
             </div>
 
           </div>

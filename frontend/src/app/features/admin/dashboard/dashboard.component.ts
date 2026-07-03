@@ -8,6 +8,7 @@ import { OrderService } from '../../../core/services/order.service';
 import { StaffService } from '../../../core/services/staff.service';
 import { InventoryService } from '../../../core/services/inventory.service';
 import { MenuService } from '../../../core/services/menu.service';
+import { SettingsService } from '../../../core/services/settings.service';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -23,6 +24,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   private staffService = inject(StaffService);
   private inventoryService = inject(InventoryService);
   private menuService = inject(MenuService);
+  public settingsService = inject(SettingsService);
 
   private intervalId: any;
 
