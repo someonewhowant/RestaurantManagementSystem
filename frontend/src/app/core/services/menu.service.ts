@@ -2,7 +2,7 @@ import { Injectable, signal, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { tap } from 'rxjs';
 
-export type MenuCategory = 'Популярное' | 'Горячее' | 'Закуски' | 'Напитки' | 'Десерты';
+export type MenuCategory = 'Популярное' | 'Горячее' | 'Закуски' | 'Салаты' | 'Напитки' | 'Десерты';
 
 export interface Dish {
   id: string;
@@ -31,7 +31,7 @@ export class MenuService {
   private menuSignal = signal<Dish[]>([]);
   public menu = this.menuSignal.asReadonly();
   
-  public categories = signal<MenuCategory[]>(['Популярное', 'Горячее', 'Закуски', 'Напитки', 'Десерты']).asReadonly();
+  public categories = signal<MenuCategory[]>(['Популярное', 'Горячее', 'Закуски', 'Салаты', 'Напитки', 'Десерты']).asReadonly();
 
   constructor() {
     this.fetchMenu();

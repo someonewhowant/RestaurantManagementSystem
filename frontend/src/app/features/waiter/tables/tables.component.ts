@@ -96,7 +96,8 @@ export class WaiterTablesComponent {
 
   getDuration(table: Table): string {
     if (table.status === 'Свободен' || !table.statusUpdatedAt) return '';
-    const diff = Date.now() - table.statusUpdatedAt.getTime();
+    const date = new Date(table.statusUpdatedAt);
+    const diff = Date.now() - date.getTime();
     const minutes = Math.floor(diff / 60000);
     return `${minutes} мин`;
   }

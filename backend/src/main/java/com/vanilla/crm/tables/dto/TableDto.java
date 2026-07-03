@@ -42,6 +42,7 @@ public class TableDto {
     }
 
     public static RestaurantTable.TableStatus toStatusEnum(String status) {
+        if (status == null) return RestaurantTable.TableStatus.FREE;
         return STATUS_MAP.getOrDefault(status, RestaurantTable.TableStatus.FREE);
     }
 }

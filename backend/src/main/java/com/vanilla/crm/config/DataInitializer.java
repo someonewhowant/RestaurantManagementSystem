@@ -13,6 +13,7 @@ import com.vanilla.crm.staff.StaffRepository;
 import com.vanilla.crm.staff.entity.Employee;
 import com.vanilla.crm.tables.TableRepository;
 import com.vanilla.crm.tables.entity.RestaurantTable;
+import com.vanilla.crm.orders.OrderRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,10 +36,19 @@ public class DataInitializer implements CommandLineRunner {
     private final TransactionRepository transactionRepository;
     private final TableRepository tableRepository;
     private final UserRepository userRepository;
+    private final OrderRepository orderRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Override
     public void run(String... args) throws Exception {
+        // Принудительно очистим таблицы, если там только старые тестовые данные, чтобы загрузить новые 5 блюд
+        if (menuRepository.count() > 0 && menuRepository.count() < 5) {
+            log.info("Detected old test data. Clearing database to seed new full data...");
+            orderRepository.deleteAll(); // Delete orders first due to foreign key constraints on dishes
+            menuRepository.deleteAll();
+            inventoryRepository.deleteAll();
+        }
+
         if (menuRepository.count() == 0 && inventoryRepository.count() == 0) {
             log.info("Database is empty. Seeding inventory and menu data...");
             seedInventory();
@@ -83,7 +93,8 @@ public class DataInitializer implements CommandLineRunner {
             InventoryItem.builder().name("Помидоры").category("Овощи").currentStock(18.0).minStock(15.0).unit("кг").pricePerUnit(new BigDecimal("150")).expiresInDays(1).build(),
             InventoryItem.builder().name("Оливковое масло").category("Бакалея").currentStock(12.0).minStock(5.0).unit("л").pricePerUnit(new BigDecimal("800")).build(),
             InventoryItem.builder().name("Соль").category("Бакалея").currentStock(1.0).minStock(3.0).unit("кг").pricePerUnit(new BigDecimal("30")).build(),
-            InventoryItem.builder().name("Сливки 33%").category("Молочка").currentStock(5.0).minStock(3.0).unit("л").pricePerUnit(new BigDecimal("300")).expiresInDays(0).build()
+            InventoryItem.builder().name("Сливки 33%").category("Молочка").currentStock(5.0).minStock(3.0).unit("л").pricePerUnit(new BigDecimal("300")).expiresInDays(0).build(),
+            InventoryItem.builder().name("Кофе в зернах").category("Напитки").currentStock(3.0).minStock(2.0).unit("кг").pricePerUnit(new BigDecimal("1500")).build()
         );
         inventoryRepository.saveAll(items);
         log.info("Seeded {} inventory items.", items.size());
@@ -95,8 +106,10 @@ public class DataInitializer implements CommandLineRunner {
                 .category("Горячее")
                 .price(new BigDecimal("2500"))
                 .status(Dish.DishStatus.AVAILABLE)
+                .weight("300г")
+                .imageIcon("🥩")
                 .instructions("Прожарка medium rare, подавать с чесночным маслом")
-                .allergens(List.of("Мясо"))
+                .allergens(new java.util.HashSet<>(java.util.List.of("Мясо")))
                 .macros(com.vanilla.crm.menu.entity.Macros.builder().calories(650.0).protein(45.0).carbs(0.0).fats(50.0).build())
                 .build();
 
@@ -105,25 +118,79 @@ public class DataInitializer implements CommandLineRunner {
                 .category("Салаты")
                 .price(new BigDecimal("450"))
                 .status(Dish.DishStatus.AVAILABLE)
+                .weight("250г")
+                .imageIcon("🥗")
                 .instructions("Соус отдельно")
-                .allergens(List.of("Яйцо", "Глютен"))
+                .allergens(new java.util.HashSet<>(java.util.List.of("Яйцо", "Глютен")))
                 .macros(com.vanilla.crm.menu.entity.Macros.builder().calories(320.0).protein(12.0).carbs(15.0).fats(25.0).build())
                 .build();
 
-        List<Dish> dishes = menuRepository.saveAll(List.of(dish1, dish2));
+        Dish dish3 = Dish.builder()
+                .name("Картофель Фри")
+                .category("Закуски")
+                .price(new BigDecimal("200"))
+                .status(Dish.DishStatus.AVAILABLE)
+                .weight("150г")
+                .imageIcon("🍟")
+                .instructions("Жарить во фритюре до золотистой корочки")
+                .allergens(new java.util.HashSet<>())
+                .macros(com.vanilla.crm.menu.entity.Macros.builder().calories(290.0).protein(3.0).carbs(35.0).fats(15.0).build())
+                .build();
+
+        Dish dish4 = Dish.builder()
+                .name("Эспрессо")
+                .category("Напитки")
+                .price(new BigDecimal("150"))
+                .status(Dish.DishStatus.AVAILABLE)
+                .weight("30мл")
+                .imageIcon("☕")
+                .instructions("Классический эспрессо")
+                .allergens(new java.util.HashSet<>())
+                .macros(com.vanilla.crm.menu.entity.Macros.builder().calories(5.0).protein(0.0).carbs(0.0).fats(0.0).build())
+                .build();
+
+        Dish dish5 = Dish.builder()
+                .name("Тирамису")
+                .category("Десерты")
+                .price(new BigDecimal("350"))
+                .status(Dish.DishStatus.AVAILABLE)
+                .weight("150г")
+                .imageIcon("🍰")
+                .instructions("Подавать охлажденным")
+                .allergens(new java.util.HashSet<>(java.util.List.of("Лактоза", "Глютен", "Яйцо")))
+                .macros(com.vanilla.crm.menu.entity.Macros.builder().calories(280.0).protein(5.0).carbs(30.0).fats(12.0).build())
+                .build();
+
+        List<Dish> dishes = menuRepository.saveAll(List.of(dish1, dish2, dish3, dish4, dish5));
 
         List<InventoryItem> items = inventoryRepository.findAll();
         if (!items.isEmpty()) {
             InventoryItem meat = items.stream().filter(i -> i.getName().equals("Говядина")).findFirst().orElse(items.get(0));
-            InventoryItem lettuce = items.stream().filter(i -> i.getName().equals("Помидоры")).findFirst().orElse(items.get(0));
             InventoryItem tomatoes = items.stream().filter(i -> i.getName().equals("Помидоры")).findFirst().orElse(items.get(0));
+            InventoryItem potatoes = items.stream().filter(i -> i.getName().equals("Картофель")).findFirst().orElse(items.get(0));
+            InventoryItem coffee = items.stream().filter(i -> i.getName().equals("Кофе в зернах")).findFirst().orElse(items.get(0));
+            InventoryItem cream = items.stream().filter(i -> i.getName().equals("Сливки 33%")).findFirst().orElse(items.get(0));
+            InventoryItem oil = items.stream().filter(i -> i.getName().equals("Оливковое масло")).findFirst().orElse(items.get(0));
+            InventoryItem salt = items.stream().filter(i -> i.getName().equals("Соль")).findFirst().orElse(items.get(0));
 
             Dish savedDish1 = dishes.get(0);
-            savedDish1.getRecipe().add(RecipeIngredient.builder().dish(savedDish1).inventoryItem(meat).amount(0.3).build());
+            savedDish1.getRecipe().add(RecipeIngredient.builder().dish(savedDish1).inventoryItem(meat).amount(0.35).build());
+            savedDish1.getRecipe().add(RecipeIngredient.builder().dish(savedDish1).inventoryItem(oil).amount(0.02).build());
+            savedDish1.getRecipe().add(RecipeIngredient.builder().dish(savedDish1).inventoryItem(salt).amount(0.01).build());
             
             Dish savedDish2 = dishes.get(1);
-            savedDish2.getRecipe().add(RecipeIngredient.builder().dish(savedDish2).inventoryItem(lettuce).amount(0.1).build());
             savedDish2.getRecipe().add(RecipeIngredient.builder().dish(savedDish2).inventoryItem(tomatoes).amount(0.05).build());
+            savedDish2.getRecipe().add(RecipeIngredient.builder().dish(savedDish2).inventoryItem(oil).amount(0.02).build());
+
+            Dish savedDish3 = dishes.get(2);
+            savedDish3.getRecipe().add(RecipeIngredient.builder().dish(savedDish3).inventoryItem(potatoes).amount(0.2).build());
+            savedDish3.getRecipe().add(RecipeIngredient.builder().dish(savedDish3).inventoryItem(salt).amount(0.01).build());
+
+            Dish savedDish4 = dishes.get(3);
+            savedDish4.getRecipe().add(RecipeIngredient.builder().dish(savedDish4).inventoryItem(coffee).amount(0.015).build());
+
+            Dish savedDish5 = dishes.get(4);
+            savedDish5.getRecipe().add(RecipeIngredient.builder().dish(savedDish5).inventoryItem(cream).amount(0.05).build());
 
             menuRepository.saveAll(dishes);
         }

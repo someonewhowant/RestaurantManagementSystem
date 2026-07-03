@@ -10,6 +10,8 @@ import com.vanilla.crm.orders.dto.OrderDto;
 import com.vanilla.crm.orders.dto.OrderItemDto;
 import com.vanilla.crm.orders.entity.Order;
 import com.vanilla.crm.orders.entity.OrderItem;
+import com.vanilla.crm.staff.StaffRepository;
+import com.vanilla.crm.staff.entity.Employee;
 import com.vanilla.crm.tables.TableRepository;
 import com.vanilla.crm.tables.entity.RestaurantTable;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +36,7 @@ public class OrderService {
     private final TableRepository tableRepository;
     private final BudgetService budgetService;
     private final InventoryService inventoryService;
+    private final StaffRepository staffRepository;
 
     /**
      * Get the active order for a given table, or return an empty order DTO.
@@ -202,11 +205,28 @@ public class OrderService {
         order.setClosedAt(Instant.now());
 
         // Create income transaction in budget
+        String description = "Заказ стол №" + order.getTable().getNumber();
+        
+        if (order.getTable().getWaiterId() != null) {
+            staffRepository.findById(order.getTable().getWaiterId()).ifPresent(emp -> {
+                description.concat(" (Официант: " + emp.getName() + ")");
+            });
+        }
+        
+        // Fix string concatenation side effect
+        String finalDescription = description;
+        if (order.getTable().getWaiterId() != null) {
+            Employee waiter = staffRepository.findById(order.getTable().getWaiterId()).orElse(null);
+            if (waiter != null) {
+                finalDescription = "Заказ стол №" + order.getTable().getNumber() + " | Официант: " + waiter.getName();
+            }
+        }
+
         TransactionDto txDto = TransactionDto.builder()
                 .amount(total)
                 .type("Доход")
                 .category("Оплата заказа")
-                .description("Заказ стол №" + order.getTable().getNumber())
+                .description(finalDescription)
                 .build();
         budgetService.createTransaction(txDto);
 
@@ -220,6 +240,13 @@ public class OrderService {
                 });
             }
         });
+
+        // Free the table
+        RestaurantTable table = order.getTable();
+        table.setStatus(RestaurantTable.TableStatus.FREE);
+        table.setWaiterId(null);
+        table.setStatusUpdatedAt(Instant.now());
+        tableRepository.save(table);
 
         log.info("Order {} closed. Total: {} ₽", orderId, total);
 

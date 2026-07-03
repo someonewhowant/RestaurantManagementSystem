@@ -84,40 +84,18 @@ export class WaiterTerminalComponent {
     const tid = this.tableId();
     if (!tid) return;
 
-    const total = this.orderTotal();
-    
-    // 1. Фиксируем выручку в бюджете
-    const wName = this.waiterName();
-    const items = this.currentOrderItems().map(item => ({ dishId: item.dish.id, quantity: item.quantity }));
-    this.budgetService.addTransaction({
-      date: new Date().toISOString(),
-      amount: total,
-      type: 'Доход',
-      category: 'Оплата заказа',
-      description: `Оплата заказа столика ID: ${tid}` + (wName ? `. Официант: ${wName}` : ''),
-      items
-    });
+    // 1. Закрываем заказ (бэкенд сам фиксирует выручку и списывает ингредиенты)
+    this.orderService.closeOrder(tid);
 
-    // 2. Очищаем корзину
-    this.orderService.clearOrder(tid);
+    // 2. Освобождаем стол на Карте столов (теперь это делает бэкенд автоматически)
 
-    // 3. Освобождаем стол на Карте столов
-    this.tablesService.changeStatus(tid, 'Свободен');
-
-    // 4. Возвращаемся в зал
+    // 3. Возвращаемся в зал
     this.router.navigate(['/waiter/tables']);
   }
 
   sendToKitchen() {
     const tid = this.tableId();
     if (tid) {
-      // Ищем блюда в статусе 'new', чтобы списать их ингредиенты
-      const order = this.orderService.orders()[tid];
-      if (order) {
-        const newItems = order.items.filter(i => i.status === 'new');
-        this.inventoryService.consumeForOrderItems(newItems);
-      }
-
       this.orderService.sendToKitchen(tid);
       this.tablesService.changeStatus(tid, 'Ожидает блюда');
     }

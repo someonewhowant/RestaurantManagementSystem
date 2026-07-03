@@ -34,7 +34,7 @@ public class DishDto {
                 .weight(dish.getWeight())
                 .imageIcon(dish.getImageIcon())
                 .instructions(dish.getInstructions())
-                .allergens(dish.getAllergens())
+                .allergens(dish.getAllergens() != null ? new java.util.ArrayList<>(dish.getAllergens()) : null)
                 .macros(dish.getMacros())
                 .recipe(dish.getRecipe() != null ? 
                     dish.getRecipe().stream().map(RecipeIngredientDto::fromEntity).toList() : null)

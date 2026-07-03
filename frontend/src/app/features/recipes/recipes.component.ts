@@ -147,7 +147,7 @@ export class RecipesComponent {
       price: this.newDishPrice(),
       weight: this.newDishWeight() || '0г',
       imageIcon: this.newDishIcon(),
-      recipe: validIngredients.length > 0 ? validIngredients : undefined,
+      recipe: validIngredients,
       instructions: this.newDishInstructions(),
       allergens: this.newDishAllergens(),
       macros: this.newDishMacros()

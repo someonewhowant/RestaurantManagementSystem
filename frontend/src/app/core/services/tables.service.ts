@@ -9,7 +9,7 @@ export interface Table {
   capacity: number;
   status: TableStatus;
   waiterId?: string;
-  statusUpdatedAt?: Date;
+  statusUpdatedAt?: string;
 }
 
 @Injectable({

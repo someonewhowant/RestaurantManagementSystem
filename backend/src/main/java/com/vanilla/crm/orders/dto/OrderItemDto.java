@@ -39,6 +39,7 @@ public class OrderItemDto {
     }
 
     public static OrderItem.ItemStatus toStatusEnum(String status) {
+        if (status == null) return OrderItem.ItemStatus.NEW;
         return STATUS_MAP.getOrDefault(status, OrderItem.ItemStatus.NEW);
     }
 }

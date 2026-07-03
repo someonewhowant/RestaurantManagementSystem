@@ -51,7 +51,7 @@ public class MenuService {
                 .weight(dto.getWeight())
                 .imageIcon(dto.getImageIcon())
                 .instructions(dto.getInstructions())
-                .allergens(dto.getAllergens())
+                .allergens(dto.getAllergens() != null ? new java.util.HashSet<>(dto.getAllergens()) : null)
                 .macros(dto.getMacros())
                 .build();
         return DishDto.fromEntity(menuRepository.save(dish));
@@ -68,7 +68,7 @@ public class MenuService {
         if (dto.getWeight() != null) dish.setWeight(dto.getWeight());
         if (dto.getImageIcon() != null) dish.setImageIcon(dto.getImageIcon());
         if (dto.getInstructions() != null) dish.setInstructions(dto.getInstructions());
-        if (dto.getAllergens() != null) dish.setAllergens(dto.getAllergens());
+        if (dto.getAllergens() != null) dish.setAllergens(new java.util.HashSet<>(dto.getAllergens()));
         if (dto.getMacros() != null) dish.setMacros(dto.getMacros());
         
         if (dto.getRecipe() != null) {

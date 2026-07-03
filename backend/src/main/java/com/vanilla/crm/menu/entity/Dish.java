@@ -45,14 +45,14 @@ public class Dish {
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "dish_allergens", joinColumns = @JoinColumn(name = "dish_id"))
     @Column(name = "allergen")
-    private List<String> allergens;
+    private java.util.Set<String> allergens;
 
     @Embedded
     private Macros macros;
 
     @OneToMany(mappedBy = "dish", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @Builder.Default
-    private List<RecipeIngredient> recipe = new ArrayList<>();
+    private java.util.Set<RecipeIngredient> recipe = new java.util.HashSet<>();
 
     public enum DishStatus {
         AVAILABLE,
