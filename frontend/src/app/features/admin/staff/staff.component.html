@@ -30,6 +30,14 @@
         <input type="email" formControlName="email" placeholder="email@example.com" />
       </div>
       <div class="form-group">
+        <label>Зарплата</label>
+        <input type="number" formControlName="salary" placeholder="0" />
+      </div>
+      <div class="form-group">
+        <label>День/Дата ЗП</label>
+        <input type="text" formControlName="salaryDate" placeholder="например, 5 число" />
+      </div>
+      <div class="form-group">
         <label>Роль</label>
         <select formControlName="role">
           <option value="Менеджер">Менеджер</option>
@@ -78,7 +86,7 @@
 
 <div class="staff-grid">
   @for (emp of filteredStaff(); track emp.id) {
-    <app-ui-card class="staff-card" [class.fired]="emp.status === 'Уволен'" [class.vacation]="emp.status === 'В отпуске'">
+    <app-ui-card class="staff-card clickable-card" [class.fired]="emp.status === 'Уволен'" [class.vacation]="emp.status === 'В отпуске'" (click)="openViewModal(emp)">
       <div class="card-top">
         <div class="staff-header-info">
           <div class="avatar">{{ getInitials(emp.name) }}</div>
@@ -132,7 +140,7 @@
                   }
                 </span>
               </div>
-              <button class="shift-btn" (click)="toggleShift(emp.id)">
+              <button class="shift-btn" (click)="toggleShift(emp.id); $event.stopPropagation()">
                 @if (emp.onShift) { Закрыть } @else { Начать }
               </button>
             </div>
@@ -161,11 +169,11 @@
       </div>
       
       <div class="card-actions">
-        <app-ui-button variant="secondary" size="sm" (click)="openEditModal(emp)">Редактировать</app-ui-button>
+        <app-ui-button variant="secondary" size="sm" (click)="openEditModal(emp); $event.stopPropagation()">Редактировать</app-ui-button>
         @if (emp.status === 'Уволен') {
-          <app-ui-button variant="success" size="sm" (click)="activateEmployee(emp.id)">Восстановить</app-ui-button>
+          <app-ui-button variant="success" size="sm" (click)="activateEmployee(emp.id); $event.stopPropagation()">Восстановить</app-ui-button>
         } @else {
-          <app-ui-button variant="danger" size="sm" (click)="fireEmployee(emp.id)">Уволить</app-ui-button>
+          <app-ui-button variant="danger" size="sm" (click)="fireEmployee(emp.id); $event.stopPropagation()">Уволить</app-ui-button>
         }
       </div>
     </app-ui-card>
@@ -192,6 +200,14 @@
         <div class="form-group">
           <label>Email</label>
           <input type="email" formControlName="email" />
+        </div>
+        <div class="form-group">
+          <label>Зарплата</label>
+          <input type="number" formControlName="salary" />
+        </div>
+        <div class="form-group">
+          <label>День/Дата ЗП</label>
+          <input type="text" formControlName="salaryDate" />
         </div>
         <div class="form-group">
           <label>Роль</label>
@@ -241,6 +257,58 @@
           <app-ui-button variant="success" [disabled]="editForm.invalid" type="submit">Сохранить</app-ui-button>
         </div>
       </form>
+    </div>
+  }
+</app-ui-modal>
+
+<!-- Модальное окно просмотра (Карточка) -->
+<app-ui-modal 
+  [isOpen]="selectedViewEmployee() !== null" 
+  [title]="'Карточка сотрудника'"
+  (onClose)="closeViewModal()">
+  
+  @if (selectedViewEmployee(); as emp) {
+    <div class="view-modal-content" style="display: flex; flex-direction: column; gap: 20px;">
+      <div class="view-header" style="display: flex; gap: 16px; align-items: center;">
+        <div class="avatar" style="width: 60px; height: 60px; font-size: 20px;">{{ getInitials(emp.name) }}</div>
+        <div>
+          <h2 style="margin: 0; font-size: 24px; color: var(--color-text-main);">{{ emp.name }}</h2>
+          <div style="color: var(--color-text-muted); font-size: 15px; margin-top: 4px;">{{ emp.role }} • {{ emp.status }}</div>
+        </div>
+      </div>
+      
+      <div class="view-body" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; background: rgba(255,255,255,0.02); padding: 20px; border-radius: var(--radius-md); border: 1px solid var(--color-border);">
+        <div>
+          <div style="color: var(--color-text-muted); font-size: 13px; margin-bottom: 4px;">Телефон</div>
+          <div style="font-weight: 500;">{{ emp.phone || '—' }}</div>
+        </div>
+        <div>
+          <div style="color: var(--color-text-muted); font-size: 13px; margin-bottom: 4px;">Email</div>
+          <div style="font-weight: 500;">{{ emp.email || '—' }}</div>
+        </div>
+        <div>
+          <div style="color: var(--color-text-muted); font-size: 13px; margin-bottom: 4px;">Зарплата</div>
+          <div style="font-weight: 500; color: var(--color-success);">{{ emp.salary ? emp.salary + ' ₸' : 'Не указана' }}</div>
+        </div>
+        <div>
+          <div style="color: var(--color-text-muted); font-size: 13px; margin-bottom: 4px;">Дата ЗП</div>
+          <div style="font-weight: 500;">{{ emp.salaryDate || '—' }}</div>
+        </div>
+        <div>
+          <div style="color: var(--color-text-muted); font-size: 13px; margin-bottom: 4px;">Дата найма</div>
+          <div style="font-weight: 500;">{{ emp.hireDate | date:'dd.MM.yyyy' }}</div>
+        </div>
+        @if (emp.fireDate) {
+          <div>
+            <div style="color: var(--color-text-muted); font-size: 13px; margin-bottom: 4px;">Дата увольнения</div>
+            <div style="font-weight: 500; color: var(--color-danger);">{{ emp.fireDate | date:'dd.MM.yyyy' }}</div>
+          </div>
+        }
+      </div>
+
+      <div class="form-actions" style="margin-top: 0;">
+        <app-ui-button variant="primary" (click)="closeViewModal()">Закрыть</app-ui-button>
+      </div>
     </div>
   }
 </app-ui-modal>

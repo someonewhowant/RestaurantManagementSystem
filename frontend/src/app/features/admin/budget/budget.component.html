@@ -29,21 +29,21 @@
 <!-- Summary Cards -->
 <div class="summary-grid">
   <app-ui-card class="summary-card balance">
-    <div class="label">Общий баланс</div>
+    <div class="label"><span>💰</span> Общий баланс</div>
     <div class="value" [class.negative]="budgetService.totalBalance() < 0">
       {{ budgetService.totalBalance() | currency:settingsService.currency():'symbol-narrow':'1.0-0' }}
     </div>
   </app-ui-card>
 
   <app-ui-card class="summary-card income">
-    <div class="label">Всего доходов</div>
+    <div class="label"><span>📈</span> Всего доходов</div>
     <div class="value text-success">
       +{{ budgetService.totalIncome() | currency:settingsService.currency():'symbol-narrow':'1.0-0' }}
     </div>
   </app-ui-card>
 
   <app-ui-card class="summary-card expense">
-    <div class="label">Всего расходов</div>
+    <div class="label"><span>📉</span> Всего расходов</div>
     <div class="value text-danger">
       -{{ budgetService.totalExpense() | currency:settingsService.currency():'symbol-narrow':'1.0-0' }}
     </div>

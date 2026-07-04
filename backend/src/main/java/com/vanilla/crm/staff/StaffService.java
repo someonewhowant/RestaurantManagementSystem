@@ -31,6 +31,8 @@ public class StaffService {
                 .name(dto.getName())
                 .phone(dto.getPhone())
                 .email(dto.getEmail())
+                .salary(dto.getSalary())
+                .salaryDate(dto.getSalaryDate())
                 .role(EmployeeDto.toRoleEnum(dto.getRole()))
                 .status(EmployeeDto.toStatusEnum(dto.getStatus()))
                 .hireDate(dto.getHireDate() != null && !dto.getHireDate().isEmpty() ? LocalDate.parse(dto.getHireDate()) : LocalDate.now())
@@ -51,6 +53,8 @@ public class StaffService {
         if (dto.getName() != null) employee.setName(dto.getName());
         if (dto.getPhone() != null) employee.setPhone(dto.getPhone());
         if (dto.getEmail() != null) employee.setEmail(dto.getEmail());
+        if (dto.getSalary() != null) employee.setSalary(dto.getSalary());
+        if (dto.getSalaryDate() != null) employee.setSalaryDate(dto.getSalaryDate());
         if (dto.getRole() != null) employee.setRole(EmployeeDto.toRoleEnum(dto.getRole()));
         if (dto.getHireDate() != null && !dto.getHireDate().isEmpty()) {
             employee.setHireDate(LocalDate.parse(dto.getHireDate()));

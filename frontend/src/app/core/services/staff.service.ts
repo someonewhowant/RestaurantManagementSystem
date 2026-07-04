@@ -8,6 +8,8 @@ export interface Employee {
   status: 'Активен' | 'В отпуске' | 'Уволен';
   phone?: string;
   email?: string;
+  salary?: number;
+  salaryDate?: string;
   hireDate: string;
   fireDate?: string;
   vacationStart?: string;

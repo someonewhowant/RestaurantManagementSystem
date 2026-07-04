@@ -180,6 +180,10 @@
     }
   }
   
+  &.clickable-card {
+    cursor: pointer;
+  }
+  
   &.fired { 
     opacity: 0.7; 
     filter: grayscale(0.5); 

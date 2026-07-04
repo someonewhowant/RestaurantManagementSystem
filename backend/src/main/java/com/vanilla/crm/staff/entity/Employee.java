@@ -27,6 +27,11 @@ public class Employee {
 
     private String email;
 
+    @Column(precision = 10, scale = 2)
+    private java.math.BigDecimal salary;
+
+    private String salaryDate;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private EmployeeRole role;

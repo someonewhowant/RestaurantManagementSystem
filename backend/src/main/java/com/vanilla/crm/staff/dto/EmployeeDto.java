@@ -15,6 +15,8 @@ public class EmployeeDto {
     private String name;
     private String phone;
     private String email;
+    private java.math.BigDecimal salary;
+    private String salaryDate;
     private String role;      // "Менеджер", "Официант", "Повар", "Кассир"
     private String status;    // "Активен", "В отпуске", "Уволен"
     private String hireDate;
@@ -57,6 +59,8 @@ public class EmployeeDto {
                 .name(emp.getName())
                 .phone(emp.getPhone())
                 .email(emp.getEmail())
+                .salary(emp.getSalary())
+                .salaryDate(emp.getSalaryDate())
                 .role(ROLE_REVERSE.getOrDefault(emp.getRole(), emp.getRole().name()))
                 .status(STATUS_REVERSE.getOrDefault(emp.getStatus(), emp.getStatus().name()))
                 .hireDate(emp.getHireDate() != null ? emp.getHireDate().toString() : null)

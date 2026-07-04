@@ -73,13 +73,15 @@ public class StaffController {
     public ResponseEntity<byte[]> exportCsv() {
         List<EmployeeDto> employees = staffService.getAllEmployees();
         StringWriter writer = new StringWriter();
-        writer.append("ID;Имя;Телефон;Email;Роль;Статус;На смене\n");
+        writer.append("ID;Имя;Телефон;Email;Зарплата;Дата зарплаты;Роль;Статус;На смене\n");
         for (EmployeeDto emp : employees) {
-            writer.append(String.format("%s;%s;%s;%s;%s;%s;%s\n",
+            writer.append(String.format("%s;%s;%s;%s;%s;%s;%s;%s;%s\n",
                     emp.getId(),
                     emp.getName() != null ? emp.getName().replace(";", " ") : "",
                     emp.getPhone() != null ? emp.getPhone().replace(";", " ") : "",
                     emp.getEmail() != null ? emp.getEmail().replace(";", " ") : "",
+                    emp.getSalary() != null ? emp.getSalary() : "",
+                    emp.getSalaryDate() != null ? emp.getSalaryDate().replace(";", " ") : "",
                     emp.getRole() != null ? emp.getRole().replace(";", " ") : "",
                     emp.getStatus() != null ? emp.getStatus().replace(";", " ") : "",
                     Boolean.TRUE.equals(emp.getOnShift()) ? "Да" : "Нет"));

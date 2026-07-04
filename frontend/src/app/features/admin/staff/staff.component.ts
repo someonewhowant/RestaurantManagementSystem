@@ -42,13 +42,20 @@ export class AdminStaffComponent {
       list = list.filter(e => e.status === status);
     }
     
-    return list;
+    // Сортировка: уволенные в самом конце
+    return list.sort((a, b) => {
+      if (a.status === 'Уволен' && b.status !== 'Уволен') return 1;
+      if (a.status !== 'Уволен' && b.status === 'Уволен') return -1;
+      return 0;
+    });
   });
 
   public addForm = this.fb.nonNullable.group({
     name: ['', Validators.required],
     phone: [''],
     email: [''],
+    salary: [0],
+    salaryDate: [''],
     role: ['Официант' as Employee['role'], Validators.required],
     status: ['Активен' as Employee['status'], Validators.required],
     hireDate: [new Date().toISOString().split('T')[0], Validators.required],
@@ -63,6 +70,8 @@ export class AdminStaffComponent {
     name: ['', Validators.required],
     phone: [''],
     email: [''],
+    salary: [0],
+    salaryDate: [''],
     role: ['Официант' as Employee['role'], Validators.required],
     status: ['Активен' as Employee['status'], Validators.required],
     hireDate: ['', Validators.required],
@@ -71,12 +80,24 @@ export class AdminStaffComponent {
     vacationEnd: ['']
   });
 
+  public selectedViewEmployee = signal<Employee | null>(null);
+
+  openViewModal(emp: Employee) {
+    this.selectedViewEmployee.set(emp);
+  }
+
+  closeViewModal() {
+    this.selectedViewEmployee.set(null);
+  }
+
   openEditModal(emp: Employee) {
     this.selectedEditEmployee.set(emp);
     this.editForm.reset({
       name: emp.name,
       phone: emp.phone || '',
       email: emp.email || '',
+      salary: emp.salary || 0,
+      salaryDate: emp.salaryDate || '',
       role: emp.role,
       status: emp.status,
       hireDate: emp.hireDate,
