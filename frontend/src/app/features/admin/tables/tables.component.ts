@@ -1,9 +1,9 @@
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
-import { TablesService, Table } from '../../../../core/services/tables.service';
-import { UiButtonComponent } from '../../../../core/ui/button/button.component';
-import { UiModalComponent } from '../../../../core/ui/modal/modal.component';
+import { TablesService, Table } from '../../../core/services/tables.service';
+import { UiButtonComponent } from '../../../core/ui/button/button.component';
+import { UiModalComponent } from '../../../core/ui/modal/modal.component';
 
 @Component({
   selector: 'app-admin-tables',

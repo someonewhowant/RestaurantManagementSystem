@@ -1,9 +1,10 @@
 import { Component, inject, signal, computed } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TablesService, Table, TableStatus } from '../../../core/services/tables.service';
 import { StaffService } from '../../../core/services/staff.service';
+import { AuthService } from '../../../core/services/auth.service';
 import { UiBadgeComponent } from '../../../core/ui/badge/badge.component';
 import { UiModalComponent } from '../../../core/ui/modal/modal.component';
 import { UiButtonComponent } from '../../../core/ui/button/button.component';
@@ -11,13 +12,14 @@ import { UiButtonComponent } from '../../../core/ui/button/button.component';
 @Component({
   selector: 'app-waiter-tables',
   standalone: true,
-  imports: [CommonModule, FormsModule, UiBadgeComponent, UiModalComponent, UiButtonComponent],
+  imports: [CommonModule, FormsModule, RouterLink, UiBadgeComponent, UiModalComponent, UiButtonComponent],
   templateUrl: './tables.component.html',
   styleUrl: './tables.component.scss'
 })
 export class WaiterTablesComponent {
   public tablesService = inject(TablesService);
   public staffService = inject(StaffService);
+  public authService = inject(AuthService);
   private router = inject(Router);
   
   public selectedTable = signal<Table | null>(null);
