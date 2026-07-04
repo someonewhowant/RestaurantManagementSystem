@@ -13,6 +13,8 @@ import java.util.UUID;
 public class EmployeeDto {
     private UUID id;
     private String name;
+    private String phone;
+    private String email;
     private String role;      // "Менеджер", "Официант", "Повар", "Кассир"
     private String status;    // "Активен", "В отпуске", "Уволен"
     private String hireDate;
@@ -53,6 +55,8 @@ public class EmployeeDto {
         return EmployeeDto.builder()
                 .id(emp.getId())
                 .name(emp.getName())
+                .phone(emp.getPhone())
+                .email(emp.getEmail())
                 .role(ROLE_REVERSE.getOrDefault(emp.getRole(), emp.getRole().name()))
                 .status(STATUS_REVERSE.getOrDefault(emp.getStatus(), emp.getStatus().name()))
                 .hireDate(emp.getHireDate() != null ? emp.getHireDate().toString() : null)

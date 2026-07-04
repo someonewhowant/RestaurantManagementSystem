@@ -47,6 +47,8 @@ export class AdminStaffComponent {
 
   public addForm = this.fb.nonNullable.group({
     name: ['', Validators.required],
+    phone: [''],
+    email: [''],
     role: ['Официант' as Employee['role'], Validators.required],
     status: ['Активен' as Employee['status'], Validators.required],
     hireDate: [new Date().toISOString().split('T')[0], Validators.required],
@@ -59,6 +61,8 @@ export class AdminStaffComponent {
 
   public editForm = this.fb.nonNullable.group({
     name: ['', Validators.required],
+    phone: [''],
+    email: [''],
     role: ['Официант' as Employee['role'], Validators.required],
     status: ['Активен' as Employee['status'], Validators.required],
     hireDate: ['', Validators.required],
@@ -71,6 +75,8 @@ export class AdminStaffComponent {
     this.selectedEditEmployee.set(emp);
     this.editForm.reset({
       name: emp.name,
+      phone: emp.phone || '',
+      email: emp.email || '',
       role: emp.role,
       status: emp.status,
       hireDate: emp.hireDate,
@@ -122,5 +128,32 @@ export class AdminStaffComponent {
 
   toggleShift(id: string) {
     this.staffService.toggleShift(id);
+  }
+
+  getInitials(name: string): string {
+    if (!name) return '??';
+    const parts = name.split(' ').filter(p => p.length > 0);
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[1][0]).toUpperCase();
+    } else if (parts.length === 1) {
+      return parts[0].substring(0, 2).toUpperCase();
+    }
+    return '??';
+  }
+
+  getShiftDuration(startTime: string | undefined): string {
+    if (!startTime) return '';
+    const start = new Date(startTime).getTime();
+    const now = new Date().getTime();
+    const diffMs = now - start;
+    if (diffMs < 0) return 'Только что';
+    
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+    const diffMinutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+    
+    if (diffHours > 0) {
+      return `${diffHours} ч. ${diffMinutes} мин.`;
+    }
+    return `${diffMinutes} мин.`;
   }
 }

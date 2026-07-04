@@ -6,6 +6,8 @@ export interface Employee {
   name: string;
   role: 'Менеджер' | 'Официант' | 'Повар' | 'Кассир';
   status: 'Активен' | 'В отпуске' | 'Уволен';
+  phone?: string;
+  email?: string;
   hireDate: string;
   fireDate?: string;
   vacationStart?: string;
