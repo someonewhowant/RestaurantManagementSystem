@@ -43,4 +43,26 @@ public class TableController {
     public ResponseEntity<TableDto> assignWaiter(@PathVariable UUID id, @RequestBody WaiterAssignRequest request) {
         return ResponseEntity.ok(tableService.assignWaiter(id, request.getWaiterId()));
     }
+
+    @Operation(summary = "Создать столик", description = "Добавляет новый столик в зал.")
+    @ApiResponse(responseCode = "200", description = "Созданный столик")
+    @PostMapping
+    public ResponseEntity<TableDto> createTable(@RequestBody TableDto dto) {
+        return ResponseEntity.ok(tableService.createTable(dto));
+    }
+
+    @Operation(summary = "Обновить столик", description = "Обновляет номер или вместимость столика.")
+    @ApiResponse(responseCode = "200", description = "Обновлённый столик")
+    @PutMapping("/{id}")
+    public ResponseEntity<TableDto> updateTable(@PathVariable UUID id, @RequestBody TableDto dto) {
+        return ResponseEntity.ok(tableService.updateTable(id, dto));
+    }
+
+    @Operation(summary = "Удалить столик", description = "Удаляет столик из системы.")
+    @ApiResponse(responseCode = "204", description = "Столик удалён")
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteTable(@PathVariable UUID id) {
+        tableService.deleteTable(id);
+        return ResponseEntity.noContent().build();
+    }
 }

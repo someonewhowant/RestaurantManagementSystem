@@ -49,4 +49,29 @@ export class TablesService {
       error: (err) => console.error('Failed to assign waiter', err)
     });
   }
+
+  addTable(table: Partial<Table>) {
+    this.http.post<Table>('/api/tables', table).subscribe({
+      next: (created) => this.tablesSignal.update(list => [...list, created]),
+      error: (err) => console.error('Failed to create table', err)
+    });
+  }
+
+  updateTable(id: string, updates: Partial<Table>) {
+    this.http.put<Table>(`/api/tables/${id}`, updates).subscribe({
+      next: (updated) => this.tablesSignal.update(list =>
+        list.map(t => t.id === id ? updated : t)
+      ),
+      error: (err) => console.error('Failed to update table', err)
+    });
+  }
+
+  deleteTable(id: string) {
+    this.http.delete(`/api/tables/${id}`).subscribe({
+      next: () => this.tablesSignal.update(list =>
+        list.filter(t => t.id !== id)
+      ),
+      error: (err) => console.error('Failed to delete table', err)
+    });
+  }
 }

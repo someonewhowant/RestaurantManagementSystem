@@ -52,22 +52,23 @@
 
 <!-- Analytics (Category Breakdown) -->
 @if (budgetService.dateRange().start || budgetService.dateRange().end) {
-  <app-ui-card style="margin-bottom: 24px;">
-    <h3 style="margin-top: 0; margin-bottom: 16px;">Структура расходов</h3>
+  <app-ui-card class="analytics-card">
+    <h3 style="margin-top: 0; margin-bottom: 20px; font-size: 18px; letter-spacing: 0.5px;">Структура расходов</h3>
     @if (hasExpenses()) {
       <div style="display: flex; gap: 32px; align-items: center; flex-wrap: wrap;">
-        <!-- Simple Bar Chart -->
-        <div style="flex: 1; display: flex; flex-direction: column; gap: 12px;">
+        <!-- Neon Bar Chart -->
+        <div style="flex: 1; display: flex; flex-direction: column; gap: 16px;">
           @for (cat of expenseCategories(); track cat.name) {
             <div>
-              <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 4px; font-weight: 500;">
+              <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px; font-weight: 500; color: var(--color-text-main);">
                 <span>{{ cat.name }}</span>
                 <span>{{ cat.amount | currency:settingsService.currency():'symbol-narrow':'1.0-0' }} ({{ cat.percent }}%)</span>
               </div>
-              <div style="width: 100%; height: 8px; background: var(--color-bg-hover); border-radius: 4px; overflow: hidden;">
-                <div style="height: 100%; border-radius: 4px; transition: width 0.3s;"
+              <div class="bar-bg">
+                <div class="bar-fill"
                      [style.width.%]="cat.percent"
-                     [style.background]="getCategoryColor(cat.name)">
+                     [style.background]="getCategoryColor(cat.name)"
+                     [style.color]="getCategoryColor(cat.name)">
                 </div>
               </div>
             </div>
@@ -135,17 +136,23 @@
     </thead>
     <tbody>
       @for (tx of budgetService.transactions(); track tx.id) {
-        <tr class="clickable-row" (click)="openTransactionDetails(tx)">
+        <tr class="clickable-row" 
+            [class.income-row]="tx.type === 'Доход'" 
+            [class.expense-row]="tx.type === 'Расход'"
+            (click)="openTransactionDetails(tx)">
           <td class="tx-date">{{ tx.date | date:'dd MMM yyyy HH:mm' }}</td>
           <td>
             @if (tx.type === 'Доход') {
-              <app-ui-badge color="success">Доход</app-ui-badge>
+              <app-ui-badge color="success" style="box-shadow: 0 0 10px rgba(76, 175, 80, 0.2);">Доход</app-ui-badge>
             } @else {
-              <app-ui-badge color="danger">Расход</app-ui-badge>
+              <app-ui-badge color="danger" style="box-shadow: 0 0 10px rgba(244, 67, 54, 0.2);">Расход</app-ui-badge>
             }
           </td>
-          <td>{{ tx.category }}</td>
-          <td>{{ tx.description }}</td>
+          <td>
+            <span style="opacity: 0.8; margin-right: 6px;">{{ tx.type === 'Доход' ? '💵' : '💳' }}</span>
+            {{ tx.category }}
+          </td>
+          <td><span style="color: var(--color-text-main);">{{ tx.description }}</span></td>
           <td class="text-right tx-amount" [class.text-success]="tx.type === 'Доход'" [class.text-danger]="tx.type === 'Расход'">
             {{ tx.type === 'Доход' ? '+' : '-' }}{{ tx.amount | currency:settingsService.currency():'symbol-narrow':'1.0-0' }}
           </td>

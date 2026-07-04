@@ -1,0 +1,86 @@
+<div class="page-header">
+  <div>
+    <h2>Управление столами</h2>
+    <p>Добавление, редактирование и удаление столиков зала.</p>
+  </div>
+  <app-ui-button variant="primary" (click)="openAddModal()">Добавить стол</app-ui-button>
+</div>
+
+<div class="table-container">
+  <table class="admin-table">
+    <thead>
+      <tr>
+        <th>Номер стола</th>
+        <th>Вместимость</th>
+        <th>Текущий статус</th>
+        <th class="text-right">Действия</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (table of tablesService.tables(); track table.id) {
+        <tr>
+          <td><span class="table-badge">#{{ table.number }}</span></td>
+          <td>🪑 {{ table.capacity }} персон</td>
+          <td>
+            <span class="status-indicator" [class]="'bg-' + (table.status === 'Свободен' ? 'success' : table.status === 'Занят' ? 'danger' : 'warning')"></span>
+            {{ table.status }}
+          </td>
+          <td class="text-right">
+            <app-ui-button variant="secondary" size="sm" (click)="openEditModal(table)" style="margin-right: 8px;">Редактировать</app-ui-button>
+            <app-ui-button variant="danger" size="sm" (click)="deleteTable(table.id)">Удалить</app-ui-button>
+          </td>
+        </tr>
+      } @empty {
+        <tr>
+          <td colspan="4" class="empty-state">Нет добавленных столов</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>
+
+<!-- Модальное окно добавления -->
+<app-ui-modal 
+  [isOpen]="isAddingTable()" 
+  [title]="'Добавить новый стол'"
+  (onClose)="closeAddModal()">
+  
+  <form [formGroup]="addForm" (ngSubmit)="submitAdd()" class="form-layout">
+    <div class="form-group">
+      <label>Номер стола</label>
+      <input type="number" formControlName="number" placeholder="Например: 12" />
+    </div>
+    <div class="form-group">
+      <label>Вместимость (чел)</label>
+      <input type="number" formControlName="capacity" placeholder="Например: 4" />
+    </div>
+    
+    <div class="form-actions">
+      <app-ui-button type="button" variant="secondary" (click)="closeAddModal()">Отмена</app-ui-button>
+      <app-ui-button type="submit" variant="primary" [disabled]="!addForm.valid">Сохранить</app-ui-button>
+    </div>
+  </form>
+</app-ui-modal>
+
+<!-- Модальное окно редактирования -->
+<app-ui-modal 
+  [isOpen]="selectedEditTable() !== null" 
+  [title]="'Редактировать стол'"
+  (onClose)="closeEditModal()">
+  
+  <form [formGroup]="editForm" (ngSubmit)="submitEdit()" class="form-layout">
+    <div class="form-group">
+      <label>Номер стола</label>
+      <input type="number" formControlName="number" />
+    </div>
+    <div class="form-group">
+      <label>Вместимость (чел)</label>
+      <input type="number" formControlName="capacity" />
+    </div>
+    
+    <div class="form-actions">
+      <app-ui-button type="button" variant="secondary" (click)="closeEditModal()">Отмена</app-ui-button>
+      <app-ui-button type="submit" variant="primary" [disabled]="!editForm.valid">Сохранить</app-ui-button>
+    </div>
+  </form>
+</app-ui-modal>

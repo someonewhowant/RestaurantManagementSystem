@@ -2,8 +2,18 @@
   <!-- Левая колонка: Меню -->
   <div class="menu-section">
     <div class="menu-header">
-      <app-ui-button routerLink="/waiter/tables" variant="primary">← В зал</app-ui-button>
-      <h2>Меню</h2>
+      <div style="display: flex; align-items: center; gap: 16px;">
+        <app-ui-button routerLink="/waiter/tables" variant="secondary">← Назад</app-ui-button>
+        <h2 style="font-size: 22px;">Меню</h2>
+      </div>
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" 
+               [ngModel]="searchQuery()" 
+               (ngModelChange)="searchQuery.set($event)" 
+               placeholder="Поиск блюд..." 
+               class="search-input">
+      </div>
     </div>
 
     <!-- Категории -->
@@ -22,7 +32,9 @@
     <div class="dishes-grid">
       @for (dish of displayedDishes(); track dish.id) {
         <div class="dish-card" (click)="addToCart(dish)">
-          <div class="dish-icon">{{ dish.imageIcon }}</div>
+          <div class="dish-icon-wrapper">
+            <div class="dish-icon">{{ dish.imageIcon }}</div>
+          </div>
           <div class="dish-info">
             <h4>{{ dish.name }}</h4>
             <span class="weight">{{ dish.weight }}</span>
@@ -36,13 +48,13 @@
   <!-- Правая колонка: Корзина / Чек -->
   <div class="cart-section">
     <div class="cart-header">
-      <div style="display: flex; flex-direction: column; gap: 4px;">
-        <h3>Заказ: Стол {{ tableId() || '?' }}</h3>
+      <div style="display: flex; flex-direction: column; gap: 4px; align-items: center; text-align: center;">
+        <h3 style="font-family: var(--font-secondary); text-transform: uppercase; letter-spacing: 1px;">Заказ #{{ tableId() || '0' }}</h3>
+        <span style="font-size: 13px; color: var(--color-text-muted);">Стол {{ tableId() || '?' }}</span>
         @if (waiterName()) {
-          <span style="font-size: 13px; color: var(--color-text-muted);">Официант: <strong>{{ waiterName() }}</strong></span>
+          <span style="font-size: 13px; color: var(--color-text-muted);">Оф: {{ waiterName() }}</span>
         }
       </div>
-      <span class="cart-meta">Новый чек</span>
     </div>
 
     <div class="cart-items">

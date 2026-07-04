@@ -22,6 +22,7 @@ export const routes: Routes = [
       { path: 'inventory', loadComponent: () => import('./features/admin/inventory/inventory.component').then(m => m.AdminInventoryComponent) },
       { path: 'staff', loadComponent: () => import('./features/admin/staff/staff.component').then(m => m.AdminStaffComponent) },
       { path: 'budget', loadComponent: () => import('./features/admin/budget/budget.component').then(m => m.AdminBudgetComponent) },
+      { path: 'tables', loadComponent: () => import('./features/admin/tables/tables.component').then(m => m.AdminTablesComponent) },
       
       { path: 'pos', redirectTo: 'pos/tables', pathMatch: 'full' },
       { path: 'pos/tables', loadComponent: () => import('./features/waiter/tables/tables.component').then(m => m.WaiterTablesComponent) },

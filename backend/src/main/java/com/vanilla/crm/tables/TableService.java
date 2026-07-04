@@ -51,4 +51,29 @@ public class TableService {
         table.setWaiterId(waiterId);
         return TableDto.fromEntity(tableRepository.save(table));
     }
+
+    @Transactional
+    public TableDto createTable(TableDto dto) {
+        RestaurantTable table = RestaurantTable.builder()
+                .number(dto.getNumber())
+                .capacity(dto.getCapacity())
+                .status(RestaurantTable.TableStatus.FREE)
+                .statusUpdatedAt(Instant.now())
+                .build();
+        return TableDto.fromEntity(tableRepository.save(table));
+    }
+
+    @Transactional
+    public TableDto updateTable(UUID id, TableDto dto) {
+        RestaurantTable table = tableRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Table not found"));
+        if (dto.getNumber() != null) table.setNumber(dto.getNumber());
+        if (dto.getCapacity() != null) table.setCapacity(dto.getCapacity());
+        return TableDto.fromEntity(tableRepository.save(table));
+    }
+
+    @Transactional
+    public void deleteTable(UUID id) {
+        tableRepository.deleteById(id);
+    }
 }

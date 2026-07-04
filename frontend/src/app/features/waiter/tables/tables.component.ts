@@ -96,9 +96,23 @@ export class WaiterTablesComponent {
 
   getDuration(table: Table): string {
     if (table.status === 'Свободен' || !table.statusUpdatedAt) return '';
+    const minutes = this.getDurationMinutes(table);
+    if (minutes >= 60) {
+      const h = Math.floor(minutes / 60);
+      const m = minutes % 60;
+      return `${h} ч ${m} мин`;
+    }
+    return `${minutes} мин`;
+  }
+
+  getDurationMinutes(table: Table): number {
+    if (table.status === 'Свободен' || !table.statusUpdatedAt) return 0;
     const date = new Date(table.statusUpdatedAt);
     const diff = Date.now() - date.getTime();
-    const minutes = Math.floor(diff / 60000);
-    return `${minutes} мин`;
+    return Math.floor(diff / 60000);
+  }
+
+  getSeatsArray(capacity: number): number[] {
+    return Array.from({ length: capacity }, (_, i) => i);
   }
 }

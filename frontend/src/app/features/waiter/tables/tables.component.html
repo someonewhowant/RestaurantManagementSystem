@@ -24,16 +24,35 @@
 
 <div class="tables-grid">
   @for (table of tablesService.tables(); track table.id) {
-    <div class="table-item" [class]="'status-' + getStatusColor(table.status)" (click)="onTableClick(table)">
-      <div class="table-number">{{ table.number }}</div>
+    <div class="table-item" 
+         [class]="'status-' + getStatusColor(table.status)" 
+         (click)="onTableClick(table)"
+         [style.opacity]="currentWaiterId() && table.waiterId && currentWaiterId() !== table.waiterId ? 0.6 : 1">
+      
+      <div class="table-visualizer">
+        <div class="table-number">{{ table.number }}</div>
+        <div class="seats-container">
+          @for (seat of getSeatsArray(table.capacity); track seat) {
+            <div class="seat" 
+                 [style.transform]="'rotate(' + (seat * (360 / table.capacity)) + 'deg) translate(64px) rotate(-' + (seat * (360 / table.capacity)) + 'deg)'">
+              🪑
+            </div>
+          }
+        </div>
+      </div>
+
       <div class="table-info">
-        <div class="capacity">🧑‍🤝‍🧑 {{ table.capacity }}</div>
+        <div class="capacity"><span>🪑</span> {{ table.capacity }}</div>
         <app-ui-badge [color]="getStatusColor(table.status)">{{ table.status }}</app-ui-badge>
       </div>
       @if (table.waiterId) {
-        <div class="assigned-waiter" style="margin-top: auto; font-size: 12px; color: var(--color-text-muted); border-top: 1px dashed rgba(0,0,0,0.1); padding-top: 12px; display: flex; justify-content: space-between; align-items: center;">
+        <div class="assigned-waiter" style="margin-top: auto; font-size: 12px; color: var(--color-text-muted); border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 12px; width: 100%; display: flex; justify-content: space-between; align-items: center;">
           <span>Официант: <strong>{{ getWaiterName(table.waiterId) }}</strong></span>
-          <span style="font-weight: 600; color: var(--color-primary);" *ngIf="getDuration(table)">⏱ {{ getDuration(table) }}</span>
+          <span *ngIf="getDuration(table)" 
+                style="font-weight: 600;" 
+                [style.color]="getDurationMinutes(table) >= 30 ? 'var(--color-danger)' : getDurationMinutes(table) >= 15 ? 'var(--color-warning)' : 'var(--color-primary)'">
+            ⏱ {{ getDuration(table) }}
+          </span>
         </div>
       }
     </div>
@@ -46,10 +65,10 @@
   (onClose)="closeModal()">
   
   @if (selectedTable(); as table) {
-    <div class="modal-table-info">
+    <div class="modal-table-info" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); backdrop-filter: blur(10px);">
       <div class="info-group">
         <span class="label">Вместимость:</span>
-        <span class="value">{{ table.capacity }} персон</span>
+        <span class="value">🪑 {{ table.capacity }} персон</span>
       </div>
       <div class="info-group">
         <span class="label">Текущий статус:</span>
@@ -63,7 +82,11 @@
       }
       <div class="info-group" *ngIf="getDuration(table)">
         <span class="label">Время обслуживания:</span>
-        <span class="value" style="color: var(--color-primary); font-weight: 600;">{{ getDuration(table) }}</span>
+        <span class="value" 
+              style="font-weight: 600;"
+              [style.color]="getDurationMinutes(table) >= 30 ? 'var(--color-danger)' : getDurationMinutes(table) >= 15 ? 'var(--color-warning)' : 'var(--color-primary)'">
+          {{ getDuration(table) }}
+        </span>
       </div>
     </div>
 

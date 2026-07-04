@@ -84,63 +84,129 @@
 
 /* Table */
 .table-container {
-  background: var(--color-surface); border-radius: var(--radius-lg); box-shadow: var(--shadow-md); overflow: hidden;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: var(--radius-lg); 
+  box-shadow: var(--shadow-md); 
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
 }
 .budget-table {
   width: 100%; border-collapse: collapse; text-align: left;
 }
 .budget-table th, .budget-table td {
-  padding: 16px 24px; border-bottom: 1px solid var(--color-border);
+  padding: 16px 24px; border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 .budget-table th {
-  background-color: var(--color-bg); font-weight: 600; color: var(--color-text-muted); font-size: 14px; text-transform: uppercase;
+  background-color: rgba(0, 0, 0, 0.2); font-weight: 600; color: var(--color-text-muted); font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px;
 }
 .budget-table tbody tr:last-child td { border-bottom: none; }
-.budget-table tbody tr { transition: background-color 0.2s ease; }
-.budget-table tbody tr:hover { background-color: var(--color-bg-hover); }
+.budget-table tbody tr { 
+  transition: all 0.3s ease; 
+  position: relative;
+}
+
+.budget-table tbody tr.income-row td:first-child {
+  border-left: 3px solid transparent;
+  transition: border-color 0.3s ease;
+}
+.budget-table tbody tr.expense-row td:first-child {
+  border-left: 3px solid transparent;
+  transition: border-color 0.3s ease;
+}
+
+.clickable-row {
+  cursor: pointer;
+}
+.clickable-row:hover {
+  background-color: rgba(255, 255, 255, 0.04);
+}
+
+.clickable-row.income-row:hover td:first-child {
+  border-left-color: var(--color-success);
+}
+.clickable-row.expense-row:hover td:first-child {
+  border-left-color: var(--color-danger);
+}
 
 .tx-date { color: var(--color-text-muted); font-size: 14px; }
 .tx-amount { font-family: var(--font-secondary); font-weight: 600; font-size: 16px; }
+.tx-amount.text-success { text-shadow: 0 0 10px rgba(76, 175, 80, 0.4); }
+.tx-amount.text-danger { text-shadow: 0 0 10px rgba(244, 67, 54, 0.4); }
 .text-right { text-align: right; }
 .empty-state { text-align: center; color: var(--color-text-muted); padding: 32px !important; }
 
-/* Table modifications */
-.clickable-row {
-  cursor: pointer;
-  transition: background-color 0.2s ease;
+/* Analytics Redesign */
+.analytics-card {
+  margin-bottom: 24px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: inset 0 0 20px rgba(255,255,255,0.01);
+  backdrop-filter: blur(10px);
 }
-.clickable-row:hover {
-  background-color: var(--color-bg-hover);
+
+.bar-bg {
+  width: 100%; 
+  height: 10px; 
+  background: rgba(255, 255, 255, 0.05); 
+  border-radius: 6px; 
+  overflow: hidden;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.3);
+}
+
+.bar-fill {
+  height: 100%; 
+  border-radius: 6px; 
+  transition: width 1s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 0 10px currentColor; /* Neon glow */
 }
 
 /* Digital Receipt Modal Redesign */
 .receipt-modal {
   display: flex;
   flex-direction: column;
+  background: var(--color-surface);
+  position: relative;
+  border-radius: 8px;
+  /* Premium Receipt Edge */
+  mask-image: radial-gradient(circle at 10px 0, transparent 4px, black 5px),
+              radial-gradient(circle at 10px 100%, transparent 4px, black 5px);
+  mask-size: 20px 100%;
+  mask-position: 0 0, 0 100%;
+  mask-repeat: repeat-x;
 }
 
 .receipt-header {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 32px 24px 24px;
-  background: linear-gradient(180deg, var(--color-bg-hover) 0%, transparent 100%);
-  border-bottom: 2px dashed var(--color-border);
+  padding: 40px 24px 24px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.03) 0%, transparent 100%);
+  border-bottom: 2px dashed rgba(255,255,255,0.1);
 }
 
 .receipt-icon {
-  width: 56px;
-  height: 56px;
+  width: 64px;
+  height: 64px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 24px;
+  font-size: 28px;
   font-weight: 700;
   margin-bottom: 16px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
 }
-.receipt-icon.success { background: var(--color-success-bg); color: var(--color-success); }
-.receipt-icon.danger { background: var(--color-danger-bg); color: var(--color-danger); }
+.receipt-icon.success { 
+  background: linear-gradient(135deg, var(--color-success) 0%, #1b5e20 100%); 
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(76, 175, 80, 0.4);
+}
+.receipt-icon.danger { 
+  background: linear-gradient(135deg, var(--color-danger) 0%, #b71c1c 100%); 
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(244, 67, 54, 0.4);
+}
 
 .receipt-header h2 {
   font-size: 16px;

@@ -1,6 +1,7 @@
 import { Component, inject, signal, computed } from '@angular/core';
 import { ActivatedRoute, RouterLink, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { MenuService, MenuCategory, Dish } from '../../../core/services/menu.service';
 import { OrderService } from '../../../core/services/order.service';
 import { BudgetService } from '../../../core/services/budget.service';
@@ -13,7 +14,7 @@ import { UiButtonComponent } from '../../../core/ui/button/button.component';
 @Component({
   selector: 'app-waiter-terminal',
   standalone: true,
-  imports: [CommonModule, UiButtonComponent, RouterLink],
+  imports: [CommonModule, FormsModule, UiButtonComponent, RouterLink],
   templateUrl: './terminal.component.html',
   styleUrl: './terminal.component.scss'
 })
@@ -30,6 +31,27 @@ export class WaiterTerminalComponent {
   
   public tableId = signal<string | null>(null);
   public selectedCategory = signal<MenuCategory>('Популярное');
+
+  public searchQuery = signal<string>('');
+
+  public displayedDishes = computed(() => {
+    const category = this.selectedCategory();
+    const query = this.searchQuery().toLowerCase().trim();
+    let items = this.menuService.menu();
+
+    if (query) {
+      items = items.filter((d: Dish) => 
+        d.name.toLowerCase().includes(query)
+      );
+    } else {
+      if (category === 'Популярное') {
+        items = items.slice(0, 4);
+      } else {
+        items = items.filter((d: Dish) => d.category === category);
+      }
+    }
+    return items;
+  });
 
   public tableInfo = computed(() => {
     const tid = this.tableId();
@@ -49,10 +71,6 @@ export class WaiterTerminalComponent {
       this.tableId.set(params['tableId'] || null);
     });
   }
-
-  public displayedDishes = computed(() => {
-    return this.menuService.getDishesByCategory(this.selectedCategory());
-  });
 
   selectCategory(category: MenuCategory) {
     this.selectedCategory.set(category);
