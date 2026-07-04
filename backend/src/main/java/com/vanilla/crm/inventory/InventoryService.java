@@ -1,5 +1,6 @@
 package com.vanilla.crm.inventory;
 
+import com.vanilla.crm.inventory.dto.ConsumeItemDto;
 import com.vanilla.crm.inventory.dto.InventoryItemDto;
 import com.vanilla.crm.inventory.entity.InventoryItem;
 import lombok.RequiredArgsConstructor;
@@ -83,6 +84,16 @@ public class InventoryService {
         InventoryItem item = inventoryRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Item not found"));
         return InventoryItemDto.fromEntity(item);
+    }
+
+    @Transactional
+    public void consumeBatch(List<ConsumeItemDto> items) {
+        if (items == null || items.isEmpty()) return;
+        for (ConsumeItemDto item : items) {
+            if (item.getAmount() != null && item.getAmount() > 0) {
+                inventoryRepository.consumeItem(item.getIngredientId(), item.getAmount());
+            }
+        }
     }
 
     @Transactional

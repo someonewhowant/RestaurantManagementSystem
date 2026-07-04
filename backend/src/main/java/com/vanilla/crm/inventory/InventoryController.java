@@ -1,6 +1,7 @@
 package com.vanilla.crm.inventory;
 
 import com.vanilla.crm.inventory.dto.AmountRequest;
+import com.vanilla.crm.inventory.dto.BatchConsumeRequest;
 import com.vanilla.crm.inventory.dto.InventoryItemDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -71,6 +72,14 @@ public class InventoryController {
     @PatchMapping("/{id}/consume")
     public ResponseEntity<InventoryItemDto> consume(@PathVariable UUID id, @RequestBody AmountRequest request) {
         return ResponseEntity.ok(inventoryService.consume(id, request.getAmount()));
+    }
+
+    @Operation(summary = "Пакетное списание", description = "Списывает несколько позиций одновременно.")
+    @ApiResponse(responseCode = "200", description = "Списание успешно")
+    @PostMapping("/consume-batch")
+    public ResponseEntity<Void> consumeBatch(@RequestBody BatchConsumeRequest request) {
+        inventoryService.consumeBatch(request.getItems());
+        return ResponseEntity.ok().build();
     }
 
     @Operation(summary = "Удалить позицию", description = "Полностью удаляет позицию со склада.")

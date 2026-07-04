@@ -26,6 +26,7 @@ export class AdminInventoryComponent {
   public showAddForm = signal(false);
   public selectedRestockItem = signal<InventoryItem | null>(null);
   public selectedEditItem = signal<InventoryItem | null>(null);
+  public selectedViewItem = signal<InventoryItem | null>(null);
 
   public searchQuery = signal('');
   public selectedCategory = signal('Все категории');
@@ -51,7 +52,9 @@ export class AdminInventoryComponent {
     category: ['Овощи', Validators.required],
     currentStock: [0, [Validators.required, Validators.min(0)]],
     minStock: [0, [Validators.required, Validators.min(0)]],
-    unit: ['кг', Validators.required]
+    unit: ['кг', Validators.required],
+    pricePerUnit: [0, [Validators.min(0)]],
+    expiresInDays: [0, [Validators.min(0)]]
   });
 
   public restockForm = this.fb.nonNullable.group({
@@ -63,7 +66,13 @@ export class AdminInventoryComponent {
     name: ['', Validators.required],
     category: ['Овощи', Validators.required],
     minStock: [0, [Validators.required, Validators.min(0)]],
-    unit: ['кг', Validators.required]
+    unit: ['кг', Validators.required],
+    pricePerUnit: [0, [Validators.min(0)]],
+    expiresInDays: [0, [Validators.min(0)]]
+  });
+
+  public consumeForm = this.fb.nonNullable.group({
+    amount: [1, [Validators.required, Validators.min(0.01)]]
   });
 
   toggleAddForm() {
@@ -73,7 +82,7 @@ export class AdminInventoryComponent {
   onSubmitAdd() {
     if (this.addForm.valid) {
       this.inventoryService.addItem(this.addForm.value as any);
-      this.addForm.reset({ category: 'Овощи', currentStock: 0, minStock: 0, unit: 'кг' });
+      this.addForm.reset({ category: 'Овощи', currentStock: 0, minStock: 0, unit: 'кг', pricePerUnit: 0, expiresInDays: 0 });
       this.showAddForm.set(false);
     }
   }
@@ -128,7 +137,9 @@ export class AdminInventoryComponent {
       name: item.name,
       category: item.category,
       minStock: item.minStock,
-      unit: item.unit
+      unit: item.unit,
+      pricePerUnit: item.pricePerUnit || 0,
+      expiresInDays: item.expiresInDays || 0
     });
   }
 
@@ -141,6 +152,24 @@ export class AdminInventoryComponent {
     if (item && this.editForm.valid) {
       this.inventoryService.updateItem(item.id, this.editForm.getRawValue() as any);
       this.closeEditModal();
+    }
+  }
+
+  openViewModal(item: InventoryItem) {
+    this.selectedViewItem.set(item);
+    this.consumeForm.reset({ amount: 1 });
+  }
+
+  closeViewModal() {
+    this.selectedViewItem.set(null);
+  }
+
+  submitConsume() {
+    const item = this.selectedViewItem();
+    if (item && this.consumeForm.valid) {
+      const { amount } = this.consumeForm.getRawValue();
+      this.inventoryService.consume(item.id, amount);
+      this.closeViewModal();
     }
   }
 

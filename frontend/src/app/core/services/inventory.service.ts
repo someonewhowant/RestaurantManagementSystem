@@ -80,8 +80,6 @@ export class InventoryService {
 
   // Массовое списание по рецептам (вызывается при закрытии заказа)
   consumeForOrderItems(orderItems: { dish: any, quantity: number }[]) {
-    // В идеале это должно быть реализовано одним пакетным запросом на бекенд (Stage 8). 
-    // Пока реализуем через последовательные вызовы для совместимости.
     const consumptionMap = new Map<string, number>();
 
     for (const item of orderItems) {
@@ -94,9 +92,17 @@ export class InventoryService {
       }
     }
 
-    consumptionMap.forEach((amount, ingredientId) => {
-       this.consume(ingredientId, amount);
-    });
+    const payload = Array.from(consumptionMap.entries()).map(([ingredientId, amount]) => ({
+      ingredientId,
+      amount
+    }));
+
+    if (payload.length > 0) {
+      this.http.post('/api/inventory/consume-batch', { items: payload }).subscribe({
+        next: () => this.fetchItems(),
+        error: (err) => console.error('Failed to consume batch', err)
+      });
+    }
   }
 
   exportCsv() {

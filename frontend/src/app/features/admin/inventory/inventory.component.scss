@@ -32,8 +32,8 @@
 }
 
 .add-form {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 16px;
   align-items: flex-end;
 }
@@ -42,14 +42,6 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
-  flex: 1;
-  min-width: 150px;
-}
-
-.stock-inputs {
-  flex: 2;
-  flex-direction: row;
-  min-width: 300px;
 }
 
 .form-group label {
@@ -78,7 +70,8 @@
 }
 
 .form-actions {
-  margin-bottom: 2px;
+  grid-column: 1 / -1;
+  margin-top: 8px;
 }
 
 .alert-box {
@@ -95,6 +88,14 @@
 .alert-icon { font-size: 24px; }
 .alert-content strong { color: var(--color-danger); display: block; margin-bottom: 4px;}
 .alert-content p { color: var(--color-text-muted); font-size: 14px;}
+
+.alert-box.warning-alert {
+  background-color: var(--color-warning-bg);
+  border-left-color: var(--color-warning);
+}
+.alert-box.warning-alert .alert-content strong {
+  color: var(--color-warning);
+}
 
 /* Premium Restock Modal */
 .restock-modal-content {
@@ -159,6 +160,12 @@
 
 .form-row {
   display: flex;
+  gap: 16px;
+}
+
+.edit-form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   gap: 16px;
 }
 
@@ -357,3 +364,50 @@
 .dish-cat { font-size: 10px; background: var(--color-border); color: var(--color-text-muted); }
 .empty-hint { margin: 0; font-size: 13px; color: var(--color-text-muted); }
 
+/* View Modal */
+.view-modal-content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+.details-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  padding: 16px;
+  border-radius: var(--radius-md);
+}
+.detail-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.detail-item .label {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  font-weight: 600;
+}
+.detail-item .value {
+  font-size: 15px;
+  color: var(--color-text-main);
+  font-family: var(--font-secondary);
+}
+.consume-box {
+  background: var(--color-danger-bg);
+  padding: 16px;
+  border-radius: var(--radius-md);
+  border: 1px dashed var(--color-danger);
+}
+.consume-box h4 {
+  margin: 0 0 8px 0;
+  color: var(--color-danger);
+  font-size: 14px;
+}
+.consume-box p {
+  margin: 0;
+  font-size: 13px;
+  color: var(--color-text-muted);
+}

@@ -31,26 +31,32 @@
         <option value="Напитки">Напитки</option>
       </select>
     </div>
-    <div class="form-group stock-inputs">
-      <div class="form-group">
-        <label>Остаток</label>
-        <input type="number" formControlName="currentStock" />
-      </div>
-      <div class="form-group">
-        <label>Минимум</label>
-        <input type="number" formControlName="minStock" />
-      </div>
-      <div class="form-group">
-        <label>Ед. изм.</label>
-        <select formControlName="unit">
-          <option value="кг">кг</option>
-          <option value="л">л</option>
-          <option value="шт">шт</option>
-        </select>
-      </div>
+    <div class="form-group">
+      <label>Остаток</label>
+      <input type="number" formControlName="currentStock" />
+    </div>
+    <div class="form-group">
+      <label>Минимум</label>
+      <input type="number" formControlName="minStock" />
+    </div>
+    <div class="form-group">
+      <label>Ед. изм.</label>
+      <select formControlName="unit">
+        <option value="кг">кг</option>
+        <option value="л">л</option>
+        <option value="шт">шт</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Цена за ед.</label>
+      <input type="number" formControlName="pricePerUnit" step="0.01" placeholder="0.00" />
+    </div>
+    <div class="form-group">
+      <label>Срок (дней)</label>
+      <input type="number" formControlName="expiresInDays" placeholder="30" />
     </div>
     <div class="form-actions">
-      <app-ui-button variant="success" [disabled]="addForm.invalid" type="submit">Сохранить позицию</app-ui-button>
+      <app-ui-button variant="success" [disabled]="addForm.invalid" type="submit" style="width: 100%;">Сохранить позицию</app-ui-button>
     </div>
   </form>
 </div>
@@ -63,6 +69,16 @@
   <div class="alert-content">
     <strong>Внимание: Дефицит продуктов!</strong>
     <p>Количество позиций, требующих немедленного пополнения: {{ inventoryService.lowStockItems().length }}</p>
+  </div>
+</div>
+}
+
+@if (inventoryService.expiringItems().length > 0) {
+<div class="alert-box warning-alert">
+  <span class="alert-icon">⏳</span>
+  <div class="alert-content">
+    <strong>Внимание: Истекающий срок годности!</strong>
+    <p>Количество позиций, требующих внимания: {{ inventoryService.expiringItems().length }}</p>
   </div>
 </div>
 }
@@ -90,7 +106,9 @@
         <th>Наименование</th>
         <th>Категория</th>
         <th>Остаток</th>
+        <th>Цена</th>
         <th>Минимум</th>
+        <th>Срок годн.</th>
         <th>Статус</th>
         <th>Действия</th>
       </tr>
@@ -102,14 +120,28 @@
         <td>{{ item.category }}</td>
         <td class="item-stock">
           <div class="stock-info">
-            <span>{{ item.currentStock }} {{ item.unit }}</span>
+            <span>{{ item.currentStock | number:'1.0-2' }} {{ item.unit }}</span>
           </div>
           <div class="progress-bar-container">
             <div class="progress-fill" [class]="getProgressBarClass(item)" [style.width.%]="getPercentage(item)">
             </div>
           </div>
         </td>
-        <td class="item-min">{{ item.minStock }} {{ item.unit }}</td>
+        <td class="item-price">
+          @if (item.pricePerUnit) {
+          {{ item.pricePerUnit | currency:settingsService.currency():'symbol-narrow':'1.0-2' }}
+          } @else {
+          —
+          }
+        </td>
+        <td class="item-min">{{ item.minStock | number:'1.0-2' }} {{ item.unit }}</td>
+        <td class="item-expiry">
+          @if (item.expiresInDays !== undefined && item.expiresInDays !== null) {
+          {{ item.expiresInDays }} дн.
+          } @else {
+          —
+          }
+        </td>
         <td>
           @if (item.currentStock <= item.minStock) { <app-ui-badge color="danger">Дефицит</app-ui-badge>
             } @else {
@@ -118,6 +150,9 @@
         </td>
         <td>
           <div class="actions-group">
+            <button class="icon-btn" (click)="openViewModal(item)" title="Просмотр карточки">
+              👁️
+            </button>
             <button class="icon-btn" (click)="openRestockModal(item)" title="Пополнить запасы">
               📦
             </button>
@@ -151,7 +186,7 @@
 
     <div class="current-stock-box" [class.warning]="item.currentStock <= item.minStock">
       <span class="stock-label">Текущий остаток на складе:</span>
-      <span class="stock-value">{{ item.currentStock }} <small>{{ item.unit }}</small></span>
+      <span class="stock-value">{{ item.currentStock | number:'1.0-2' }} <small>{{ item.unit }}</small></span>
     </div>
 
     <form [formGroup]="restockForm" (ngSubmit)="submitRestock()" class="restock-form">
@@ -197,7 +232,7 @@
         <input type="text" formControlName="name" />
       </div>
 
-      <div class="form-row">
+      <div class="edit-form-grid">
         <div class="form-group">
           <label>Категория</label>
           <select formControlName="category" class="category-select" style="width: 100%;">
@@ -211,6 +246,22 @@
         <div class="form-group">
           <label>Мин. запас</label>
           <input type="number" formControlName="minStock" />
+        </div>
+        <div class="form-group">
+          <label>Ед. изм.</label>
+          <select formControlName="unit">
+            <option value="кг">кг</option>
+            <option value="л">л</option>
+            <option value="шт">шт</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Цена за ед.</label>
+          <input type="number" formControlName="pricePerUnit" step="0.01" />
+        </div>
+        <div class="form-group">
+          <label>Срок годн. (дней)</label>
+          <input type="number" formControlName="expiresInDays" />
         </div>
       </div>
 
@@ -236,6 +287,86 @@
         <app-ui-button variant="success" [disabled]="editForm.invalid" type="submit">Сохранить</app-ui-button>
       </div>
     </form>
+  </div>
+  }
+</app-ui-modal>
+
+<!-- Модальное окно просмотра карточки товара и ручного списания -->
+<app-ui-modal [isOpen]="selectedViewItem() !== null" [title]="'Карточка товара'" (onClose)="closeViewModal()">
+  @if (selectedViewItem(); as item) {
+  <div class="view-modal-content">
+    <div class="restock-item-header">
+      <div class="item-icon">📝</div>
+      <div class="item-details">
+        <h3>{{ item.name }}</h3>
+        <span class="badge category-badge">{{ item.category }}</span>
+      </div>
+    </div>
+
+    <div class="details-grid">
+      <div class="detail-item">
+        <span class="label">Текущий остаток</span>
+        <span class="value">{{ item.currentStock | number:'1.0-2' }} {{ item.unit }}</span>
+      </div>
+      <div class="detail-item">
+        <span class="label">Мин. запас</span>
+        <span class="value">{{ item.minStock | number:'1.0-2' }} {{ item.unit }}</span>
+      </div>
+      <div class="detail-item">
+        <span class="label">Цена за ед.</span>
+        <span class="value">
+          @if (item.pricePerUnit) {
+          {{ item.pricePerUnit | currency:settingsService.currency():'symbol-narrow':'1.0-2' }}
+          } @else {
+          —
+          }
+        </span>
+      </div>
+      <div class="detail-item">
+        <span class="label">Срок годн.</span>
+        <span class="value">
+          @if (item.expiresInDays !== undefined && item.expiresInDays !== null) {
+          {{ item.expiresInDays }} дн.
+          } @else {
+          —
+          }
+        </span>
+      </div>
+    </div>
+
+    <div class="related-dishes-box">
+      <h4>Используется в меню:</h4>
+      @let related = getRelatedDishes(item);
+      @if (related.length > 0) {
+      <ul class="related-list">
+        @for (dish of related; track dish.id) {
+        <li>
+          <span class="dish-name">{{ dish.name }}</span>
+          <span class="dish-cat badge">{{ dish.category }}</span>
+        </li>
+        }
+      </ul>
+      } @else {
+      <p class="empty-hint">Этот ингредиент пока не используется ни в одной технологической карте.</p>
+      }
+    </div>
+
+    <div class="consume-box">
+      <h4>Ручное списание товара</h4>
+      <p>Используйте эту форму для списания просроченного или испорченного товара.</p>
+      <form [formGroup]="consumeForm" (ngSubmit)="submitConsume()" class="consume-form"
+        style="display: flex; gap: 16px; align-items: flex-end; margin-top: 12px;">
+        <div class="form-group" style="margin-bottom: 0; flex: 1;">
+          <label>Количество ({{ item.unit }})</label>
+          <input type="number" formControlName="amount" step="0.1" />
+        </div>
+        <app-ui-button variant="danger" [disabled]="consumeForm.invalid" type="submit">Списать</app-ui-button>
+      </form>
+    </div>
+
+    <div class="modal-actions" style="margin-top: 24px;">
+      <app-ui-button variant="secondary" (click)="closeViewModal()" type="button">Закрыть</app-ui-button>
+    </div>
   </div>
   }
 </app-ui-modal>
