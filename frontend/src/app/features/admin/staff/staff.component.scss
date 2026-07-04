@@ -18,7 +18,38 @@
   }
 }
 
-/* Forms */
+/* Forms & Filters */
+.filters-bar {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+  align-items: center;
+  background: var(--color-surface);
+  padding: 16px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--color-border);
+}
+
+.filter-select {
+  padding: 12px 16px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  outline: none;
+  font-size: 14px;
+  font-family: inherit;
+  background-color: var(--color-bg-hover);
+  color: var(--color-text-main);
+  transition: all 0.2s ease;
+  min-width: 160px;
+  
+  &:focus {
+    border-color: var(--color-primary);
+    background-color: var(--color-surface);
+    box-shadow: var(--shadow-sm), 0 0 0 3px rgba(230,81,0,0.1);
+  }
+}
+
 .add-form-container {
   background: var(--color-surface); 
   padding: 24px; 
@@ -77,12 +108,12 @@
     font-size: 14px; 
     outline: none; 
     transition: all 0.2s ease;
-    background-color: #fafafa;
+    background-color: var(--color-surface);
+    color: var(--color-text-main);
     
     &:focus { 
       border-color: var(--color-primary); 
-      background-color: var(--color-surface);
-      box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
+      box-shadow: var(--shadow-sm), 0 0 0 3px rgba(230,81,0,0.1);
     }
   }
 }
@@ -94,12 +125,12 @@
   width: 100%;
   
   &.danger-group { 
-    background: rgba(244,67,54,0.05); 
+    background: var(--color-danger-bg); 
     border-left: 4px solid var(--color-danger); 
   }
   
   &.warning-group { 
-    background: rgba(255,152,0,0.05); 
+    background: var(--color-warning-bg); 
     border-left: 4px solid var(--color-warning); 
   }
 }
@@ -136,13 +167,13 @@
   &.fired { 
     opacity: 0.7; 
     filter: grayscale(0.5); 
-    border-color: rgba(244,67,54,0.3); 
-    background: #fffcfc;
+    border-color: var(--color-danger); 
+    background: var(--color-danger-bg);
   }
   
   &.vacation { 
-    border-color: rgba(255,152,0,0.3); 
-    background: #fffdfa;
+    border-color: var(--color-warning); 
+    background: var(--color-warning-bg);
   }
 }
 
@@ -160,7 +191,7 @@
 }
 
 .card-info {
-  background: #f8f9fa;
+  background: var(--color-bg-hover);
   padding: 16px;
   border-radius: var(--radius-md);
   display: flex;
@@ -192,9 +223,9 @@
   border-radius: 20px; 
   letter-spacing: 0.3px;
   
-  &.st-danger { color: var(--color-danger); background: rgba(244,67,54,0.1); }
-  &.st-warning { color: var(--color-warning); background: rgba(255,152,0,0.15); }
-  &.st-success { color: var(--color-success); background: rgba(76,175,80,0.15); }
+  &.st-danger { color: var(--color-danger); background: var(--color-danger-bg); }
+  &.st-warning { color: var(--color-warning); background: var(--color-warning-bg); }
+  &.st-success { color: var(--color-success); background: var(--color-success-bg); }
 }
 
 .dates-box { 
@@ -213,8 +244,8 @@
   box-shadow: 0 1px 2px rgba(0,0,0,0.02);
   border: 1px solid var(--color-border);
   
-  &.danger-item { background: rgba(244,67,54,0.03); border-color: rgba(244,67,54,0.1); }
-  &.warning-item { background: rgba(255,152,0,0.03); border-color: rgba(255,152,0,0.1); }
+  &.danger-item { background: var(--color-danger-bg); border-color: rgba(244,67,54,0.1); }
+  &.warning-item { background: var(--color-warning-bg); border-color: rgba(255,152,0,0.1); }
 }
 
 .d-icon { 
@@ -224,12 +255,12 @@
   display: flex; 
   align-items: center; 
   justify-content: center; 
-  background: #f1f3f5; 
+  background: var(--color-bg-hover); 
   border-radius: 8px; 
 }
 
-.danger-item .d-icon { background: rgba(244,67,54,0.1); }
-.warning-item .d-icon { background: rgba(255,152,0,0.1); }
+.danger-item .d-icon { background: var(--color-danger-bg); }
+.warning-item .d-icon { background: var(--color-warning-bg); }
 
 .d-text { 
   display: flex; 
@@ -261,12 +292,12 @@
 
 
 .shift-item { border-left: 3px solid transparent; }
-.shift-item.shift-active { border-left-color: var(--color-success); background: rgba(76,175,80,0.03); }
+.shift-item.shift-active { border-left-color: var(--color-success); background: var(--color-success-bg); }
 .shift-btn {
   background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 6px; 
   padding: 4px 10px; font-size: 11px; font-weight: 600; cursor: pointer;
   transition: all 0.2s; color: var(--color-text-main);
 }
 .shift-item.shift-active .shift-btn { border-color: rgba(244,67,54,0.3); color: var(--color-danger); }
-.shift-btn:hover { background: #f0f0f0; }
+.shift-btn:hover { background: var(--color-bg-hover); }
 

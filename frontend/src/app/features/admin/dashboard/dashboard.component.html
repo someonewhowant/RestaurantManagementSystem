@@ -1,438 +1,355 @@
-<div class="page-header" style="margin-bottom: 24px;">
-  <h2>Сводка за день</h2>
-  <p style="color: var(--color-text-muted); font-size: 14px;">Ключевые показатели работы ресторана на данный момент.</p>
-</div>
-
-<div class="dashboard-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px;">
+<div class="dashboard-container">
   
-  <!-- Выручка -->
-  <app-ui-card class="stat-card" style="display: flex; flex-direction: column; gap: 12px; position: relative; overflow: hidden;">
-    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-      <div>
-        <h3 style="font-size: 14px; font-weight: 500; color: var(--color-text-muted); margin: 0;">Выручка</h3>
-        <div class="value" style="font-size: 26px; font-weight: 700; color: var(--color-text-main); margin-top: 4px; letter-spacing: -0.5px;">
-          {{ totalRevenue() | currency:settingsService.currency():'symbol-narrow':'1.0-0' }}
-        </div>
-      </div>
-      <div class="trend" [style.color]="trends.revenue.isPositive ? 'var(--color-success)' : 'var(--color-danger)'" [style.background]="trends.revenue.isPositive ? 'rgba(76,175,80,0.1)' : 'rgba(244,67,54,0.1)'" style="font-size: 13px; font-weight: 600; padding: 4px 8px; border-radius: 6px;">
-        {{ trends.revenue.isPositive ? '↑' : '↓' }} {{ trends.revenue.value }}%
-      </div>
-    </div>
-    <!-- Sparkline -->
-    <div style="height: 40px; margin-top: auto; margin-left: -16px; margin-right: -16px; margin-bottom: -16px;">
-      <svg viewBox="0 0 100 30" preserveAspectRatio="none" style="width: 100%; height: 100%; overflow: visible; display: block;">
-        <path [attr.d]="sparklineRevenue" fill="none" stroke="var(--color-primary)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
-        <path [attr.d]="sparklineRevenue + ' L 100 30 L 0 30 Z'" fill="rgba(33,150,243,0.1)" stroke="none" />
-      </svg>
-    </div>
-  </app-ui-card>
+  <div class="dashboard-header">
+    <h2>Сводка за день</h2>
+    <p>Ключевые показатели работы ресторана на данный момент.</p>
+  </div>
 
-  <!-- Средний чек -->
-  <app-ui-card class="stat-card" style="display: flex; flex-direction: column; gap: 12px; position: relative; overflow: hidden;">
-    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-      <div>
-        <h3 style="font-size: 14px; font-weight: 500; color: var(--color-text-muted); margin: 0;">Средний чек</h3>
-        <div class="value" style="font-size: 26px; font-weight: 700; color: var(--color-text-main); margin-top: 4px; letter-spacing: -0.5px;">
-          {{ averageCheck() | currency:settingsService.currency():'symbol-narrow':'1.0-0' }}
-        </div>
-      </div>
-      <div class="trend" [style.color]="trends.averageCheck.isPositive ? 'var(--color-success)' : 'var(--color-danger)'" [style.background]="trends.averageCheck.isPositive ? 'rgba(76,175,80,0.1)' : 'rgba(244,67,54,0.1)'" style="font-size: 13px; font-weight: 600; padding: 4px 8px; border-radius: 6px;">
-        {{ trends.averageCheck.isPositive ? '↑' : '↓' }} {{ trends.averageCheck.value }}%
-      </div>
-    </div>
-    <!-- Sparkline -->
-    <div style="height: 40px; margin-top: auto; margin-left: -16px; margin-right: -16px; margin-bottom: -16px;">
-      <svg viewBox="0 0 100 30" preserveAspectRatio="none" style="width: 100%; height: 100%; overflow: visible; display: block;">
-        <path [attr.d]="sparklineCheck" fill="none" stroke="var(--color-success)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
-        <path [attr.d]="sparklineCheck + ' L 100 30 L 0 30 Z'" fill="rgba(76,175,80,0.1)" stroke="none" />
-      </svg>
-    </div>
-  </app-ui-card>
-
-  <!-- Гости -->
-  <app-ui-card class="stat-card" style="display: flex; flex-direction: column; gap: 12px; position: relative; overflow: hidden;">
-    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-      <div>
-        <h3 style="font-size: 14px; font-weight: 500; color: var(--color-text-muted); margin: 0;">Гости</h3>
-        <div class="value" style="font-size: 26px; font-weight: 700; color: var(--color-text-main); margin-top: 4px; letter-spacing: -0.5px;">
-          {{ guestCount() }} <span style="font-size: 14px; color: var(--color-text-muted); font-weight: 500;">чел.</span>
-        </div>
-      </div>
-      <div class="trend" [style.color]="trends.guestCount.isPositive ? 'var(--color-success)' : 'var(--color-danger)'" [style.background]="trends.guestCount.isPositive ? 'rgba(76,175,80,0.1)' : 'rgba(244,67,54,0.1)'" style="font-size: 13px; font-weight: 600; padding: 4px 8px; border-radius: 6px;">
-        {{ trends.guestCount.isPositive ? '↑' : '↓' }} {{ trends.guestCount.value }}%
-      </div>
-    </div>
-    <!-- Sparkline -->
-    <div style="height: 40px; margin-top: auto; margin-left: -16px; margin-right: -16px; margin-bottom: -16px;">
-      <svg viewBox="0 0 100 30" preserveAspectRatio="none" style="width: 100%; height: 100%; overflow: visible; display: block;">
-        <path [attr.d]="sparklineGuests" fill="none" stroke="var(--color-warning)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
-        <path [attr.d]="sparklineGuests + ' L 100 30 L 0 30 Z'" fill="rgba(255,152,0,0.1)" stroke="none" />
-      </svg>
-    </div>
-  </app-ui-card>
-
-  <!-- Фудкост -->
-  <app-ui-card class="stat-card" style="display: flex; flex-direction: column; gap: 12px; position: relative; overflow: hidden;">
-    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-      <div>
-        <h3 style="font-size: 14px; font-weight: 500; color: var(--color-text-muted); margin: 0;">Фудкост</h3>
-        <div class="value" style="font-size: 26px; font-weight: 700; color: var(--color-text-main); margin-top: 4px; letter-spacing: -0.5px;">
-          {{ foodCost() | number:'1.1-1' }}%
-        </div>
-      </div>
-      <div class="trend" [style.color]="trends.foodCost.isPositive ? 'var(--color-success)' : 'var(--color-danger)'" [style.background]="trends.foodCost.isPositive ? 'rgba(76,175,80,0.1)' : 'rgba(244,67,54,0.1)'" style="font-size: 13px; font-weight: 600; padding: 4px 8px; border-radius: 6px;">
-        <!-- For FoodCost, down is positive. -->
-        {{ trends.foodCost.value < 0 ? '↓' : '↑' }} {{ trends.foodCost.value < 0 ? (trends.foodCost.value * -1) : trends.foodCost.value }}%
-      </div>
-    </div>
-    <!-- Sparkline -->
-    <div style="height: 40px; margin-top: auto; margin-left: -16px; margin-right: -16px; margin-bottom: -16px;">
-      <svg viewBox="0 0 100 30" preserveAspectRatio="none" style="width: 100%; height: 100%; overflow: visible; display: block;">
-        <path [attr.d]="sparklineFoodCost" fill="none" stroke="#8b5cf6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
-        <path [attr.d]="sparklineFoodCost + ' L 100 30 L 0 30 Z'" fill="rgba(139,92,246,0.1)" stroke="none" />
-      </svg>
-    </div>
-  </app-ui-card>
-</div>
-
-<div class="secondary-metrics-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; margin-top: 16px;">
-  <!-- Топ-официант -->
-  <app-ui-card class="stat-card" style="display: flex; flex-direction: column; gap: 12px; height: 100%;">
-    <div style="display: flex; justify-content: space-between; align-items: center;">
-      <h3 style="font-size: 16px; font-weight: 600; color: var(--color-text-main); margin: 0;">Рейтинг официантов 🏆</h3>
-      <span style="font-size: 12px; color: var(--color-text-muted); background: rgba(0,0,0,0.05); padding: 2px 6px; border-radius: 4px; border: 1px solid rgba(0,0,0,0.05);">По выручке</span>
-    </div>
+  <!-- Ряд 1: KPI -->
+  <div class="dashboard-grid kpi-grid">
     
-    @if (topWaiters().length > 0) {
-      <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 8px;">
-        @for (waiter of topWaiters(); track waiter.name; let i = $index) {
-          <div style="display: flex; align-items: center; gap: 12px; padding-bottom: 12px;" [style.border-bottom]="i === topWaiters().length - 1 ? 'none' : '1px solid rgba(0,0,0,0.05)'">
-            <!-- Rank Indicator / Avatar -->
-            <div style="position: relative;">
-              <div style="width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 18px; font-weight: bold; box-shadow: 0 4px 8px rgba(0,0,0,0.1);"
-                   [style.background]="i === 0 ? 'linear-gradient(135deg, #fbbf24, #f59e0b)' : (i === 1 ? 'linear-gradient(135deg, #9ca3af, #6b7280)' : 'linear-gradient(135deg, #d97706, #b45309)')">
-                {{ waiter.name.charAt(0) }}
-              </div>
-              <div style="position: absolute; bottom: -4px; right: -4px; width: 20px; height: 20px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; border: 1px solid rgba(0,0,0,0.1);"
-                   [style.color]="i === 0 ? '#f59e0b' : (i === 1 ? '#6b7280' : '#b45309')">
-                #{{ i + 1 }}
-              </div>
+    <!-- Выручка -->
+    <app-ui-card class="kpi-card">
+      <div class="kpi-header">
+        <div class="kpi-info">
+          <h3>Выручка</h3>
+          <div class="kpi-value">{{ totalRevenue() | currency:settingsService.currency():'symbol-narrow':'1.0-0' }}</div>
+        </div>
+        <div class="kpi-trend" [class.positive]="trends.revenue.isPositive" [class.negative]="!trends.revenue.isPositive">
+          {{ trends.revenue.isPositive ? '↑' : '↓' }} {{ trends.revenue.value }}%
+        </div>
+      </div>
+      <div class="kpi-sparkline">
+        <svg viewBox="0 0 100 30" preserveAspectRatio="none">
+          <path [attr.d]="sparklineRevenue" class="spark-line stroke-primary" />
+          <path [attr.d]="sparklineRevenue + ' L 100 30 L 0 30 Z'" class="spark-fill fill-primary" />
+        </svg>
+      </div>
+    </app-ui-card>
+
+    <!-- Средний чек -->
+    <app-ui-card class="kpi-card">
+      <div class="kpi-header">
+        <div class="kpi-info">
+          <h3>Средний чек</h3>
+          <div class="kpi-value">{{ averageCheck() | currency:settingsService.currency():'symbol-narrow':'1.0-0' }}</div>
+        </div>
+        <div class="kpi-trend" [class.positive]="trends.averageCheck.isPositive" [class.negative]="!trends.averageCheck.isPositive">
+          {{ trends.averageCheck.isPositive ? '↑' : '↓' }} {{ trends.averageCheck.value }}%
+        </div>
+      </div>
+      <div class="kpi-sparkline">
+        <svg viewBox="0 0 100 30" preserveAspectRatio="none">
+          <path [attr.d]="sparklineCheck" class="spark-line stroke-success" />
+          <path [attr.d]="sparklineCheck + ' L 100 30 L 0 30 Z'" class="spark-fill fill-success" />
+        </svg>
+      </div>
+    </app-ui-card>
+
+    <!-- Гости -->
+    <app-ui-card class="kpi-card">
+      <div class="kpi-header">
+        <div class="kpi-info">
+          <h3>Гости</h3>
+          <div class="kpi-value">{{ guestCount() }} <span>чел.</span></div>
+        </div>
+        <div class="kpi-trend" [class.positive]="trends.guestCount.isPositive" [class.negative]="!trends.guestCount.isPositive">
+          {{ trends.guestCount.isPositive ? '↑' : '↓' }} {{ trends.guestCount.value }}%
+        </div>
+      </div>
+      <div class="kpi-sparkline">
+        <svg viewBox="0 0 100 30" preserveAspectRatio="none">
+          <path [attr.d]="sparklineGuests" class="spark-line stroke-warning" />
+          <path [attr.d]="sparklineGuests + ' L 100 30 L 0 30 Z'" class="spark-fill fill-warning" />
+        </svg>
+      </div>
+    </app-ui-card>
+
+    <!-- Фудкост -->
+    <app-ui-card class="kpi-card">
+      <div class="kpi-header">
+        <div class="kpi-info">
+          <h3>Фудкост</h3>
+          <div class="kpi-value">{{ foodCost() | number:'1.1-1' }}%</div>
+        </div>
+        <div class="kpi-trend" [class.positive]="trends.foodCost.value < 0" [class.negative]="trends.foodCost.value >= 0">
+          {{ trends.foodCost.value < 0 ? '↓' : '↑' }} {{ trends.foodCost.value < 0 ? (trends.foodCost.value * -1) : trends.foodCost.value }}%
+        </div>
+      </div>
+      <div class="kpi-sparkline">
+        <svg viewBox="0 0 100 30" preserveAspectRatio="none">
+          <path [attr.d]="sparklineFoodCost" class="spark-line stroke-info" />
+          <path [attr.d]="sparklineFoodCost + ' L 100 30 L 0 30 Z'" class="spark-fill fill-info" />
+        </svg>
+      </div>
+    </app-ui-card>
+
+  </div>
+
+  <!-- Ряд 2: Графики -->
+  <div class="dashboard-grid charts-grid">
+    
+    <!-- Динамика -->
+    <app-ui-card class="chart-card">
+      <div class="card-header">
+        <h3>Динамика доходов и расходов (за 7 дней)</h3>
+        <div class="chart-legend">
+          <div class="legend-item"><span class="dot bg-primary"></span> Доходы</div>
+          <div class="legend-item"><span class="dot bg-danger"></span> Расходы</div>
+        </div>
+      </div>
+      <div class="bar-chart-container">
+        @for (point of weeklyChartData(); track point.label) {
+          <div class="chart-column">
+            <div class="bars">
+              <div class="bar bg-danger" [style.height.%]="(point.expense / chartMax()) * 100" [title]="'Расход: ' + (point.expense | currency:settingsService.currency():'symbol-narrow':'1.0-0')"></div>
+              <div class="bar bg-primary" [style.height.%]="(point.revenue / chartMax()) * 100" [title]="'Доход: ' + (point.revenue | currency:settingsService.currency():'symbol-narrow':'1.0-0')"></div>
             </div>
-            
-            <!-- Details -->
-            <div style="flex: 1;">
-              <div style="font-size: 15px; font-weight: 600; color: var(--color-text-main);">{{ waiter.name }}</div>
-              <div style="font-size: 12px; color: var(--color-text-muted);">{{ i === 0 ? 'Лидер дня' : 'Отличный результат' }}</div>
-            </div>
-            
-            <!-- Revenue -->
-            <div style="text-align: right;">
-              <div style="font-size: 15px; font-weight: 700; color: var(--color-success);">{{ waiter.revenue | currency:settingsService.currency():'symbol-narrow':'1.0-0' }}</div>
-            </div>
+            <div class="chart-label">{{ point.label }}</div>
           </div>
         }
       </div>
-    } @else {
-      <div style="color: var(--color-text-muted); font-size: 14px; margin-top: 16px; font-style: italic;">Пока нет данных о закрытых счетах за сегодня.</div>
-    }
-  </app-ui-card>
+    </app-ui-card>
 
-  <!-- Сотрудники на смене -->
-  <app-ui-card class="stat-card" style="display: flex; flex-direction: column; gap: 12px; height: 100%;">
-    <div style="display: flex; justify-content: space-between; align-items: center;">
-      <h3 style="font-size: 16px; font-weight: 600; color: var(--color-text-main); margin: 0;">Сотрудники на смене</h3>
-      <span style="font-size: 13px; font-weight: 700; color: var(--color-success); background: rgba(76,175,80,0.1); padding: 2px 8px; border-radius: 12px;">{{ staffOnShift().length }}</span>
-    </div>
-    <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px;">
-      @for (emp of staffOnShift(); track emp.id) {
-        <div style="display: flex; align-items: center; gap: 8px; background: white; padding: 8px 14px; border-radius: 20px; border: 1px solid rgba(0,0,0,0.08); box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
-          <span style="width: 8px; height: 8px; border-radius: 50%; background: var(--color-success); box-shadow: 0 0 6px var(--color-success);"></span>
-          <span style="font-size: 13px; font-weight: 600; color: var(--color-text-main);">{{ emp.name.split(' ')[0] }}</span>
-          <span style="font-size: 12px; color: var(--color-text-muted); background: rgba(0,0,0,0.04); padding: 2px 6px; border-radius: 4px;">{{ emp.role }}</span>
+    <!-- Пиковые часы -->
+    <app-ui-card class="chart-card">
+      <div class="card-header">
+        <h3>Прогноз загрузки зала</h3>
+        <div class="chart-legend">
+          <div class="legend-item"><span class="dot bg-info"></span> Ок</div>
+          <div class="legend-item"><span class="dot bg-warning"></span> Плотно</div>
+          <div class="legend-item"><span class="dot bg-danger"></span> Запара</div>
         </div>
-      } @empty {
-        <div style="color: var(--color-text-muted); font-size: 14px; font-style: italic;">Нет открытых смен. Работников в зале нет.</div>
-      }
-    </div>
-  </app-ui-card>
-</div>
+      </div>
+      <div class="heatmap-chart-container">
+        @for (point of peakHoursData(); track point.label) {
+          <div class="chart-column">
+            <div class="bars">
+              <div class="bar" 
+                   [class.bg-danger]="point.load > 75"
+                   [class.bg-warning]="point.load > 40 && point.load <= 75"
+                   [class.bg-info]="point.load <= 40"
+                   [style.height.%]="point.load"
+                   [title]="'Загрузка: ' + point.load + '%'">
+              </div>
+            </div>
+            <div class="chart-label">{{ point.label }}</div>
+          </div>
+        }
+      </div>
+    </app-ui-card>
 
-<div class="alerts-section" style="margin-top: 16px; display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 16px;">
-  <app-ui-card class="stat-card" style="border: 1px solid rgba(244,67,54,0.3); background: rgba(244,67,54,0.02); height: 100%;">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-      <h3 style="font-size: 16px; font-weight: 600; color: var(--color-danger); margin: 0; display: flex; align-items: center; gap: 8px;">
-        <span>⚠️</span> Дефицит на складе
-      </h3>
-      <a routerLink="/app/inventory" style="font-size: 13px; color: var(--color-primary); text-decoration: none; font-weight: 600; background: rgba(33,150,243,0.1); padding: 4px 10px; border-radius: 6px; transition: background 0.2s;">
-        Склад →
-      </a>
-    </div>
+  </div>
+
+  <!-- Ряд 3: Операционка -->
+  <div class="dashboard-grid operational-grid">
     
-    @if (lowStockItems().length > 0) {
-      <div style="display: flex; flex-direction: column; gap: 8px;">
-        @for (item of lowStockItems(); track item.id) {
-          <div style="display: flex; justify-content: space-between; align-items: center; background: white; padding: 10px 14px; border-radius: 8px; border: 1px solid rgba(244,67,54,0.15); box-shadow: 0 2px 4px rgba(244,67,54,0.05);">
-            <div style="display: flex; align-items: center; gap: 12px;">
-              <span style="font-size: 18px; display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; background: rgba(0,0,0,0.03); border-radius: 6px;">
+    <!-- ABC Анализ -->
+    <app-ui-card class="operational-card abc-card">
+      <div class="card-header">
+        <h3>📊 ABC-анализ меню</h3>
+        <a routerLink="/app/recipes" class="action-link">Карта рецептов →</a>
+      </div>
+      @if (abcAnalysis(); as abc) {
+        <div class="abc-content">
+          <div class="abc-group">
+            <div class="group-title text-success"><span class="dot bg-success"></span> Хиты продаж (A)</div>
+            <div class="abc-list">
+              @for (dish of abc.hits; track dish.name) {
+                <div class="abc-item hit">
+                  <div class="item-icon">{{ dish.icon || '🍽️' }}</div>
+                  <div class="item-info">
+                    <div class="item-name">{{ dish.name }}</div>
+                  </div>
+                  <div class="item-stats">
+                    <div class="item-revenue text-success">{{ dish.revenue | currency:settingsService.currency():'symbol-narrow':'1.0-0' }}</div>
+                    <div class="item-count">{{ dish.count }} порц.</div>
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+          <div class="abc-group mt-auto">
+            <div class="group-title text-danger"><span class="dot bg-danger"></span> Аутсайдеры (C)</div>
+            <div class="abc-list">
+              @for (dish of abc.outsiders; track dish.name) {
+                <div class="abc-item outsider">
+                  <div class="item-icon">{{ dish.icon || '🍽️' }}</div>
+                  <div class="item-info">
+                    <div class="item-name">{{ dish.name }}</div>
+                  </div>
+                  <div class="item-stats">
+                    <div class="item-revenue">{{ dish.revenue | currency:settingsService.currency():'symbol-narrow':'1.0-0' }}</div>
+                    <div class="item-count">{{ dish.count }} порц.</div>
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+      }
+    </app-ui-card>
+
+    <!-- Активность -->
+    <app-ui-card class="operational-card activity-card">
+      <div class="card-header">
+        <h3>Лента активности</h3>
+        <a routerLink="/app/budget" class="action-link">Вся история →</a>
+      </div>
+      <div class="activity-list">
+        @for (tx of recentTransactions(); track tx.id) {
+          <div class="activity-item">
+            <div class="activity-icon" [class.income]="tx.type === 'Доход'" [class.expense]="tx.type !== 'Доход'">
+              {{ tx.type === 'Доход' ? '💰' : '🛒' }}
+            </div>
+            <div class="activity-content">
+              <div class="activity-main">
+                <div class="activity-title">{{ tx.category }}</div>
+                <div class="activity-amount" [class.text-success]="tx.type === 'Доход'">
+                  {{ tx.type === 'Доход' ? '+' : '-' }} {{ tx.amount | currency:settingsService.currency():'symbol-narrow':'1.0-0' }}
+                </div>
+              </div>
+              <div class="activity-sub">
+                <div class="activity-desc">{{ tx.description }}</div>
+                <div class="activity-time">{{ tx.date | date:'HH:mm (dd.MM)' }}</div>
+              </div>
+            </div>
+          </div>
+        } @empty {
+          <div class="empty-state">Транзакций пока нет.</div>
+        }
+      </div>
+    </app-ui-card>
+
+    <!-- Команда -->
+    <div class="team-column">
+      
+      <!-- Рейтинг официантов -->
+      <app-ui-card class="team-card top-waiters-card">
+        <div class="card-header">
+          <h3>Рейтинг официантов 🏆</h3>
+          <span class="badge">По выручке</span>
+        </div>
+        @if (topWaiters().length > 0) {
+          <div class="waiters-list">
+            @for (waiter of topWaiters(); track waiter.name; let i = $index) {
+              <div class="waiter-item">
+                <div class="waiter-avatar-wrapper">
+                  <div class="waiter-avatar rank-{{i}}">{{ waiter.name.charAt(0) }}</div>
+                  <div class="waiter-rank rank-{{i}}">#{{ i + 1 }}</div>
+                </div>
+                <div class="waiter-info">
+                  <div class="waiter-name">{{ waiter.name }}</div>
+                  <div class="waiter-desc">{{ i === 0 ? 'Лидер дня' : 'Отличный результат' }}</div>
+                </div>
+                <div class="waiter-revenue text-success">
+                  {{ waiter.revenue | currency:settingsService.currency():'symbol-narrow':'1.0-0' }}
+                </div>
+              </div>
+            }
+          </div>
+        } @else {
+          <div class="empty-state">Пока нет закрытых счетов.</div>
+        }
+      </app-ui-card>
+
+      <!-- На смене -->
+      <app-ui-card class="team-card staff-shift-card">
+        <div class="card-header">
+          <h3>Сейчас на смене</h3>
+          <span class="badge badge-success">{{ staffOnShift().length }}</span>
+        </div>
+        <div class="staff-tags">
+          @for (emp of staffOnShift(); track emp.id) {
+            <div class="staff-tag">
+              <span class="dot bg-success"></span>
+              <span class="staff-name">{{ emp.name.split(' ')[0] }}</span>
+              <span class="staff-role">{{ emp.role }}</span>
+            </div>
+          } @empty {
+            <div class="empty-state">Нет открытых смен.</div>
+          }
+        </div>
+      </app-ui-card>
+
+    </div>
+
+  </div>
+
+  <!-- Ряд 4: Алерты -->
+  <div class="dashboard-grid alerts-grid">
+    
+    <!-- Дефицит -->
+    <app-ui-card class="alert-card danger-alert">
+      <div class="card-header">
+        <h3 class="text-danger">⚠️ Дефицит на складе</h3>
+        <a routerLink="/app/inventory" class="action-link">Пополнить →</a>
+      </div>
+      @if (lowStockItems().length > 0) {
+        <div class="alert-list">
+          @for (item of lowStockItems(); track item.id) {
+            <div class="alert-item">
+              <div class="alert-item-icon">
                 @if (item.category === 'Морепродукты') { 🐟 }
                 @else if (item.category === 'Мясо') { 🥩 }
                 @else if (item.category === 'Овощи') { 🥦 }
                 @else if (item.category === 'Бакалея') { 🧂 }
                 @else { 📦 }
-              </span>
-              <div>
-                <div style="font-size: 14px; font-weight: 600; color: var(--color-text-main);">{{ item.name }}</div>
-                <div style="font-size: 11px; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.5px;">{{ item.category }}</div>
+              </div>
+              <div class="alert-item-info">
+                <div class="item-name">{{ item.name }}</div>
+                <div class="item-category">{{ item.category }}</div>
+              </div>
+              <div class="alert-item-stats">
+                <div class="item-current text-danger">{{ item.currentStock }} {{ item.unit }}</div>
+                <div class="item-min">мин. {{ item.minStock }}</div>
               </div>
             </div>
-            <div style="text-align: right;">
-              <div style="font-size: 14px; font-weight: 700; color: var(--color-danger);">{{ item.currentStock }} {{ item.unit }}</div>
-              <div style="font-size: 11px; color: var(--color-text-muted);">мин. {{ item.minStock }}</div>
-            </div>
-          </div>
-        }
-      </div>
-    } @else {
-      <div style="color: var(--color-success); font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 8px; background: rgba(76,175,80,0.05); padding: 12px; border-radius: 8px;">
-        <span style="font-size: 18px;">✅</span> Все продукты в достаточном количестве. Закупки не требуются.
-      </div>
-    }
-  </app-ui-card>
+          }
+        </div>
+      } @else {
+        <div class="alert-success">✅ Все продукты в достаточном количестве. Закупки не требуются.</div>
+      }
+    </app-ui-card>
 
-  <!-- Сроки годности -->
-  <app-ui-card class="stat-card" style="border: 1px solid rgba(255,152,0,0.3); background: rgba(255,152,0,0.02); height: 100%;">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-      <h3 style="font-size: 16px; font-weight: 600; color: #e65100; margin: 0; display: flex; align-items: center; gap: 8px;">
-        <span>⏳</span> Сроки годности
-      </h3>
-      <a routerLink="/app/inventory" style="font-size: 13px; color: var(--color-primary); text-decoration: none; font-weight: 600; background: rgba(33,150,243,0.1); padding: 4px 10px; border-radius: 6px; transition: background 0.2s;">
-        Склад →
-      </a>
-    </div>
-    
-    @if (expiringItems().length > 0) {
-      <div style="display: flex; flex-direction: column; gap: 8px;">
-        @for (item of expiringItems(); track item.id) {
-          <div style="display: flex; justify-content: space-between; align-items: center; background: white; padding: 10px 14px; border-radius: 8px; border: 1px solid rgba(255,152,0,0.2); box-shadow: 0 2px 4px rgba(255,152,0,0.05);">
-            <div style="display: flex; align-items: center; gap: 12px;">
-              <span style="font-size: 18px; display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; background: rgba(0,0,0,0.03); border-radius: 6px;">
+    <!-- Сроки годности -->
+    <app-ui-card class="alert-card warning-alert">
+      <div class="card-header">
+        <h3 class="text-warning">⏳ Сроки годности</h3>
+        <a routerLink="/app/inventory" class="action-link">Склад →</a>
+      </div>
+      @if (expiringItems().length > 0) {
+        <div class="alert-list">
+          @for (item of expiringItems(); track item.id) {
+            <div class="alert-item">
+              <div class="alert-item-icon">
                 @if (item.category === 'Морепродукты') { 🐟 }
                 @else if (item.category === 'Мясо') { 🥩 }
                 @else if (item.category === 'Овощи') { 🥦 }
                 @else if (item.category === 'Бакалея') { 🧂 }
                 @else if (item.category === 'Молочка') { 🥛 }
                 @else { 📦 }
-              </span>
-              <div>
-                <div style="font-size: 14px; font-weight: 600; color: var(--color-text-main);">{{ item.name }}</div>
-                <div style="font-size: 11px; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.5px;">{{ item.currentStock }} {{ item.unit }}</div>
+              </div>
+              <div class="alert-item-info">
+                <div class="item-name">{{ item.name }}</div>
+                <div class="item-category">{{ item.currentStock }} {{ item.unit }}</div>
+              </div>
+              <div class="alert-item-stats">
+                <div class="item-current" [class.text-danger]="item.expiresInDays === 0" [class.text-warning]="item.expiresInDays! > 0">
+                  @if (item.expiresInDays === 0) { Сегодня }
+                  @else if (item.expiresInDays === 1) { Завтра }
+                  @else { Через {{ item.expiresInDays }} дн. }
+                </div>
+                <div class="item-min">Списание</div>
               </div>
             </div>
-            <div style="text-align: right;">
-              <div style="font-size: 13px; font-weight: 700;" [style.color]="item.expiresInDays === 0 ? 'var(--color-danger)' : '#e65100'">
-                @if (item.expiresInDays === 0) { Сегодня }
-                @else if (item.expiresInDays === 1) { Завтра }
-                @else { Через {{ item.expiresInDays }} дн. }
-              </div>
-              <div style="font-size: 11px; color: var(--color-text-muted);">Списание</div>
-            </div>
-          </div>
-        }
-      </div>
-    } @else {
-      <div style="color: var(--color-success); font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 8px; background: rgba(76,175,80,0.05); padding: 12px; border-radius: 8px;">
-        <span style="font-size: 18px;">✅</span> Просрочек не предвидится.
-      </div>
-    }
-  </app-ui-card>
-
-  <!-- ABC-анализ меню -->
-  <app-ui-card class="stat-card" style="height: 100%; display: flex; flex-direction: column;">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-      <h3 style="font-size: 16px; font-weight: 600; color: var(--color-text-main); margin: 0; display: flex; align-items: center; gap: 8px;">
-        <span>📊</span> ABC-анализ меню
-      </h3>
-      <a routerLink="/app/recipes" style="font-size: 13px; color: var(--color-primary); text-decoration: none; font-weight: 600; background: rgba(33,150,243,0.1); padding: 4px 10px; border-radius: 6px; transition: background 0.2s;">
-        Карта рецептов →
-      </a>
-    </div>
-
-    @if (abcAnalysis(); as abc) {
-      <div style="display: flex; flex-direction: column; gap: 16px; flex: 1;">
-        
-        <!-- Генераторы прибыли (Категория A) -->
-        <div>
-          <div style="font-size: 12px; font-weight: 700; color: var(--color-success); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
-            <span style="width: 6px; height: 6px; border-radius: 50%; background: var(--color-success);"></span> Хиты продаж
-          </div>
-          <div style="display: flex; flex-direction: column; gap: 6px;">
-            @for (dish of abc.hits; track dish.name) {
-              <div style="display: flex; justify-content: space-between; align-items: center; padding: 6px 10px; background: rgba(76,175,80,0.05); border-radius: 8px; border: 1px solid rgba(76,175,80,0.1);">
-                <div style="display: flex; align-items: center; gap: 10px;">
-                  <div style="font-size: 16px; width: 20px; text-align: center;">{{ dish.icon || '🍽️' }}</div>
-                  <div>
-                    <div style="font-size: 13px; font-weight: 600; color: var(--color-text-main);">{{ dish.name }}</div>
-                  </div>
-                </div>
-                <div style="text-align: right;">
-                  <div style="font-size: 13px; font-weight: 700; color: var(--color-success);">{{ dish.revenue | currency:settingsService.currency():'symbol-narrow':'1.0-0' }}</div>
-                  <div style="font-size: 11px; color: var(--color-text-muted);">{{ dish.count }} порц.</div>
-                </div>
-              </div>
-            }
-          </div>
+          }
         </div>
-
-        <!-- Аутсайдеры (Категория C) -->
-        <div style="margin-top: auto;">
-          <div style="font-size: 12px; font-weight: 700; color: var(--color-danger); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
-            <span style="width: 6px; height: 6px; border-radius: 50%; background: var(--color-danger);"></span> Аутсайдеры
-          </div>
-          <div style="display: flex; flex-direction: column; gap: 6px;">
-            @for (dish of abc.outsiders; track dish.name) {
-              <div style="display: flex; justify-content: space-between; align-items: center; padding: 6px 10px; background: rgba(244,67,54,0.03); border-radius: 8px; border: 1px dashed rgba(244,67,54,0.2);">
-                <div style="display: flex; align-items: center; gap: 10px;">
-                  <div style="font-size: 16px; width: 20px; text-align: center; opacity: 0.6;">{{ dish.icon || '🍽️' }}</div>
-                  <div>
-                    <div style="font-size: 13px; font-weight: 600; color: var(--color-text-main); opacity: 0.8;">{{ dish.name }}</div>
-                  </div>
-                </div>
-                <div style="text-align: right;">
-                  <div style="font-size: 13px; font-weight: 700; color: var(--color-text-main); opacity: 0.8;">{{ dish.revenue | currency:settingsService.currency():'symbol-narrow':'1.0-0' }}</div>
-                  <div style="font-size: 11px; color: var(--color-text-muted);">{{ dish.count }} порц.</div>
-                </div>
-              </div>
-            }
-          </div>
-        </div>
-
-      </div>
-    }
-  </app-ui-card>
-</div>
-
-<!-- Лента активности -->
-<div class="activity-feed-section" style="margin-top: 16px;">
-  <app-ui-card class="stat-card" style="display: flex; flex-direction: column; gap: 16px;">
-    <div style="display: flex; justify-content: space-between; align-items: center;">
-      <h3 style="font-size: 16px; font-weight: 600; color: var(--color-text-main); margin: 0;">Лента активности</h3>
-      <a routerLink="/admin/budget" style="font-size: 13px; color: var(--color-primary); text-decoration: none; font-weight: 600;">Вся история →</a>
-    </div>
-
-    <div style="display: flex; flex-direction: column; gap: 0;">
-      @for (tx of recentTransactions(); track tx.id; let last = $last) {
-        <div style="display: flex; align-items: flex-start; gap: 16px; padding: 12px 0;" [style.border-bottom]="last ? 'none' : '1px solid rgba(0,0,0,0.05)'">
-          <!-- Иконка транзакции -->
-          <div style="width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;"
-               [style.background]="tx.type === 'Доход' ? 'rgba(76,175,80,0.1)' : 'rgba(244,67,54,0.1)'"
-               [style.color]="tx.type === 'Доход' ? 'var(--color-success)' : 'var(--color-danger)'">
-            @if (tx.type === 'Доход') {
-              <span style="font-size: 18px;">💰</span>
-            } @else {
-              <span style="font-size: 18px;">🛒</span>
-            }
-          </div>
-          
-          <!-- Описание и время -->
-          <div style="flex: 1;">
-            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-              <div style="font-size: 14px; font-weight: 600; color: var(--color-text-main);">{{ tx.category }}</div>
-              <div style="font-size: 15px; font-weight: 700;"
-                   [style.color]="tx.type === 'Доход' ? 'var(--color-success)' : 'var(--color-text-main)'">
-                {{ tx.type === 'Доход' ? '+' : '-' }} {{ tx.amount | currency:settingsService.currency():'symbol-narrow':'1.0-0' }}
-              </div>
-            </div>
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px;">
-              <div style="font-size: 13px; color: var(--color-text-muted);">{{ tx.description }}</div>
-              <div style="font-size: 12px; color: var(--color-text-muted);">{{ tx.date | date:'HH:mm (dd.MM)' }}</div>
-            </div>
-          </div>
-        </div>
-      } @empty {
-        <div style="color: var(--color-text-muted); font-size: 14px; padding: 16px 0; text-align: center; font-style: italic;">Транзакций пока нет.</div>
+      } @else {
+        <div class="alert-success">✅ Просрочек не предвидится.</div>
       }
-    </div>
-  </app-ui-card>
-</div>
+    </app-ui-card>
 
-<!-- График доходов и расходов -->
-<div class="chart-section" style="margin-top: 16px;">
-  <app-ui-card class="stat-card" style="display: flex; flex-direction: column; gap: 16px;">
-    <div style="display: flex; justify-content: space-between; align-items: center;">
-      <h3 style="font-size: 16px; font-weight: 600; color: var(--color-text-main); margin: 0;">Динамика доходов и расходов (за 7 дней)</h3>
-      <div style="display: flex; gap: 16px; font-size: 13px; font-weight: 500;">
-        <div style="display: flex; align-items: center; gap: 6px;">
-          <span style="width: 12px; height: 12px; border-radius: 3px; background: var(--color-primary);"></span> Доходы
-        </div>
-        <div style="display: flex; align-items: center; gap: 6px;">
-          <span style="width: 12px; height: 12px; border-radius: 3px; background: rgba(244,67,54,0.7);"></span> Расходы
-        </div>
-      </div>
-    </div>
+  </div>
 
-    <!-- CSS Bar Chart -->
-    <div style="display: flex; align-items: flex-end; justify-content: space-between; height: 220px; padding-top: 20px; border-bottom: 1px solid rgba(0,0,0,0.1); gap: 12px; margin-top: 8px;">
-      @for (point of weeklyChartData(); track point.label) {
-        <div style="display: flex; flex-direction: column; align-items: center; gap: 12px; flex: 1; height: 100%;">
-          
-          <!-- Bars Container -->
-          <div style="display: flex; align-items: flex-end; justify-content: center; gap: 6px; height: 100%; width: 100%; position: relative;">
-            
-            <!-- Expense Bar -->
-            <div style="width: 35%; max-width: 28px; background: rgba(244,67,54,0.7); border-radius: 4px 4px 0 0; transition: height 0.8s cubic-bezier(0.16, 1, 0.3, 1);"
-                 [style.height.%]="(point.expense / chartMax()) * 100"
-                 [title]="'Расход: ' + (point.expense | currency:settingsService.currency():'symbol-narrow':'1.0-0')">
-            </div>
-            
-            <!-- Revenue Bar -->
-            <div style="width: 35%; max-width: 28px; background: var(--color-primary); border-radius: 4px 4px 0 0; transition: height 0.8s cubic-bezier(0.16, 1, 0.3, 1);"
-                 [style.height.%]="(point.revenue / chartMax()) * 100"
-                 [title]="'Доход: ' + (point.revenue | currency:settingsService.currency():'symbol-narrow':'1.0-0')">
-            </div>
-
-          </div>
-          <!-- Label -->
-          <div style="font-size: 13px; font-weight: 500; color: var(--color-text-muted);">{{ point.label }}</div>
-        </div>
-      }
-    </div>
-  </app-ui-card>
-</div>
-
-<!-- Пиковые часы (Загрузка) -->
-<div class="peak-hours-section" style="margin-top: 16px;">
-  <app-ui-card class="stat-card" style="display: flex; flex-direction: column; gap: 16px;">
-    <div style="display: flex; justify-content: space-between; align-items: center;">
-      <h3 style="font-size: 16px; font-weight: 600; color: var(--color-text-main); margin: 0;">Пиковые часы (Прогноз загрузки)</h3>
-      <div style="display: flex; gap: 12px; font-size: 12px; font-weight: 500; color: var(--color-text-muted);">
-        <div style="display: flex; align-items: center; gap: 4px;">
-          <span style="width: 10px; height: 10px; border-radius: 2px; background: rgba(33,150,243,0.85);"></span> Свободно
-        </div>
-        <div style="display: flex; align-items: center; gap: 4px;">
-          <span style="width: 10px; height: 10px; border-radius: 2px; background: rgba(255,152,0,0.85);"></span> Плотная посадка
-        </div>
-        <div style="display: flex; align-items: center; gap: 4px;">
-          <span style="width: 10px; height: 10px; border-radius: 2px; background: rgba(244,67,54,0.85);"></span> Полный зал (Запара)
-        </div>
-      </div>
-    </div>
-
-    <!-- Heatmap Bar Chart -->
-    <div style="display: flex; align-items: flex-end; justify-content: space-between; height: 160px; padding-top: 10px; border-bottom: 1px solid rgba(0,0,0,0.1); gap: 4px; margin-top: 8px;">
-      @for (point of peakHoursData(); track point.label) {
-        <div style="display: flex; flex-direction: column; align-items: center; gap: 8px; flex: 1; height: 100%; position: relative;">
-          
-          <div style="display: flex; align-items: flex-end; justify-content: center; width: 100%; height: 100%;">
-            <div style="width: 100%; max-width: 32px; border-radius: 4px 4px 0 0; transition: height 0.8s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s;"
-                 [style.height.%]="point.load"
-                 [style.background]="point.load > 75 ? 'rgba(244,67,54,0.85)' : (point.load > 40 ? 'rgba(255,152,0,0.85)' : 'rgba(33,150,243,0.85)')"
-                 [title]="'Загрузка: ' + point.load + '%'">
-            </div>
-          </div>
-          
-          <div style="font-size: 11px; font-weight: 500; color: var(--color-text-muted);">{{ point.label }}</div>
-        </div>
-      }
-    </div>
-  </app-ui-card>
 </div>

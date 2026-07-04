@@ -14,14 +14,14 @@
 </div>
 
 <!-- Filters Bar -->
-<div class="filters-bar" style="display: flex; gap: 16px; margin-bottom: 24px; align-items: flex-end; background: white; padding: 16px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.05);">
-  <div class="form-group" style="margin-bottom: 0; min-width: 150px;">
-    <label style="font-size: 13px; margin-bottom: 4px;">С даты</label>
-    <input type="date" [ngModel]="budgetService.dateRange().start" (ngModelChange)="onStartDateChange($event)" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid rgba(0,0,0,0.1);" />
+<div class="filters-bar">
+  <div class="form-group">
+    <label>С даты</label>
+    <input type="date" [ngModel]="budgetService.dateRange().start" (ngModelChange)="onStartDateChange($event)" />
   </div>
-  <div class="form-group" style="margin-bottom: 0; min-width: 150px;">
-    <label style="font-size: 13px; margin-bottom: 4px;">По дату</label>
-    <input type="date" [ngModel]="budgetService.dateRange().end" (ngModelChange)="onEndDateChange($event)" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid rgba(0,0,0,0.1);" />
+  <div class="form-group">
+    <label>По дату</label>
+    <input type="date" [ngModel]="budgetService.dateRange().end" (ngModelChange)="onEndDateChange($event)" />
   </div>
   <app-ui-button variant="secondary" (click)="clearFilters()">Сбросить</app-ui-button>
 </div>
@@ -64,7 +64,7 @@
                 <span>{{ cat.name }}</span>
                 <span>{{ cat.amount | currency:settingsService.currency():'symbol-narrow':'1.0-0' }} ({{ cat.percent }}%)</span>
               </div>
-              <div style="width: 100%; height: 8px; background: rgba(0,0,0,0.05); border-radius: 4px; overflow: hidden;">
+              <div style="width: 100%; height: 8px; background: var(--color-bg-hover); border-radius: 4px; overflow: hidden;">
                 <div style="height: 100%; border-radius: 4px; transition: width 0.3s;"
                      [style.width.%]="cat.percent"
                      [style.background]="getCategoryColor(cat.name)">

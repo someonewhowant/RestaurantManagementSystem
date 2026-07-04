@@ -48,19 +48,19 @@
   </div>
 }
 
-<div class="card p-lg" style="margin-bottom: 24px;">
-    <div class="global-search-wrapper">
+<div class="filters-bar">
+    <div class="global-search-wrapper" style="flex: 1;">
       <span class="global-search-icon">🔍</span>
       <input type="text" class="global-search-input" [ngModel]="searchQuery()" (ngModelChange)="searchQuery.set($event)" placeholder="Поиск по имени сотрудника...">
     </div>
-  <select [ngModel]="roleFilter()" (ngModelChange)="roleFilter.set($event)" style="padding: 10px 12px; border: 1px solid rgba(0,0,0,0.1); border-radius: 6px; outline: none; font-size: 14px; font-family: inherit; background: white;">
+  <select [ngModel]="roleFilter()" (ngModelChange)="roleFilter.set($event)" class="filter-select">
     <option value="Все">Все должности</option>
     <option value="Менеджер">Менеджер</option>
     <option value="Официант">Официант</option>
     <option value="Повар">Повар</option>
     <option value="Кассир">Кассир</option>
   </select>
-  <select [ngModel]="statusFilter()" (ngModelChange)="statusFilter.set($event)" style="padding: 10px 12px; border: 1px solid rgba(0,0,0,0.1); border-radius: 6px; outline: none; font-size: 14px; font-family: inherit; background: white;">
+  <select [ngModel]="statusFilter()" (ngModelChange)="statusFilter.set($event)" class="filter-select">
     <option value="Все">Все статусы</option>
     <option value="Активен">Активен</option>
     <option value="В отпуске">В отпуске</option>

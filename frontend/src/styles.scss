@@ -9,6 +9,9 @@
   --color-warning: #FFC107;
   --color-danger: #F44336;
   --color-danger-hover: #d32f2f;
+  --color-success-bg: rgba(76, 175, 80, 0.1);
+  --color-danger-bg: rgba(244, 67, 54, 0.1);
+  --color-warning-bg: rgba(255, 193, 7, 0.1);
   --color-bg: #F5F7FA;
   --color-surface: #FFFFFF;
   --color-text-main: #212529;
@@ -46,6 +49,10 @@ body.dark-theme {
   --color-border: rgba(255,255,255,0.1);
   --color-border-light: rgba(255,255,255,0.05);
   --color-bg-hover: rgba(255,255,255,0.05);
+  
+  --color-success-bg: rgba(76, 175, 80, 0.15);
+  --color-danger-bg: rgba(244, 67, 54, 0.15);
+  --color-warning-bg: rgba(255, 193, 7, 0.15);
   
   --shadow-sm: 0 2px 4px rgba(0,0,0,0.3);
   --shadow-md: 0 4px 12px rgba(0,0,0,0.4);
