@@ -3,14 +3,13 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MenuService, Dish, MenuCategory } from '../../core/services/menu.service';
 import { InventoryService } from '../../core/services/inventory.service';
-import { UiCardComponent } from '../../core/ui/card/card.component';
 import { UiBadgeComponent } from '../../core/ui/badge/badge.component';
 import { UiButtonComponent } from '../../core/ui/button/button.component';
 
 @Component({
   selector: 'app-recipes',
   standalone: true,
-  imports: [CommonModule, FormsModule, UiCardComponent, UiBadgeComponent, UiButtonComponent],
+  imports: [CommonModule, FormsModule, UiBadgeComponent, UiButtonComponent],
   templateUrl: './recipes.component.html',
   styleUrl: './recipes.component.scss'
 })
@@ -19,6 +18,47 @@ export class RecipesComponent {
   public inventoryService = inject(InventoryService);
   
   public isBuilderOpen = signal(false);
+  
+  // Emoji Modal State
+  public isEmojiModalOpen = signal(false);
+  public emojiList = ['🍲', '🥗', '🍔', '🍟', '🍕', '🌭', '🥪', '🌮', '🌯', '🍜', '🍣', '🍱', '🍛', '🍳', '🥩', '🍗', '🍖', '🥟', '🍤', '🥞', '🥐', '🍞', '🥯', '🍰', '🎂', '🧁', '🍦', '🍨', '🍧', '🍩', '🍪', '🍮', '🍷', '🍸', '🍹', '🍺', '☕', '🍵', '🥤', '🧃'];
+
+  // Ingredient Modal State
+  public isIngredientModalOpen = signal(false);
+  public ingredientSearchQuery = signal('');
+  
+  public filteredInventory = computed(() => {
+    const query = this.ingredientSearchQuery().toLowerCase();
+    const items = this.inventoryService.items();
+    if (!query) return items;
+    return items.filter((item: any) => 
+      item.name.toLowerCase().includes(query) || 
+      item.category.toLowerCase().includes(query)
+    );
+  });
+
+  getInvItem(id: string): any {
+    return this.inventoryService.items().find(i => i.id === id);
+  }
+
+  openIngredientModal() {
+    this.ingredientSearchQuery.set('');
+    this.isIngredientModalOpen.set(true);
+  }
+
+  closeIngredientModal() {
+    this.isIngredientModalOpen.set(false);
+  }
+
+  addIngredientFromModal(invItem: any) {
+    if (!this.selectedIngredients().find(i => i.ingredientId === invItem.id)) {
+      this.selectedIngredients.update(list => [...list, { ingredientId: invItem.id, amount: 1 }]);
+    }
+    this.closeIngredientModal();
+  }
+
+  // Emojis for dish icons
+  public availableEmojis = ['🍲', '🥗', '🥩', '🍷', '🍺', '🍔', '🍟', '🍕', '🍣', '🍤', '🥐', '🥖', '🥪', '🌮', '🌯', '🍜', '🍝', '🍵', '☕', '🍰', '🧁', '🍨', '🍳', '🥞', '🥓', '🍗', '🥬', '🍄', '🥑', '🍆', '🍅', '🧅'];
 
   // Filters
   public searchQuery = signal('');
@@ -35,11 +75,33 @@ export class RecipesComponent {
     
     const query = this.searchQuery().toLowerCase().trim();
     if (query) {
-      list = list.filter(d => d.name.toLowerCase().includes(query));
+      list = list.filter(d => {
+        const nameMatch = d.name.toLowerCase().includes(query);
+        const ingredientMatch = d.recipe?.some(ing => {
+          const invName = this.getIngredientName(ing.ingredientId).toLowerCase();
+          return invName.includes(query);
+        });
+        return nameMatch || ingredientMatch;
+      });
     }
     
     return list;
   });
+
+  public getDishMargin(dish: Dish): number {
+    let cost = 0;
+    const inv = this.inventoryService.items();
+    if (dish.recipe) {
+      for (const item of dish.recipe) {
+        const invItem = inv.find(i => i.id === item.ingredientId);
+        if (invItem && invItem.pricePerUnit) {
+          cost += invItem.pricePerUnit * item.amount;
+        }
+      }
+    }
+    if (dish.price <= 0) return 0;
+    return ((dish.price - cost) / dish.price) * 100;
+  }
 
   // Form state
   public newDishName = signal('');
@@ -48,7 +110,7 @@ export class RecipesComponent {
   public newDishWeight = signal('');
   public newDishIcon = signal('🍲');
   
-  public newDishInstructions = signal('');
+  public newDishSteps = signal<{text: string, timerMin: number}[]>([]);
   public newDishAllergens = signal<string[]>([]);
   public newDishMacros = signal({ proteins: 0, fats: 0, carbs: 0, calories: 0 });
   
@@ -85,7 +147,12 @@ export class RecipesComponent {
       this.newDishPrice.set(dish.price);
       this.newDishWeight.set(dish.weight);
       this.newDishIcon.set(dish.imageIcon);
-      this.newDishInstructions.set(dish.instructions || '');
+      try {
+        const steps = JSON.parse(dish.instructions || '[]');
+        this.newDishSteps.set(Array.isArray(steps) ? steps : [{text: dish.instructions || '', timerMin: 0}]);
+      } catch {
+        this.newDishSteps.set(dish.instructions ? [{text: dish.instructions, timerMin: 0}] : []);
+      }
       this.newDishAllergens.set(dish.allergens || []);
       this.newDishMacros.set(dish.macros || { proteins: 0, fats: 0, carbs: 0, calories: 0 });
       this.selectedIngredients.set(dish.recipe ? [...dish.recipe] : []);
@@ -96,7 +163,7 @@ export class RecipesComponent {
       this.newDishPrice.set(0);
       this.newDishWeight.set('');
       this.newDishIcon.set('🍲');
-      this.newDishInstructions.set('');
+      this.newDishSteps.set([]);
       this.newDishAllergens.set([]);
       this.newDishMacros.set({ proteins: 0, fats: 0, carbs: 0, calories: 0 });
       this.selectedIngredients.set([]);
@@ -120,6 +187,22 @@ export class RecipesComponent {
       const newList = [...list];
       newList[index] = { ...newList[index], [field]: value };
       return newList;
+    });
+  }
+
+  addStep() {
+    this.newDishSteps.update(steps => [...steps, { text: '', timerMin: 0 }]);
+  }
+
+  removeStep(index: number) {
+    this.newDishSteps.update(steps => steps.filter((_, i) => i !== index));
+  }
+
+  updateStep(index: number, field: 'text' | 'timerMin', value: any) {
+    this.newDishSteps.update(steps => {
+      const newSteps = [...steps];
+      newSteps[index] = { ...newSteps[index], [field]: value };
+      return newSteps;
     });
   }
 
@@ -148,7 +231,7 @@ export class RecipesComponent {
       weight: this.newDishWeight() || '0г',
       imageIcon: this.newDishIcon(),
       recipe: validIngredients,
-      instructions: this.newDishInstructions(),
+      instructions: JSON.stringify(this.newDishSteps()),
       allergens: this.newDishAllergens(),
       macros: this.newDishMacros()
     };
@@ -177,5 +260,18 @@ export class RecipesComponent {
   getIngredientUnit(id: string): string {
     const inv = this.inventoryService.items().find(i => i.id === id);
     return inv ? inv.unit : '';
+  }
+
+  openEmojiModal() {
+    this.isEmojiModalOpen.set(true);
+  }
+
+  closeEmojiModal() {
+    this.isEmojiModalOpen.set(false);
+  }
+
+  selectEmoji(emoji: string) {
+    this.newDishIcon.set(emoji);
+    this.closeEmojiModal();
   }
 }

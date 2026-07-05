@@ -1,6 +1,3 @@
-# =============================================
-#  DEV Profile — H2 Embedded (file-based)
-# =============================================
 spring:
   datasource:
     url: jdbc:h2:file:./data/vanilla-crm;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE

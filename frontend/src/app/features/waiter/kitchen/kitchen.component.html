@@ -1,13 +1,19 @@
 <div class="kitchen-container">
   <div class="kitchen-header">
-    <h2>Раздача кухни</h2>
-    <p>Отслеживание готовности блюд для выноса в зал</p>
+    <div class="header-title">
+      <h2>Раздача кухни</h2>
+      <p>Отслеживание готовности блюд для выноса в зал</p>
+    </div>
+    <div class="kitchen-filters">
+      <button class="filter-btn" [class.active]="currentFilter() === 'all'" (click)="setFilter('all')">Все заказы</button>
+      <button class="filter-btn" [class.active]="currentFilter() === 'cooking'" (click)="setFilter('cooking')">Готовятся</button>
+      <button class="filter-btn" [class.active]="currentFilter() === 'ready'" (click)="setFilter('ready')">На выдачу</button>
+    </div>
   </div>
 
   <div class="kitchen-grid">
     @for (active of activeItems(); track active.item.dish.id + active.tableId) {
-      <div class="dish-card" [class.ready]="active.item.status === 'ready'">
-        <div class="dish-status-bar"></div>
+      <div class="dish-card" [class.ready]="active.item.status === 'ready'" [class.cooking]="active.item.status === 'cooking'">
         <div class="dish-content">
           <div class="dish-meta">
             <app-ui-badge [color]="active.item.status === 'ready' ? 'success' : 'warning'">

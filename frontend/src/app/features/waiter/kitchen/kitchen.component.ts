@@ -20,23 +20,41 @@ export class KitchenComponent {
   public inventoryService = inject(InventoryService);
 
   public expandedItems = signal<Set<string>>(new Set());
+  
+  public currentFilter = signal<'all' | 'cooking' | 'ready'>('all');
 
   public activeItems = computed(() => {
     const list: any[] = [];
     const orders = this.orderService.orders();
+    const filter = this.currentFilter();
+
     for (const [tableId, order] of Object.entries(orders)) {
       for (const item of order.items) {
         if (item.status === 'cooking' || item.status === 'ready') {
-          list.push({ 
-            tableId, 
-            item, 
-            key: `${tableId}-${item.dish.id}` 
-          });
+          if (filter === 'all' || filter === item.status) {
+            list.push({ 
+              tableId, 
+              item, 
+              key: `${tableId}-${item.dish.id}` 
+            });
+          }
         }
       }
     }
+    
+    // Sort by status to prioritize 'ready' items or group them
+    list.sort((a, b) => {
+      if (a.item.status === 'ready' && b.item.status !== 'ready') return -1;
+      if (a.item.status !== 'ready' && b.item.status === 'ready') return 1;
+      return 0;
+    });
+
     return list;
   });
+
+  setFilter(filter: 'all' | 'cooking' | 'ready') {
+    this.currentFilter.set(filter);
+  }
 
   toggleDetails(key: string) {
     const current = new Set(this.expandedItems());
