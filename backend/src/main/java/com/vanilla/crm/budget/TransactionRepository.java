@@ -18,6 +18,8 @@ public interface TransactionRepository extends JpaRepository<Transaction, UUID> 
 
     List<Transaction> findByType(Transaction.TransactionType type);
 
+    boolean existsByDescription(String description);
+
     Page<Transaction> findAllByOrderByDateDesc(Pageable pageable);
     
     Page<Transaction> findAllByDateBetweenOrderByDateDesc(Instant start, Instant end, Pageable pageable);

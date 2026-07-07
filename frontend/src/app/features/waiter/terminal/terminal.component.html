@@ -64,11 +64,11 @@
           <p>Корзина пуста.<br>Выберите блюда из меню слева.</p>
         </div>
       } @else {
-        @for (item of currentOrderItems(); track item.dish.id) {
+        @for (item of currentOrderItems(); track item.key) {
           <div class="cart-item">
             <div class="item-details">
               <span class="item-name">{{ item.dish.name }}</span>
-              <span class="item-price">{{ item.dish.price | currency:settingsService.currency():'symbol-narrow':'1.0-0' }}</span>
+              <span class="item-price">{{ (item.dish.price * item.quantity) | currency:settingsService.currency():'symbol-narrow':'1.0-0' }}</span>
             </div>
             
             <div class="item-controls">
@@ -77,6 +77,7 @@
                 <span class="quantity">{{ item.quantity }}</span>
                 <button class="control-btn plus" (click)="addToCart(item.dish)">+</button>
               } @else {
+                <span class="quantity" style="margin-right: 8px; font-weight: 500;">{{ item.quantity }} шт</span>
                 <span class="status-badge" [class]="item.status">{{ item.status }}</span>
               }
             </div>
@@ -92,10 +93,10 @@
       </div>
       
       <div class="action-buttons">
-        <app-ui-button variant="warning" size="md" [disabled]="currentOrderItems().length === 0" (click)="sendToKitchen()">
+        <app-ui-button variant="warning" size="md" [disabled]="!canSendToKitchen()" (click)="sendToKitchen()">
           На кухню
         </app-ui-button>
-        <app-ui-button variant="success" size="md" [disabled]="currentOrderItems().length === 0" (click)="payOrder()">
+        <app-ui-button variant="success" size="md" [disabled]="!canPay()" (click)="payOrder()">
           Оплата
         </app-ui-button>
       </div>

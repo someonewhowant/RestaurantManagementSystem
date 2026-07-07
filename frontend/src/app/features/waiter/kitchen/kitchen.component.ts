@@ -23,6 +23,21 @@ export class KitchenComponent {
   
   public currentFilter = signal<'all' | 'cooking' | 'ready'>('all');
 
+  private intervalId: any;
+
+  ngOnInit() {
+    this.orderService.loadKitchenOrders();
+    this.intervalId = setInterval(() => {
+      this.orderService.loadKitchenOrders();
+    }, 5000);
+  }
+
+  ngOnDestroy() {
+    if (this.intervalId) {
+      clearInterval(this.intervalId);
+    }
+  }
+
   public activeItems = computed(() => {
     const list: any[] = [];
     const orders = this.orderService.orders();
@@ -35,7 +50,7 @@ export class KitchenComponent {
             list.push({ 
               tableId, 
               item, 
-              key: `${tableId}-${item.dish.id}` 
+              key: item.id || `${tableId}-${item.dish.id}-${Math.random()}`
             });
           }
         }
@@ -76,12 +91,12 @@ export class KitchenComponent {
     return item ? item.unit : '';
   }
 
-  markAsReady(tableId: string, dishId: string) {
-    this.orderService.updateItemStatus(tableId, dishId, 'ready');
+  markAsReady(tableId: string, itemId: string) {
+    this.orderService.updateItemStatus(tableId, itemId, 'ready');
   }
 
-  markAsServed(tableId: string, dishId: string) {
-    this.orderService.updateItemStatus(tableId, dishId, 'served');
+  markAsServed(tableId: string, itemId: string) {
+    this.orderService.updateItemStatus(tableId, itemId, 'served');
     
     // Check if all items for this table are served or new
     // If there are no 'cooking' or 'ready' items, change table status back to 'Занят'

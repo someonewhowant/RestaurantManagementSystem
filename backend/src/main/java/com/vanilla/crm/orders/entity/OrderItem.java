@@ -39,6 +39,7 @@ public class OrderItem {
         NEW,
         COOKING,
         READY,
-        SERVED
+        SERVED,
+        CANCELLED
     }
 }

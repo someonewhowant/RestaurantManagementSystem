@@ -1,8 +1,11 @@
 import { Injectable, signal, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { of, Observable, throwError } from 'rxjs';
+import { tap } from 'rxjs/operators';
 import { Dish } from './menu.service';
+import { ToastService } from '../ui/toast/toast.service';
 
-export type OrderItemStatus = 'new' | 'cooking' | 'ready' | 'served';
+export type OrderItemStatus = 'new' | 'cooking' | 'ready' | 'served' | 'cancelled';
 
 export interface OrderItem {
   id?: string;
@@ -23,6 +26,7 @@ export interface ActiveOrder {
 })
 export class OrderService {
   private http = inject(HttpClient);
+  private toastService = inject(ToastService);
 
   private ordersSignal = signal<Record<string, ActiveOrder>>({});
   public orders = this.ordersSignal.asReadonly();
@@ -44,14 +48,33 @@ export class OrderService {
     return { tableId, items: [] };
   }
 
+  loadKitchenOrders() {
+    this.http.get<ActiveOrder[]>('/api/orders/kitchen').subscribe({
+      next: (ordersList) => {
+        this.ordersSignal.update(orders => {
+          const updated = { ...orders };
+          for (const order of ordersList) {
+            updated[order.tableId] = order;
+          }
+          return updated;
+        });
+      },
+      error: (err) => console.error('Failed to load kitchen orders', err)
+    });
+  }
+
   addItem(tableId: string, dish: Dish) {
     this.http.post<ActiveOrder>(`/api/orders/table/${tableId}/items`, {
       dishId: dish.id, quantity: 1
     }).subscribe({
       next: (order) => {
         this.ordersSignal.update(orders => ({ ...orders, [tableId]: order }));
+        this.toastService.success(`"${dish.name}" добавлено в заказ`);
       },
-      error: (err) => console.error('Failed to add item', err)
+      error: (err) => {
+        console.error('Failed to add item', err);
+        this.toastService.error('Ошибка при добавлении блюда');
+      }
     });
   }
 
@@ -74,8 +97,12 @@ export class OrderService {
         } else {
           this.ordersSignal.update(orders => ({ ...orders, [tableId]: updated }));
         }
+        this.toastService.info('Блюдо удалено из заказа');
       },
-      error: (err) => console.error('Failed to remove item', err)
+      error: (err) => {
+        console.error('Failed to remove item', err);
+        this.toastService.error('Ошибка при удалении блюда');
+      }
     });
   }
 
@@ -87,8 +114,12 @@ export class OrderService {
           delete newOrders[tableId];
           return newOrders;
         });
+        this.toastService.info('Заказ отменен');
       },
-      error: (err) => console.error('Failed to clear order', err)
+      error: (err) => {
+        console.error('Failed to clear order', err);
+        this.toastService.error('Ошибка при отмене заказа');
+      }
     });
   }
 
@@ -99,16 +130,20 @@ export class OrderService {
     this.http.patch<ActiveOrder>(`/api/orders/${order.id}/send-to-kitchen`, {}).subscribe({
       next: (updated) => {
         this.ordersSignal.update(orders => ({ ...orders, [tableId]: updated }));
+        this.toastService.success(`Заказ #${tableId.substring(0, 4)} отправлен на кухню`);
       },
-      error: (err) => console.error('Failed to send to kitchen', err)
+      error: (err) => {
+        console.error('Failed to send to kitchen', err);
+        this.toastService.error('Ошибка при отправке на кухню');
+      }
     });
   }
 
-  updateItemStatus(tableId: string, dishId: string, newStatus: OrderItemStatus) {
+  updateItemStatus(tableId: string, itemId: string, newStatus: OrderItemStatus) {
     const order = this.ordersSignal()[tableId];
     if (!order || !order.id) return;
 
-    const item = order.items.find(i => i.dish.id === dishId);
+    const item = order.items.find(i => i.id === itemId);
     if (!item || !item.id) return;
 
     this.http.patch<ActiveOrder>(`/api/orders/${order.id}/items/${item.id}/status`, {
@@ -117,29 +152,33 @@ export class OrderService {
       next: (updated) => {
         this.ordersSignal.update(orders => ({ ...orders, [tableId]: updated }));
       },
-      error: (err) => console.error('Failed to update item status', err)
+      error: (err) => {
+        console.error('Failed to update item status', err);
+        this.toastService.error('Ошибка при обновлении статуса');
+      }
     });
   }
 
-  closeOrder(tableId: string) {
+  closeOrder(tableId: string): Observable<ActiveOrder | null> {
     const order = this.ordersSignal()[tableId];
-    if (!order || !order.id) return;
+    if (!order || !order.id) return throwError(() => new Error('Order ID is missing'));
 
-    this.http.post<ActiveOrder>(`/api/orders/${order.id}/close`, {}).subscribe({
-      next: () => {
+    return this.http.post<ActiveOrder>(`/api/orders/${order.id}/close`, {}).pipe(
+      tap(() => {
         this.ordersSignal.update(orders => {
           const newOrders = { ...orders };
           delete newOrders[tableId];
           return newOrders;
         });
-      },
-      error: (err) => console.error('Failed to close order', err)
-    });
+      })
+    );
   }
 
   getTotal(tableId: string): number {
     const order = this.ordersSignal()[tableId];
     if (!order) return 0;
-    return order.items.reduce((sum, item) => sum + (item.dish.price * item.quantity), 0);
+    return order.items
+      .filter(item => item.status !== 'cancelled')
+      .reduce((sum, item) => sum + (item.dish.price * item.quantity), 0);
   }
 }

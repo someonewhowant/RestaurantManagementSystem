@@ -2,6 +2,7 @@ package com.vanilla.crm.budget;
 
 import com.vanilla.crm.orders.OrderRepository;
 import com.vanilla.crm.orders.entity.Order;
+import com.vanilla.crm.orders.entity.OrderItem;
 import com.vanilla.crm.inventory.InventoryService;
 import com.vanilla.crm.menu.entity.Dish;
 import com.vanilla.crm.budget.dto.BudgetSummaryDto;
@@ -78,7 +79,7 @@ public class BudgetService {
                 .orderId(dto.getOrderId())
                 .build();
 
-        return TransactionDto.fromEntity(transactionRepository.save(tx));
+        return TransactionDto.fromEntity(transactionRepository.saveAndFlush(tx));
     }
 
     @Transactional
@@ -91,13 +92,18 @@ public class BudgetService {
             throw new RuntimeException("Only income transactions can be refunded");
         }
 
+        String refundDescription = "Возврат по транзакции #" + originalTx.getId();
+        if (transactionRepository.existsByDescription(refundDescription)) {
+            throw new RuntimeException("This transaction has already been refunded");
+        }
+
         // Create the Storno (Refund) transaction
         Transaction refundTx = Transaction.builder()
                 .date(Instant.now())
                 .amount(originalTx.getAmount())
                 .type(Transaction.TransactionType.EXPENSE)
                 .category("Возврат (Сторно)")
-                .description("Возврат по транзакции #" + originalTx.getId())
+                .description(refundDescription)
                 .orderId(originalTx.getOrderId())
                 .build();
 
@@ -109,16 +115,18 @@ public class BudgetService {
                 order.setStatus(Order.OrderStatus.CANCELLED);
                 orderRepository.save(order);
                 
-                order.getItems().forEach(orderItem -> {
-                    Dish dish = orderItem.getDish();
-                    if (dish.getRecipe() != null) {
-                        dish.getRecipe().forEach(recipeIngredient -> {
-                            double totalAmountToReturn = recipeIngredient.getAmount() * orderItem.getQuantity();
-                            // Restock inventory
-                            inventoryService.restock(recipeIngredient.getInventoryItem().getId(), totalAmountToReturn);
+                order.getItems().stream()
+                        .filter(item -> item.getStatus() != OrderItem.ItemStatus.CANCELLED)
+                        .forEach(orderItem -> {
+                            Dish dish = orderItem.getDish();
+                            if (dish.getRecipe() != null) {
+                                dish.getRecipe().forEach(recipeIngredient -> {
+                                    double totalAmountToReturn = recipeIngredient.getAmount() * orderItem.getQuantity();
+                                    // Restock inventory
+                                    inventoryService.restock(recipeIngredient.getInventoryItem().getId(), totalAmountToReturn);
+                                });
+                            }
                         });
-                    }
-                });
             });
         }
 

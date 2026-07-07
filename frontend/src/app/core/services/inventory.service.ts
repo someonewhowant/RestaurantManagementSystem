@@ -1,6 +1,7 @@
 import { Injectable, signal, computed, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { tap } from 'rxjs';
+import { ToastService } from '../ui/toast/toast.service';
 
 export interface InventoryItem {
   id: string;
@@ -18,6 +19,7 @@ export interface InventoryItem {
 })
 export class InventoryService {
   private http = inject(HttpClient);
+  private toastService = inject(ToastService);
 
   private itemsSignal = signal<InventoryItem[]>([]);
   public items = this.itemsSignal.asReadonly();
@@ -46,35 +48,53 @@ export class InventoryService {
 
   addItem(item: Omit<InventoryItem, 'id'>) {
     this.http.post<InventoryItem>('/api/inventory', item).subscribe({
-      next: (created) => this.itemsSignal.update(items => [...items, created]),
-      error: (err) => console.error('Failed to create inventory item', err)
+      next: (created) => {
+        this.itemsSignal.update(items => [...items, created]);
+        this.toastService.success(`Ингредиент "${created.name}" добавлен`);
+      },
+      error: (err) => {
+        console.error('Failed to create inventory item', err);
+        this.toastService.error('Ошибка при добавлении ингредиента');
+      }
     });
   }
 
   updateItem(id: string, partial: Partial<InventoryItem>) {
     this.http.put<InventoryItem>(`/api/inventory/${id}`, partial).subscribe({
-      next: (updated) => this.itemsSignal.update(items =>
-        items.map(item => item.id === id ? updated : item)
-      ),
-      error: (err) => console.error('Failed to update inventory item', err)
+      next: (updated) => {
+        this.itemsSignal.update(items => items.map(item => item.id === id ? updated : item));
+        this.toastService.success(`Ингредиент "${updated.name}" обновлен`);
+      },
+      error: (err) => {
+        console.error('Failed to update inventory item', err);
+        this.toastService.error('Ошибка при обновлении ингредиента');
+      }
     });
   }
 
   restock(id: string, amount: number) {
     this.http.patch<InventoryItem>(`/api/inventory/${id}/restock`, { amount }).subscribe({
-      next: (updated) => this.itemsSignal.update(items =>
-        items.map(item => item.id === id ? updated : item)
-      ),
-      error: (err) => console.error('Failed to restock item', err)
+      next: (updated) => {
+        this.itemsSignal.update(items => items.map(item => item.id === id ? updated : item));
+        this.toastService.success(`Поступление для "${updated.name}" зафиксировано`);
+      },
+      error: (err) => {
+        console.error('Failed to restock item', err);
+        this.toastService.error('Ошибка при пополнении запаса');
+      }
     });
   }
 
   consume(id: string, amount: number) {
     this.http.patch<InventoryItem>(`/api/inventory/${id}/consume`, { amount }).subscribe({
-      next: (updated) => this.itemsSignal.update(items =>
-        items.map(item => item.id === id ? updated : item)
-      ),
-      error: (err) => console.error('Failed to consume item', err)
+      next: (updated) => {
+        this.itemsSignal.update(items => items.map(item => item.id === id ? updated : item));
+        this.toastService.info(`Списание для "${updated.name}" зафиксировано`);
+      },
+      error: (err) => {
+        console.error('Failed to consume item', err);
+        this.toastService.error('Ошибка при списании запаса');
+      }
     });
   }
 
@@ -99,8 +119,13 @@ export class InventoryService {
 
     if (payload.length > 0) {
       this.http.post('/api/inventory/consume-batch', { items: payload }).subscribe({
-        next: () => this.fetchItems(),
-        error: (err) => console.error('Failed to consume batch', err)
+        next: () => {
+          this.fetchItems();
+        },
+        error: (err) => {
+          console.error('Failed to consume batch', err);
+          this.toastService.error('Ошибка при пакетном списании запасов');
+        }
       });
     }
   }
@@ -116,8 +141,12 @@ export class InventoryService {
         a.click();
         document.body.removeChild(a);
         window.URL.revokeObjectURL(url);
+        this.toastService.success('Отчет по инвентаризации скачан');
       },
-      error: (err) => console.error('Failed to export CSV', err)
+      error: (err) => {
+        console.error('Failed to export CSV', err);
+        this.toastService.error('Ошибка при скачивании отчета');
+      }
     });
   }
 }

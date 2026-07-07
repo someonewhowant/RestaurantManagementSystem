@@ -19,14 +19,16 @@ public class OrderItemDto {
             OrderItem.ItemStatus.NEW, "new",
             OrderItem.ItemStatus.COOKING, "cooking",
             OrderItem.ItemStatus.READY, "ready",
-            OrderItem.ItemStatus.SERVED, "served"
+            OrderItem.ItemStatus.SERVED, "served",
+            OrderItem.ItemStatus.CANCELLED, "cancelled"
     );
 
     private static final java.util.Map<String, OrderItem.ItemStatus> STATUS_MAP = java.util.Map.of(
             "new", OrderItem.ItemStatus.NEW,
             "cooking", OrderItem.ItemStatus.COOKING,
             "ready", OrderItem.ItemStatus.READY,
-            "served", OrderItem.ItemStatus.SERVED
+            "served", OrderItem.ItemStatus.SERVED,
+            "cancelled", OrderItem.ItemStatus.CANCELLED
     );
 
     public static OrderItemDto fromEntity(OrderItem item) {

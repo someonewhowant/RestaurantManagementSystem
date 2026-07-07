@@ -22,8 +22,12 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import com.vanilla.crm.inventory.dto.ConsumeItemDto;
 
 @Slf4j
 @Service
@@ -102,25 +106,17 @@ public class OrderService {
         Dish dish = menuRepository.findById(dishId)
                 .orElseThrow(() -> new RuntimeException("Dish not found"));
 
-        // Check if there's already a NEW item for this dish — increment quantity
-        OrderItem existingItem = order.getItems().stream()
-                .filter(i -> i.getDish().getId().equals(dishId) && i.getStatus() == OrderItem.ItemStatus.NEW)
-                .findFirst()
-                .orElse(null);
-
-        if (existingItem != null) {
-            existingItem.setQuantity(existingItem.getQuantity() + quantity);
-            orderItemRepository.save(existingItem);
-        } else {
+        // Create individual items for each portion to allow independent status management
+        for (int i = 0; i < quantity; i++) {
             OrderItem newItem = OrderItem.builder()
                     .order(order)
                     .dish(dish)
-                    .quantity(quantity)
+                    .quantity(1)
                     .status(OrderItem.ItemStatus.NEW)
                     .build();
             order.getItems().add(newItem);
-            orderRepository.save(order);
         }
+        orderRepository.save(order);
 
         return OrderDto.fromEntity(orderRepository.findById(order.getId()).orElseThrow());
     }
@@ -197,6 +193,7 @@ public class OrderService {
 
         // Calculate total
         BigDecimal total = order.getItems().stream()
+                .filter(item -> item.getStatus() != OrderItem.ItemStatus.CANCELLED)
                 .map(item -> item.getDish().getPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
@@ -223,15 +220,29 @@ public class OrderService {
         budgetService.createTransaction(txDto);
 
         // Deduct inventory!
-        order.getItems().forEach(orderItem -> {
-            Dish dish = orderItem.getDish();
-            if (dish.getRecipe() != null) {
-                dish.getRecipe().forEach(recipeIngredient -> {
-                    double totalAmountToConsume = recipeIngredient.getAmount() * orderItem.getQuantity();
-                    inventoryService.consume(recipeIngredient.getInventoryItem().getId(), totalAmountToConsume);
+        Map<UUID, Double> ingredientsToConsume = new HashMap<>();
+        
+        order.getItems().stream()
+                .filter(orderItem -> orderItem.getStatus() != OrderItem.ItemStatus.CANCELLED)
+                .forEach(orderItem -> {
+                    Dish dish = orderItem.getDish();
+                    if (dish.getRecipe() != null) {
+                        dish.getRecipe().forEach(recipeIngredient -> {
+                            double totalAmountToConsume = recipeIngredient.getAmount() * orderItem.getQuantity();
+                            UUID invId = recipeIngredient.getInventoryItem().getId();
+                            ingredientsToConsume.put(invId, ingredientsToConsume.getOrDefault(invId, 0.0) + totalAmountToConsume);
+                        });
+                    }
                 });
-            }
-        });
+
+        List<ConsumeItemDto> consumeBatchList = new ArrayList<>();
+        for (Map.Entry<UUID, Double> entry : ingredientsToConsume.entrySet()) {
+            consumeBatchList.add(ConsumeItemDto.builder()
+                    .ingredientId(entry.getKey())
+                    .amount(entry.getValue())
+                    .build());
+        }
+        inventoryService.consumeBatch(consumeBatchList);
 
         // Free the table
         RestaurantTable table = order.getTable();
@@ -255,6 +266,14 @@ public class OrderService {
                     order.setStatus(Order.OrderStatus.CANCELLED);
                     order.setClosedAt(Instant.now());
                     orderRepository.save(order);
+
+                    RestaurantTable table = order.getTable();
+                    if (table != null) {
+                        table.setStatus(RestaurantTable.TableStatus.FREE);
+                        table.setWaiterId(null);
+                        table.setStatusUpdatedAt(Instant.now());
+                        tableRepository.save(table);
+                    }
                 });
     }
 
@@ -265,6 +284,7 @@ public class OrderService {
     public BigDecimal getTotal(UUID tableId) {
         return orderRepository.findFirstByTableIdAndStatus(tableId, Order.OrderStatus.ACTIVE)
                 .map(order -> order.getItems().stream()
+                        .filter(item -> item.getStatus() != OrderItem.ItemStatus.CANCELLED)
                         .map(item -> item.getDish().getPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
                         .reduce(BigDecimal.ZERO, BigDecimal::add))
                 .orElse(BigDecimal.ZERO);

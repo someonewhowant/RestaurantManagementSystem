@@ -71,29 +71,41 @@ public class InventoryService {
     @Transactional
     public InventoryItemDto restock(UUID id, Double amount) {
         if (amount == null || amount <= 0) throw new IllegalArgumentException("Amount must be positive");
-        inventoryRepository.restockItem(id, amount);
         InventoryItem item = inventoryRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Item not found"));
-        return InventoryItemDto.fromEntity(item);
+        item.setCurrentStock(item.getCurrentStock() + amount);
+        return InventoryItemDto.fromEntity(inventoryRepository.save(item));
     }
 
     @Transactional
     public InventoryItemDto consume(UUID id, Double amount) {
         if (amount == null || amount <= 0) return inventoryRepository.findById(id).map(InventoryItemDto::fromEntity).orElseThrow();
-        inventoryRepository.consumeItem(id, amount);
         InventoryItem item = inventoryRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Item not found"));
-        return InventoryItemDto.fromEntity(item);
+        double newStock = item.getCurrentStock() - amount;
+        item.setCurrentStock(newStock < 0 ? 0.0 : newStock);
+        return InventoryItemDto.fromEntity(inventoryRepository.save(item));
     }
 
     @Transactional
     public void consumeBatch(List<ConsumeItemDto> items) {
         if (items == null || items.isEmpty()) return;
-        for (ConsumeItemDto item : items) {
-            if (item.getAmount() != null && item.getAmount() > 0) {
-                inventoryRepository.consumeItem(item.getIngredientId(), item.getAmount());
+        List<UUID> itemIds = items.stream().map(ConsumeItemDto::getIngredientId).collect(Collectors.toList());
+        List<InventoryItem> inventoryItems = inventoryRepository.findAllById(itemIds);
+        
+        java.util.Map<UUID, InventoryItem> itemMap = inventoryItems.stream()
+                .collect(Collectors.toMap(InventoryItem::getId, i -> i));
+
+        for (ConsumeItemDto itemDto : items) {
+            if (itemDto.getAmount() != null && itemDto.getAmount() > 0) {
+                InventoryItem item = itemMap.get(itemDto.getIngredientId());
+                if (item != null) {
+                    double newStock = item.getCurrentStock() - itemDto.getAmount();
+                    item.setCurrentStock(newStock < 0 ? 0.0 : newStock);
+                }
             }
         }
+        inventoryRepository.saveAll(inventoryItems);
     }
 
     @Transactional

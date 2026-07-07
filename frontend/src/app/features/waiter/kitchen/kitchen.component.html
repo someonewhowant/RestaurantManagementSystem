@@ -12,7 +12,7 @@
   </div>
 
   <div class="kitchen-grid">
-    @for (active of activeItems(); track active.item.dish.id + active.tableId) {
+    @for (active of activeItems(); track active.key) {
       <div class="dish-card" [class.ready]="active.item.status === 'ready'" [class.cooking]="active.item.status === 'cooking'">
         <div class="dish-content">
           <div class="dish-meta">
@@ -75,11 +75,11 @@
 
             <div class="action-buttons" style="margin-top: 16px;">
               @if (active.item.status === 'cooking') {
-                <app-ui-button variant="primary" class="full-width" (click)="markAsReady(active.tableId, active.item.dish.id)">
+                <app-ui-button variant="primary" class="full-width" (click)="markAsReady(active.tableId, active.item.id)">
                   Отметить готовым
                 </app-ui-button>
               } @else {
-                <app-ui-button variant="success" class="full-width" (click)="markAsServed(active.tableId, active.item.dish.id)">
+                <app-ui-button variant="success" class="full-width" (click)="markAsServed(active.tableId, active.item.id)">
                   Вынесено в зал
                 </app-ui-button>
               }
