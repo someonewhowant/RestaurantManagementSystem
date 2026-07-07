@@ -21,8 +21,8 @@
       </div>
       <div class="kpi-sparkline">
         <svg viewBox="0 0 100 30" preserveAspectRatio="none">
-          <path [attr.d]="sparklineRevenue" class="spark-line stroke-primary" />
-          <path [attr.d]="sparklineRevenue + ' L 100 30 L 0 30 Z'" class="spark-fill fill-primary" />
+          <path [attr.d]="sparklineRevenue()" class="spark-line stroke-primary" />
+          <path [attr.d]="sparklineRevenue() + ' L 100 30 L 0 30 Z'" class="spark-fill fill-primary" />
         </svg>
       </div>
     </app-ui-card>
@@ -40,8 +40,8 @@
       </div>
       <div class="kpi-sparkline">
         <svg viewBox="0 0 100 30" preserveAspectRatio="none">
-          <path [attr.d]="sparklineCheck" class="spark-line stroke-success" />
-          <path [attr.d]="sparklineCheck + ' L 100 30 L 0 30 Z'" class="spark-fill fill-success" />
+          <path [attr.d]="sparklineCheck()" class="spark-line stroke-success" />
+          <path [attr.d]="sparklineCheck() + ' L 100 30 L 0 30 Z'" class="spark-fill fill-success" />
         </svg>
       </div>
     </app-ui-card>
@@ -59,8 +59,8 @@
       </div>
       <div class="kpi-sparkline">
         <svg viewBox="0 0 100 30" preserveAspectRatio="none">
-          <path [attr.d]="sparklineGuests" class="spark-line stroke-warning" />
-          <path [attr.d]="sparklineGuests + ' L 100 30 L 0 30 Z'" class="spark-fill fill-warning" />
+          <path [attr.d]="sparklineGuests()" class="spark-line stroke-warning" />
+          <path [attr.d]="sparklineGuests() + ' L 100 30 L 0 30 Z'" class="spark-fill fill-warning" />
         </svg>
       </div>
     </app-ui-card>
@@ -78,8 +78,8 @@
       </div>
       <div class="kpi-sparkline">
         <svg viewBox="0 0 100 30" preserveAspectRatio="none">
-          <path [attr.d]="sparklineFoodCost" class="spark-line stroke-info" />
-          <path [attr.d]="sparklineFoodCost + ' L 100 30 L 0 30 Z'" class="spark-fill fill-info" />
+          <path [attr.d]="sparklineFoodCost()" class="spark-line stroke-info" />
+          <path [attr.d]="sparklineFoodCost() + ' L 100 30 L 0 30 Z'" class="spark-fill fill-info" />
         </svg>
       </div>
     </app-ui-card>

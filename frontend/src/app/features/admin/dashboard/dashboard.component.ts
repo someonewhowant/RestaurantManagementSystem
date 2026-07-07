@@ -43,6 +43,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   }
 
   private refreshData() {
+    this.budgetService.fetchSummary();
     this.budgetService.fetchTransactions();
     this.tablesService.fetchTables();
     this.staffService.fetchStaff();
@@ -88,11 +89,37 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     foodCost: { value: -2.3, isPositive: true }, // Negative food cost is positive for business
   };
 
-  // Generate SVG Sparklines (mock data)
-  public sparklineRevenue = 'M 0 20 Q 10 25, 20 15 T 40 10 T 60 18 T 80 5 T 100 0';
-  public sparklineCheck = 'M 0 15 Q 15 20, 30 10 T 60 5 T 80 12 T 100 2';
-  public sparklineGuests = 'M 0 25 Q 10 15, 25 18 T 50 10 T 75 15 T 100 5';
-  public sparklineFoodCost = 'M 0 5 Q 15 15, 30 10 T 60 20 T 80 15 T 100 25'; // Trending down
+  private generateSparkline(data: number[]): string {
+    if (data.length === 0) return 'M 0 15 L 100 15';
+    const max = Math.max(...data) || 1;
+    const min = Math.min(...data);
+    const range = max - min || 1;
+    const pts = data.map((val, i) => {
+      const x = (i / (data.length - 1)) * 100;
+      const y = 25 - ((val - min) / range) * 20; // y from 5 to 25
+      return `${x},${y}`;
+    });
+    return `M ${pts[0]} ` + pts.slice(1).map(p => `L ${p}`).join(' ');
+  }
+
+  public sparklineRevenue = computed(() => {
+    return this.generateSparkline(this.weeklyChartData().map(d => d.revenue));
+  });
+
+  public sparklineCheck = computed(() => {
+    return this.generateSparkline(this.weeklyChartData().map(d => {
+      const guests = Math.round(d.revenue / 850) || 1;
+      return d.revenue / guests;
+    }));
+  });
+
+  public sparklineGuests = computed(() => {
+    return this.generateSparkline(this.weeklyChartData().map(d => Math.round(d.revenue / 850)));
+  });
+
+  public sparklineFoodCost = computed(() => {
+    return this.generateSparkline(this.weeklyChartData().map(d => d.revenue === 0 ? 0 : (d.expense / d.revenue) * 100));
+  });
 
   public occupiedTablesCount = computed(() => {
     return this.tablesService.tables().filter(t => t.status !== 'Свободен').length;
@@ -205,26 +232,31 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   });
 
   public weeklyChartData = computed(() => {
-    // Generate last 7 days names
-    const days = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
-    const today = new Date().getDay();
-    const orderedDays = [];
-    for (let i = 6; i >= 0; i--) {
-      let d = today - i;
-      if (d <= 0) d += 7;
-      orderedDays.push(days[d - 1]);
-    }
+    const days = ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
     
-    return orderedDays.map((day, i) => {
-      // Mock realistic looking data for the week
-      const rev = 45000 + (Math.sin(i) * 12000) + (i * 6000);
-      const exp = 18000 + (Math.cos(i) * 4000) + (i * 1500);
-      return {
-        label: day,
-        revenue: Math.round(rev),
-        expense: Math.round(exp)
-      };
-    });
+    // Generate array of 7 days up to today
+    const stats: { label: string, revenue: number, expense: number, time: number }[] = [];
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(today);
+      d.setDate(d.getDate() - i);
+      stats.push({ label: days[d.getDay()], revenue: 0, expense: 0, time: d.getTime() });
+    }
+
+    const transactions = this.budgetService.transactions();
+    for (const tx of transactions) {
+      const txDate = new Date(tx.date);
+      txDate.setHours(0, 0, 0, 0);
+      const targetDay = stats.find(s => s.time === txDate.getTime());
+      
+      if (targetDay) {
+        if (tx.type === 'Доход') targetDay.revenue += tx.amount;
+        if (tx.type === 'Расход') targetDay.expense += tx.amount;
+      }
+    }
+
+    return stats;
   });
 
   public chartMax = computed(() => {
