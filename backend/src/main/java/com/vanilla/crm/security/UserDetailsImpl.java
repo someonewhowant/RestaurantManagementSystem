@@ -1,6 +1,6 @@
 package com.vanilla.crm.security;
 
-import com.vanilla.crm.auth.entity.User;
+import com.vanilla.crm.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;

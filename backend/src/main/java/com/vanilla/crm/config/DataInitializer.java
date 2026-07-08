@@ -1,19 +1,19 @@
 package com.vanilla.crm.config;
 
-import com.vanilla.crm.auth.UserRepository;
-import com.vanilla.crm.auth.entity.User;
-import com.vanilla.crm.budget.TransactionRepository;
-import com.vanilla.crm.budget.entity.Transaction;
-import com.vanilla.crm.inventory.InventoryRepository;
-import com.vanilla.crm.inventory.entity.InventoryItem;
-import com.vanilla.crm.menu.MenuRepository;
-import com.vanilla.crm.menu.entity.Dish;
-import com.vanilla.crm.menu.entity.RecipeIngredient;
-import com.vanilla.crm.staff.StaffRepository;
-import com.vanilla.crm.staff.entity.Employee;
-import com.vanilla.crm.tables.TableRepository;
-import com.vanilla.crm.tables.entity.RestaurantTable;
-import com.vanilla.crm.orders.OrderRepository;
+import com.vanilla.crm.repository.UserRepository;
+import com.vanilla.crm.entity.User;
+import com.vanilla.crm.repository.TransactionRepository;
+import com.vanilla.crm.entity.Transaction;
+import com.vanilla.crm.repository.InventoryRepository;
+import com.vanilla.crm.entity.InventoryItem;
+import com.vanilla.crm.repository.MenuRepository;
+import com.vanilla.crm.entity.Dish;
+import com.vanilla.crm.entity.RecipeIngredient;
+import com.vanilla.crm.repository.StaffRepository;
+import com.vanilla.crm.entity.Employee;
+import com.vanilla.crm.repository.TableRepository;
+import com.vanilla.crm.entity.RestaurantTable;
+import com.vanilla.crm.repository.OrderRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -110,7 +110,7 @@ public class DataInitializer implements CommandLineRunner {
                 .imageIcon("🥩")
                 .instructions("Прожарка medium rare, подавать с чесночным маслом")
                 .allergens(new java.util.HashSet<>(java.util.List.of("Мясо")))
-                .macros(com.vanilla.crm.menu.entity.Macros.builder().calories(650.0).protein(45.0).carbs(0.0).fats(50.0).build())
+                .macros(com.vanilla.crm.entity.Macros.builder().calories(650.0).protein(45.0).carbs(0.0).fats(50.0).build())
                 .build();
 
         Dish dish2 = Dish.builder()
@@ -122,7 +122,7 @@ public class DataInitializer implements CommandLineRunner {
                 .imageIcon("🥗")
                 .instructions("Соус отдельно")
                 .allergens(new java.util.HashSet<>(java.util.List.of("Яйцо", "Глютен")))
-                .macros(com.vanilla.crm.menu.entity.Macros.builder().calories(320.0).protein(12.0).carbs(15.0).fats(25.0).build())
+                .macros(com.vanilla.crm.entity.Macros.builder().calories(320.0).protein(12.0).carbs(15.0).fats(25.0).build())
                 .build();
 
         Dish dish3 = Dish.builder()
@@ -134,7 +134,7 @@ public class DataInitializer implements CommandLineRunner {
                 .imageIcon("🍟")
                 .instructions("Жарить во фритюре до золотистой корочки")
                 .allergens(new java.util.HashSet<>())
-                .macros(com.vanilla.crm.menu.entity.Macros.builder().calories(290.0).protein(3.0).carbs(35.0).fats(15.0).build())
+                .macros(com.vanilla.crm.entity.Macros.builder().calories(290.0).protein(3.0).carbs(35.0).fats(15.0).build())
                 .build();
 
         Dish dish4 = Dish.builder()
@@ -146,7 +146,7 @@ public class DataInitializer implements CommandLineRunner {
                 .imageIcon("☕")
                 .instructions("Классический эспрессо")
                 .allergens(new java.util.HashSet<>())
-                .macros(com.vanilla.crm.menu.entity.Macros.builder().calories(5.0).protein(0.0).carbs(0.0).fats(0.0).build())
+                .macros(com.vanilla.crm.entity.Macros.builder().calories(5.0).protein(0.0).carbs(0.0).fats(0.0).build())
                 .build();
 
         Dish dish5 = Dish.builder()
@@ -158,7 +158,7 @@ public class DataInitializer implements CommandLineRunner {
                 .imageIcon("🍰")
                 .instructions("Подавать охлажденным")
                 .allergens(new java.util.HashSet<>(java.util.List.of("Лактоза", "Глютен", "Яйцо")))
-                .macros(com.vanilla.crm.menu.entity.Macros.builder().calories(280.0).protein(5.0).carbs(30.0).fats(12.0).build())
+                .macros(com.vanilla.crm.entity.Macros.builder().calories(280.0).protein(5.0).carbs(30.0).fats(12.0).build())
                 .build();
 
         List<Dish> dishes = menuRepository.saveAll(List.of(dish1, dish2, dish3, dish4, dish5));
