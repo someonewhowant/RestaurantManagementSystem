@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 
 import java.util.List;
 import java.util.UUID;
@@ -34,7 +35,7 @@ public class TableController {
     @ApiResponse(responseCode = "200", description = "Обновлённый столик")
     @ApiResponse(responseCode = "404", description = "Столик не найден")
     @PatchMapping("/{id}/status")
-    public ResponseEntity<TableDto> changeStatus(@PathVariable UUID id, @RequestBody TableStatusRequest request) {
+    public ResponseEntity<TableDto> changeStatus(@PathVariable UUID id, @Valid @RequestBody TableStatusRequest request) {
         return ResponseEntity.ok(tableService.changeStatus(id, request.getStatus(), request.getWaiterId()));
     }
 
@@ -42,21 +43,21 @@ public class TableController {
     @ApiResponse(responseCode = "200", description = "Обновлённый столик")
     @ApiResponse(responseCode = "404", description = "Столик не найден")
     @PatchMapping("/{id}/waiter")
-    public ResponseEntity<TableDto> assignWaiter(@PathVariable UUID id, @RequestBody WaiterAssignRequest request) {
+    public ResponseEntity<TableDto> assignWaiter(@PathVariable UUID id, @Valid @RequestBody WaiterAssignRequest request) {
         return ResponseEntity.ok(tableService.assignWaiter(id, request.getWaiterId()));
     }
 
     @Operation(summary = "Создать столик", description = "Добавляет новый столик в зал.")
     @ApiResponse(responseCode = "200", description = "Созданный столик")
     @PostMapping
-    public ResponseEntity<TableDto> createTable(@RequestBody TableDto dto) {
+    public ResponseEntity<TableDto> createTable(@Valid @RequestBody TableDto dto) {
         return ResponseEntity.ok(tableService.createTable(dto));
     }
 
     @Operation(summary = "Обновить столик", description = "Обновляет номер или вместимость столика.")
     @ApiResponse(responseCode = "200", description = "Обновлённый столик")
     @PutMapping("/{id}")
-    public ResponseEntity<TableDto> updateTable(@PathVariable UUID id, @RequestBody TableDto dto) {
+    public ResponseEntity<TableDto> updateTable(@PathVariable UUID id, @Valid @RequestBody TableDto dto) {
         return ResponseEntity.ok(tableService.updateTable(id, dto));
     }
 

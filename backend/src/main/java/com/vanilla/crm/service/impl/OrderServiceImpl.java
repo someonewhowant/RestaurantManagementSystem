@@ -1,5 +1,7 @@
 package com.vanilla.crm.service.impl;
 
+import com.vanilla.crm.exception.ResourceNotFoundException;
+
 import com.vanilla.crm.repository.OrderItemRepository;
 
 import com.vanilla.crm.repository.OrderRepository;
@@ -51,6 +53,7 @@ public class OrderServiceImpl implements OrderService {
      * Get the active order for a given table, or return an empty order DTO.
      */
     @Transactional(readOnly = true)
+    @Override
     public OrderDto getOrderForTable(UUID tableId) {
         return orderRepository.findFirstByTableIdAndStatus(tableId, Order.OrderStatus.ACTIVE)
                 .map(OrderDto::fromEntity)
@@ -65,6 +68,7 @@ public class OrderServiceImpl implements OrderService {
      * Get all orders with items that are currently being cooked (for kitchen display).
      */
     @Transactional(readOnly = true)
+    @Override
     public List<OrderDto> getKitchenOrders() {
         // Find all active orders that have at least one item in COOKING status
         return orderRepository.findAll().stream()
@@ -79,13 +83,14 @@ public class OrderServiceImpl implements OrderService {
      * Create a new active order for a table (or return the existing one).
      */
     @Transactional
+    @Override
     public OrderDto createOrder(UUID tableId) {
         // Check if there's already an active order for this table
         return orderRepository.findFirstByTableIdAndStatus(tableId, Order.OrderStatus.ACTIVE)
                 .map(OrderDto::fromEntity)
                 .orElseGet(() -> {
                     RestaurantTable table = tableRepository.findById(tableId)
-                            .orElseThrow(() -> new RuntimeException("Table not found"));
+                            .orElseThrow(() -> new ResourceNotFoundException("Table not found"));
 
                     Order order = Order.builder()
                             .table(table)
@@ -100,16 +105,18 @@ public class OrderServiceImpl implements OrderService {
      * Add a dish to the active order for a table.
      */
     @Transactional
+    @Override
     public OrderDto addItem(UUID tableId, UUID dishId, int quantity) {
+        log.info("Adding {} of dish {} to table {}", quantity, dishId, tableId);
         // Find or create active order
         RestaurantTable table = tableRepository.findById(tableId)
-                .orElseThrow(() -> new RuntimeException("Table not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Table not found"));
 
         Order order = orderRepository.findFirstByTableIdAndStatus(tableId, Order.OrderStatus.ACTIVE)
                 .orElseGet(() -> orderRepository.save(Order.builder().table(table).build()));
 
         Dish dish = menuRepository.findById(dishId)
-                .orElseThrow(() -> new RuntimeException("Dish not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Dish not found"));
 
         // Create individual items for each portion to allow independent status management
         for (int i = 0; i < quantity; i++) {
@@ -130,14 +137,16 @@ public class OrderServiceImpl implements OrderService {
      * Remove an item from the order (only if status is NEW).
      */
     @Transactional
+    @Override
     public OrderDto removeItem(UUID orderId, UUID itemId) {
+        log.info("Removing item {} from order {}", itemId, orderId);
         Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new RuntimeException("Order not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Order not found"));
 
         OrderItem item = order.getItems().stream()
                 .filter(i -> i.getId().equals(itemId))
                 .findFirst()
-                .orElseThrow(() -> new RuntimeException("Item not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Item not found"));
 
         if (item.getStatus() == OrderItem.ItemStatus.NEW) {
             if (item.getQuantity() > 1) {
@@ -156,9 +165,11 @@ public class OrderServiceImpl implements OrderService {
      * Send all NEW items to the kitchen (change status to COOKING).
      */
     @Transactional
+    @Override
     public OrderDto sendToKitchen(UUID orderId) {
+        log.info("Sending order {} to kitchen", orderId);
         Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new RuntimeException("Order not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Order not found"));
 
         order.getItems().forEach(item -> {
             if (item.getStatus() == OrderItem.ItemStatus.NEW) {
@@ -173,9 +184,11 @@ public class OrderServiceImpl implements OrderService {
      * Update status of a single order item.
      */
     @Transactional
+    @Override
     public OrderDto updateItemStatus(UUID orderId, UUID itemId, String newStatus) {
+        log.info("Updating item {} status to {}", itemId, newStatus);
         Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new RuntimeException("Order not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Order not found"));
 
         order.getItems().stream()
                 .filter(i -> i.getId().equals(itemId))
@@ -192,9 +205,11 @@ public class OrderServiceImpl implements OrderService {
      * 3. Mark order as CLOSED
      */
     @Transactional
+    @Override
     public OrderDto closeOrder(UUID orderId) {
+        log.info("Closing order {}", orderId);
         Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new RuntimeException("Order not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Order not found"));
 
         // Calculate total
         BigDecimal total = order.getItems().stream()
@@ -225,29 +240,7 @@ public class OrderServiceImpl implements OrderService {
         budgetService.createTransaction(txDto);
 
         // Deduct inventory!
-        Map<UUID, Double> ingredientsToConsume = new HashMap<>();
-        
-        order.getItems().stream()
-                .filter(orderItem -> orderItem.getStatus() != OrderItem.ItemStatus.CANCELLED)
-                .forEach(orderItem -> {
-                    Dish dish = orderItem.getDish();
-                    if (dish.getRecipe() != null) {
-                        dish.getRecipe().forEach(recipeIngredient -> {
-                            double totalAmountToConsume = recipeIngredient.getAmount() * orderItem.getQuantity();
-                            UUID invId = recipeIngredient.getInventoryItem().getId();
-                            ingredientsToConsume.put(invId, ingredientsToConsume.getOrDefault(invId, 0.0) + totalAmountToConsume);
-                        });
-                    }
-                });
-
-        List<ConsumeItemDto> consumeBatchList = new ArrayList<>();
-        for (Map.Entry<UUID, Double> entry : ingredientsToConsume.entrySet()) {
-            consumeBatchList.add(ConsumeItemDto.builder()
-                    .ingredientId(entry.getKey())
-                    .amount(entry.getValue())
-                    .build());
-        }
-        inventoryService.consumeBatch(consumeBatchList);
+        inventoryService.consumeByOrder(order);
 
         // Free the table
         RestaurantTable table = order.getTable();
@@ -265,7 +258,9 @@ public class OrderServiceImpl implements OrderService {
      * Clear/cancel an active order for a table.
      */
     @Transactional
+    @Override
     public void clearOrder(UUID tableId) {
+        log.info("Clearing order for table {}", tableId);
         orderRepository.findFirstByTableIdAndStatus(tableId, Order.OrderStatus.ACTIVE)
                 .ifPresent(order -> {
                     order.setStatus(Order.OrderStatus.CANCELLED);
@@ -286,6 +281,7 @@ public class OrderServiceImpl implements OrderService {
      * Calculate total for an active order (without closing).
      */
     @Transactional(readOnly = true)
+    @Override
     public BigDecimal getTotal(UUID tableId) {
         return orderRepository.findFirstByTableIdAndStatus(tableId, Order.OrderStatus.ACTIVE)
                 .map(order -> order.getItems().stream()

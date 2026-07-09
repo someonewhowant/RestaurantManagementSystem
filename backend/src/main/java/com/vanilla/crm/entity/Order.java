@@ -1,6 +1,5 @@
 package com.vanilla.crm.entity;
 
-import com.vanilla.crm.entity.RestaurantTable;
 import jakarta.persistence.*;
 import lombok.*;
 

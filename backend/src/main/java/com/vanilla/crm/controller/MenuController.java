@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 
 import java.util.List;
 import java.util.UUID;
@@ -29,16 +30,13 @@ public class MenuController {
     public ResponseEntity<List<DishDto>> getMenu(
             @Parameter(description = "Фильтр по категории (Горячее, Салаты, Напитки и т.д.)")
             @RequestParam(required = false) String category) {
-        if (category != null && !category.isEmpty()) {
-            return ResponseEntity.ok(menuService.getDishesByCategory(category));
-        }
-        return ResponseEntity.ok(menuService.getAllDishes());
+        return ResponseEntity.ok(menuService.getMenu(category));
     }
 
     @Operation(summary = "Добавить блюдо", description = "Создаёт новое блюдо в меню.")
     @ApiResponse(responseCode = "200", description = "Созданное блюдо")
     @PostMapping
-    public ResponseEntity<DishDto> createDish(@RequestBody DishDto dto) {
+    public ResponseEntity<DishDto> createDish(@Valid @RequestBody DishDto dto) {
         return ResponseEntity.ok(menuService.createDish(dto));
     }
 
@@ -46,7 +44,7 @@ public class MenuController {
     @ApiResponse(responseCode = "200", description = "Обновлённое блюдо")
     @ApiResponse(responseCode = "404", description = "Блюдо не найдено")
     @PutMapping("/{id}")
-    public ResponseEntity<DishDto> updateDish(@PathVariable UUID id, @RequestBody DishDto dto) {
+    public ResponseEntity<DishDto> updateDish(@PathVariable UUID id, @Valid @RequestBody DishDto dto) {
         return ResponseEntity.ok(menuService.updateDish(id, dto));
     }
 
@@ -63,7 +61,7 @@ public class MenuController {
     @ApiResponse(responseCode = "200", description = "Блюдо с обновлённым рецептом")
     @ApiResponse(responseCode = "404", description = "Блюдо или ингредиент не найдены")
     @PatchMapping("/{id}/recipe")
-    public ResponseEntity<DishDto> setRecipe(@PathVariable UUID id, @RequestBody List<RecipeRequest> recipeRequests) {
+    public ResponseEntity<DishDto> setRecipe(@PathVariable UUID id, @Valid @RequestBody List<RecipeRequest> recipeRequests) {
         return ResponseEntity.ok(menuService.setRecipe(id, recipeRequests));
     }
 }

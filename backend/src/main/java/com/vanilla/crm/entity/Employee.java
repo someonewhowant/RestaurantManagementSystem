@@ -6,6 +6,7 @@ import lombok.*;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.UUID;
+import java.math.BigDecimal;
 
 @Entity
 @Table(name = "employees")
@@ -28,7 +29,7 @@ public class Employee {
     private String email;
 
     @Column(precision = 10, scale = 2)
-    private java.math.BigDecimal salary;
+    private BigDecimal salary;
 
     private String salaryDate;
 

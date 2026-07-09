@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
@@ -22,7 +23,6 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.UUID;
-import java.io.StringWriter;
 
 @RestController
 @RequestMapping("/budget")
@@ -38,7 +38,7 @@ public class BudgetController {
     public ResponseEntity<Page<TransactionDto>> getTransactions(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
-            @PageableDefault(size = 20, sort = "date", direction = org.springframework.data.domain.Sort.Direction.DESC) Pageable pageable) {
+            @PageableDefault(size = 20, sort = "date", direction = Sort.Direction.DESC) Pageable pageable) {
         
         Instant start = startDate != null ? startDate.atStartOfDay(ZoneId.systemDefault()).toInstant() : null;
         Instant end = endDate != null ? endDate.plusDays(1).atStartOfDay(ZoneId.systemDefault()).toInstant() : null;
@@ -80,28 +80,6 @@ public class BudgetController {
         
         Instant start = startDate != null ? startDate.atStartOfDay(ZoneId.systemDefault()).toInstant() : null;
         Instant end = endDate != null ? endDate.plusDays(1).atStartOfDay(ZoneId.systemDefault()).toInstant() : null;
-        
-        // Fetch all matching without pagination
-        Page<TransactionDto> transactions = budgetService.getTransactions(start, end, Pageable.unpaged());
-
-        StringWriter writer = new StringWriter();
-        writer.append("ID;Дата;Сумма;Тип;Категория;Описание\n");
-        for (TransactionDto tx : transactions.getContent()) {
-            writer.append(String.format("%s;%s;%s;%s;%s;%s\n",
-                    tx.getId(),
-                    tx.getDate() != null ? tx.getDate().toString() : "",
-                    tx.getAmount(),
-                    tx.getType(),
-                    tx.getCategory(),
-                    tx.getDescription() != null ? tx.getDescription().replace(";", " ") : ""));
-        }
-
-        byte[] textBytes = writer.toString().getBytes(java.nio.charset.StandardCharsets.UTF_8);
-        byte[] csvBytes = new byte[textBytes.length + 3];
-        csvBytes[0] = (byte) 0xEF;
-        csvBytes[1] = (byte) 0xBB;
-        csvBytes[2] = (byte) 0xBF;
-        System.arraycopy(textBytes, 0, csvBytes, 3, textBytes.length);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.parseMediaType("text/csv"));
@@ -109,6 +87,6 @@ public class BudgetController {
         
         return ResponseEntity.ok()
                 .headers(headers)
-                .body(csvBytes);
+                .body(budgetService.exportCsv(start, end));
     }
 }

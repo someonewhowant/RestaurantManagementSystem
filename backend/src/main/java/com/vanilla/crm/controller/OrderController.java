@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -43,8 +44,8 @@ public class OrderController {
     @Operation(summary = "Создать заказ", description = "Создаёт новый заказ для столика или возвращает существующий активный.")
     @ApiResponse(responseCode = "200", description = "Созданный или существующий заказ")
     @PostMapping
-    public ResponseEntity<OrderDto> createOrder(@RequestBody Map<String, UUID> body) {
-        return ResponseEntity.ok(orderService.createOrder(body.get("tableId")));
+    public ResponseEntity<OrderDto> createOrder(@Valid @RequestBody CreateOrderRequest request) {
+        return ResponseEntity.ok(orderService.createOrder(request.getTableId()));
     }
 
     @Operation(summary = "Добавить блюдо в заказ", description = "Добавляет позицию в активный заказ для столика.")
@@ -53,7 +54,7 @@ public class OrderController {
     @PostMapping("/table/{tableId}/items")
     public ResponseEntity<OrderDto> addItem(
             @PathVariable UUID tableId,
-            @RequestBody AddItemRequest request) {
+            @Valid @RequestBody AddItemRequest request) {
         return ResponseEntity.ok(orderService.addItem(
                 tableId, request.getDishId(), request.getQuantity() != null ? request.getQuantity() : 1));
     }
@@ -78,7 +79,7 @@ public class OrderController {
     public ResponseEntity<OrderDto> updateItemStatus(
             @PathVariable UUID orderId,
             @PathVariable UUID itemId,
-            @RequestBody ItemStatusRequest request) {
+            @Valid @RequestBody ItemStatusRequest request) {
         return ResponseEntity.ok(orderService.updateItemStatus(orderId, itemId, request.getStatus()));
     }
 

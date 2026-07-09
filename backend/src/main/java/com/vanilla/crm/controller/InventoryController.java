@@ -9,12 +9,14 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 
 import java.util.List;
 import java.util.UUID;
-import java.io.StringWriter;
 
 @RestController
 @RequestMapping("/inventory")
@@ -48,7 +50,7 @@ public class InventoryController {
     @Operation(summary = "Добавить позицию", description = "Создаёт новую позицию на складе.")
     @ApiResponse(responseCode = "200", description = "Созданная позиция")
     @PostMapping
-    public ResponseEntity<InventoryItemDto> createItem(@RequestBody InventoryItemDto dto) {
+    public ResponseEntity<InventoryItemDto> createItem(@Valid @RequestBody InventoryItemDto dto) {
         return ResponseEntity.ok(inventoryService.createItem(dto));
     }
 
@@ -56,7 +58,7 @@ public class InventoryController {
     @ApiResponse(responseCode = "200", description = "Обновлённая позиция")
     @ApiResponse(responseCode = "404", description = "Позиция не найдена")
     @PutMapping("/{id}")
-    public ResponseEntity<InventoryItemDto> updateItem(@PathVariable UUID id, @RequestBody InventoryItemDto dto) {
+    public ResponseEntity<InventoryItemDto> updateItem(@PathVariable UUID id, @Valid @RequestBody InventoryItemDto dto) {
         return ResponseEntity.ok(inventoryService.updateItem(id, dto));
     }
 
@@ -64,7 +66,7 @@ public class InventoryController {
     @ApiResponse(responseCode = "200", description = "Обновлённая позиция")
     @ApiResponse(responseCode = "404", description = "Позиция не найдена")
     @PatchMapping("/{id}/restock")
-    public ResponseEntity<InventoryItemDto> restock(@PathVariable UUID id, @RequestBody AmountRequest request) {
+    public ResponseEntity<InventoryItemDto> restock(@PathVariable UUID id, @Valid @RequestBody AmountRequest request) {
         return ResponseEntity.ok(inventoryService.restock(id, request.getAmount()));
     }
 
@@ -72,14 +74,14 @@ public class InventoryController {
     @ApiResponse(responseCode = "200", description = "Обновлённая позиция")
     @ApiResponse(responseCode = "400", description = "Недостаточно запасов")
     @PatchMapping("/{id}/consume")
-    public ResponseEntity<InventoryItemDto> consume(@PathVariable UUID id, @RequestBody AmountRequest request) {
+    public ResponseEntity<InventoryItemDto> consume(@PathVariable UUID id, @Valid @RequestBody AmountRequest request) {
         return ResponseEntity.ok(inventoryService.consume(id, request.getAmount()));
     }
 
     @Operation(summary = "Пакетное списание", description = "Списывает несколько позиций одновременно.")
     @ApiResponse(responseCode = "200", description = "Списание успешно")
     @PostMapping("/consume-batch")
-    public ResponseEntity<Void> consumeBatch(@RequestBody BatchConsumeRequest request) {
+    public ResponseEntity<Void> consumeBatch(@Valid @RequestBody BatchConsumeRequest request) {
         inventoryService.consumeBatch(request.getItems());
         return ResponseEntity.ok().build();
     }
@@ -96,33 +98,12 @@ public class InventoryController {
     @Operation(summary = "Экспорт в CSV", description = "Скачать остатки на складе в формате CSV.")
     @GetMapping("/export/csv")
     public ResponseEntity<byte[]> exportCsv() {
-        List<InventoryItemDto> items = inventoryService.getAllItems();
-        StringWriter writer = new StringWriter();
-        writer.append("ID;Название;Категория;Текущий остаток;Мин. остаток;Единица;Цена за ед.\n");
-        for (InventoryItemDto item : items) {
-            writer.append(String.format("%s;%s;%s;%s;%s;%s;%s\n",
-                    item.getId(),
-                    item.getName() != null ? item.getName().replace(";", " ") : "",
-                    item.getCategory() != null ? item.getCategory().replace(";", " ") : "",
-                    item.getCurrentStock(),
-                    item.getMinStock(),
-                    item.getUnit() != null ? item.getUnit().replace(";", " ") : "",
-                    item.getPricePerUnit()));
-        }
-
-        byte[] textBytes = writer.toString().getBytes(java.nio.charset.StandardCharsets.UTF_8);
-        byte[] csvBytes = new byte[textBytes.length + 3];
-        csvBytes[0] = (byte) 0xEF;
-        csvBytes[1] = (byte) 0xBB;
-        csvBytes[2] = (byte) 0xBF;
-        System.arraycopy(textBytes, 0, csvBytes, 3, textBytes.length);
-
-        org.springframework.http.HttpHeaders headers = new org.springframework.http.HttpHeaders();
-        headers.setContentType(org.springframework.http.MediaType.parseMediaType("text/csv"));
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.parseMediaType("text/csv"));
         headers.setContentDispositionFormData("attachment", "inventory_report.csv");
 
         return ResponseEntity.ok()
                 .headers(headers)
-                .body(csvBytes);
+                .body(inventoryService.exportCsv());
     }
 }

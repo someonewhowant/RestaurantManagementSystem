@@ -24,6 +24,8 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
+import com.vanilla.crm.entity.Macros;
+import java.util.HashSet;
 
 @Component
 @RequiredArgsConstructor
@@ -109,8 +111,8 @@ public class DataInitializer implements CommandLineRunner {
                 .weight("300г")
                 .imageIcon("🥩")
                 .instructions("Прожарка medium rare, подавать с чесночным маслом")
-                .allergens(new java.util.HashSet<>(java.util.List.of("Мясо")))
-                .macros(com.vanilla.crm.entity.Macros.builder().calories(650.0).protein(45.0).carbs(0.0).fats(50.0).build())
+                .allergens(new HashSet<>(List.of("Мясо")))
+                .macros(Macros.builder().calories(650.0).protein(45.0).carbs(0.0).fats(50.0).build())
                 .build();
 
         Dish dish2 = Dish.builder()
@@ -121,8 +123,8 @@ public class DataInitializer implements CommandLineRunner {
                 .weight("250г")
                 .imageIcon("🥗")
                 .instructions("Соус отдельно")
-                .allergens(new java.util.HashSet<>(java.util.List.of("Яйцо", "Глютен")))
-                .macros(com.vanilla.crm.entity.Macros.builder().calories(320.0).protein(12.0).carbs(15.0).fats(25.0).build())
+                .allergens(new HashSet<>(List.of("Яйцо", "Глютен")))
+                .macros(Macros.builder().calories(320.0).protein(12.0).carbs(15.0).fats(25.0).build())
                 .build();
 
         Dish dish3 = Dish.builder()
@@ -133,8 +135,8 @@ public class DataInitializer implements CommandLineRunner {
                 .weight("150г")
                 .imageIcon("🍟")
                 .instructions("Жарить во фритюре до золотистой корочки")
-                .allergens(new java.util.HashSet<>())
-                .macros(com.vanilla.crm.entity.Macros.builder().calories(290.0).protein(3.0).carbs(35.0).fats(15.0).build())
+                .allergens(new HashSet<>())
+                .macros(Macros.builder().calories(290.0).protein(3.0).carbs(35.0).fats(15.0).build())
                 .build();
 
         Dish dish4 = Dish.builder()
@@ -145,8 +147,8 @@ public class DataInitializer implements CommandLineRunner {
                 .weight("30мл")
                 .imageIcon("☕")
                 .instructions("Классический эспрессо")
-                .allergens(new java.util.HashSet<>())
-                .macros(com.vanilla.crm.entity.Macros.builder().calories(5.0).protein(0.0).carbs(0.0).fats(0.0).build())
+                .allergens(new HashSet<>())
+                .macros(Macros.builder().calories(5.0).protein(0.0).carbs(0.0).fats(0.0).build())
                 .build();
 
         Dish dish5 = Dish.builder()
@@ -157,8 +159,8 @@ public class DataInitializer implements CommandLineRunner {
                 .weight("150г")
                 .imageIcon("🍰")
                 .instructions("Подавать охлажденным")
-                .allergens(new java.util.HashSet<>(java.util.List.of("Лактоза", "Глютен", "Яйцо")))
-                .macros(com.vanilla.crm.entity.Macros.builder().calories(280.0).protein(5.0).carbs(30.0).fats(12.0).build())
+                .allergens(new HashSet<>(List.of("Лактоза", "Глютен", "Яйцо")))
+                .macros(Macros.builder().calories(280.0).protein(5.0).carbs(30.0).fats(12.0).build())
                 .build();
 
         List<Dish> dishes = menuRepository.saveAll(List.of(dish1, dish2, dish3, dish4, dish5));

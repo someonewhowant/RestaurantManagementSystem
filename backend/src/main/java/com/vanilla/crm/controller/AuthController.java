@@ -6,7 +6,6 @@ import com.vanilla.crm.dto.auth.AuthResponse;
 import com.vanilla.crm.dto.auth.LoginRequest;
 import com.vanilla.crm.dto.auth.RegisterRequest;
 import com.vanilla.crm.dto.auth.UserDto;
-import com.vanilla.crm.entity.User;
 import com.vanilla.crm.security.UserDetailsImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;

@@ -7,6 +7,8 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "dishes")
@@ -45,14 +47,14 @@ public class Dish {
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "dish_allergens", joinColumns = @JoinColumn(name = "dish_id"))
     @Column(name = "allergen")
-    private java.util.Set<String> allergens;
+    private Set<String> allergens;
 
     @Embedded
     private Macros macros;
 
     @OneToMany(mappedBy = "dish", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @Builder.Default
-    private java.util.Set<RecipeIngredient> recipe = new java.util.HashSet<>();
+    private Set<RecipeIngredient> recipe = new HashSet<>();
 
     public enum DishStatus {
         AVAILABLE,

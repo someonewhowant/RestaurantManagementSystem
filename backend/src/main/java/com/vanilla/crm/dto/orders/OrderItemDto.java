@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.util.UUID;
+import java.util.Map;
 
 @Data
 @Builder
@@ -15,7 +16,7 @@ public class OrderItemDto {
     private Integer quantity;
     private String status; // "new", "cooking", "ready", "served"
 
-    private static final java.util.Map<OrderItem.ItemStatus, String> STATUS_REVERSE = java.util.Map.of(
+    private static final Map<OrderItem.ItemStatus, String> STATUS_REVERSE = Map.of(
             OrderItem.ItemStatus.NEW, "new",
             OrderItem.ItemStatus.COOKING, "cooking",
             OrderItem.ItemStatus.READY, "ready",
@@ -23,7 +24,7 @@ public class OrderItemDto {
             OrderItem.ItemStatus.CANCELLED, "cancelled"
     );
 
-    private static final java.util.Map<String, OrderItem.ItemStatus> STATUS_MAP = java.util.Map.of(
+    private static final Map<String, OrderItem.ItemStatus> STATUS_MAP = Map.of(
             "new", OrderItem.ItemStatus.NEW,
             "cooking", OrderItem.ItemStatus.COOKING,
             "ready", OrderItem.ItemStatus.READY,

@@ -1,5 +1,8 @@
 package com.vanilla.crm.service.impl;
 
+import com.vanilla.crm.exception.ResourceNotFoundException;
+import com.vanilla.crm.exception.DuplicateResourceException;
+
 import com.vanilla.crm.repository.UserRepository;
 
 import com.vanilla.crm.dto.auth.AuthResponse;
@@ -17,7 +20,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.vanilla.crm.service.AuthService;
+import java.util.UUID;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
@@ -28,9 +34,11 @@ public class AuthServiceImpl implements AuthService {
     private final JwtTokenProvider tokenProvider;
 
     @Transactional
+    @Override
     public AuthResponse register(RegisterRequest request) {
+        log.info("Registering new user with email: {}", request.getEmail());
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new RuntimeException("Error: Email is already in use!");
+            throw new DuplicateResourceException("Error: Email is already in use!");
         }
 
         // Create new user's account
@@ -48,8 +56,9 @@ public class AuthServiceImpl implements AuthService {
         // Auto-login after registration
         return login(new LoginRequest(request.getEmail(), request.getPassword()));
     }
-
+    @Override
     public AuthResponse login(LoginRequest request) {
+        log.info("User login attempt: {}", request.getEmail());
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
 
@@ -57,15 +66,16 @@ public class AuthServiceImpl implements AuthService {
         String jwt = tokenProvider.generateToken(authentication);
 
         User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         return new AuthResponse(jwt, UserDto.fromEntity(user));
     }
 
     @Transactional(readOnly = true)
-    public UserDto getCurrentUser(java.util.UUID userId) {
+    @Override
+    public UserDto getCurrentUser(UUID userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         return UserDto.fromEntity(user);
     }
 }

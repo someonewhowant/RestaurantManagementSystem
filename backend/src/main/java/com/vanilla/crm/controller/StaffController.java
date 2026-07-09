@@ -8,12 +8,14 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 
 import java.util.List;
 import java.util.UUID;
-import java.io.StringWriter;
 
 @RestController
 @RequestMapping("/staff")
@@ -33,7 +35,7 @@ public class StaffController {
     @Operation(summary = "Добавить сотрудника", description = "Создаёт нового сотрудника.")
     @ApiResponse(responseCode = "200", description = "Созданный сотрудник")
     @PostMapping
-    public ResponseEntity<EmployeeDto> createEmployee(@RequestBody EmployeeDto dto) {
+    public ResponseEntity<EmployeeDto> createEmployee(@Valid @RequestBody EmployeeDto dto) {
         return ResponseEntity.ok(staffService.createEmployee(dto));
     }
 
@@ -41,7 +43,7 @@ public class StaffController {
     @ApiResponse(responseCode = "200", description = "Обновлённый сотрудник")
     @ApiResponse(responseCode = "404", description = "Сотрудник не найден")
     @PutMapping("/{id}")
-    public ResponseEntity<EmployeeDto> updateEmployee(@PathVariable UUID id, @RequestBody EmployeeDto dto) {
+    public ResponseEntity<EmployeeDto> updateEmployee(@PathVariable UUID id, @Valid @RequestBody EmployeeDto dto) {
         return ResponseEntity.ok(staffService.updateEmployee(id, dto));
     }
 
@@ -49,7 +51,7 @@ public class StaffController {
     @ApiResponse(responseCode = "200", description = "Обновлённый сотрудник")
     @ApiResponse(responseCode = "404", description = "Сотрудник не найден")
     @PatchMapping("/{id}/status")
-    public ResponseEntity<EmployeeDto> changeStatus(@PathVariable UUID id, @RequestBody StatusRequest request) {
+    public ResponseEntity<EmployeeDto> changeStatus(@PathVariable UUID id, @Valid @RequestBody StatusRequest request) {
         return ResponseEntity.ok(staffService.changeStatus(id, request.getStatus()));
     }
 
@@ -73,35 +75,12 @@ public class StaffController {
     @Operation(summary = "Экспорт в CSV", description = "Скачать список персонала в формате CSV.")
     @GetMapping("/export/csv")
     public ResponseEntity<byte[]> exportCsv() {
-        List<EmployeeDto> employees = staffService.getAllEmployees();
-        StringWriter writer = new StringWriter();
-        writer.append("ID;Имя;Телефон;Email;Зарплата;Дата зарплаты;Роль;Статус;На смене\n");
-        for (EmployeeDto emp : employees) {
-            writer.append(String.format("%s;%s;%s;%s;%s;%s;%s;%s;%s\n",
-                    emp.getId(),
-                    emp.getName() != null ? emp.getName().replace(";", " ") : "",
-                    emp.getPhone() != null ? emp.getPhone().replace(";", " ") : "",
-                    emp.getEmail() != null ? emp.getEmail().replace(";", " ") : "",
-                    emp.getSalary() != null ? emp.getSalary() : "",
-                    emp.getSalaryDate() != null ? emp.getSalaryDate().replace(";", " ") : "",
-                    emp.getRole() != null ? emp.getRole().replace(";", " ") : "",
-                    emp.getStatus() != null ? emp.getStatus().replace(";", " ") : "",
-                    Boolean.TRUE.equals(emp.getOnShift()) ? "Да" : "Нет"));
-        }
-
-        byte[] textBytes = writer.toString().getBytes(java.nio.charset.StandardCharsets.UTF_8);
-        byte[] csvBytes = new byte[textBytes.length + 3];
-        csvBytes[0] = (byte) 0xEF;
-        csvBytes[1] = (byte) 0xBB;
-        csvBytes[2] = (byte) 0xBF;
-        System.arraycopy(textBytes, 0, csvBytes, 3, textBytes.length);
-
-        org.springframework.http.HttpHeaders headers = new org.springframework.http.HttpHeaders();
-        headers.setContentType(org.springframework.http.MediaType.parseMediaType("text/csv"));
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.parseMediaType("text/csv"));
         headers.setContentDispositionFormData("attachment", "staff_report.csv");
 
         return ResponseEntity.ok()
                 .headers(headers)
-                .body(csvBytes);
+                .body(staffService.exportCsv());
     }
 }

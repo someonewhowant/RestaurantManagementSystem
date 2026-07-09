@@ -1,5 +1,10 @@
 package com.vanilla.crm.service.impl;
 
+import com.vanilla.crm.exception.ResourceNotFoundException;
+import com.vanilla.crm.exception.BusinessRuleException;
+import com.vanilla.crm.exception.DuplicateResourceException;
+import com.vanilla.crm.util.CsvExportUtil;
+
 import com.vanilla.crm.repository.TransactionRepository;
 
 import com.vanilla.crm.repository.OrderRepository;
@@ -23,8 +28,10 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import lombok.extern.slf4j.Slf4j;
 import com.vanilla.crm.service.BudgetService;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class BudgetServiceImpl implements BudgetService {
@@ -34,6 +41,7 @@ public class BudgetServiceImpl implements BudgetService {
     private final InventoryService inventoryService;
 
     @Transactional(readOnly = true)
+    @Override
     public Page<TransactionDto> getTransactions(Instant start, Instant end, Pageable pageable) {
         if (start != null && end != null) {
             return transactionRepository.findAllByDateBetweenOrderByDateDesc(start, end, pageable)
@@ -44,6 +52,7 @@ public class BudgetServiceImpl implements BudgetService {
     }
 
     @Transactional(readOnly = true)
+    @Override
     public BudgetSummaryDto getSummary(Instant start, Instant end) {
         BigDecimal income;
         BigDecimal expense;
@@ -72,7 +81,9 @@ public class BudgetServiceImpl implements BudgetService {
     }
 
     @Transactional
+    @Override
     public TransactionDto createTransaction(TransactionDto dto) {
+        log.info("Creating transaction of type {} for amount {}", dto.getType(), dto.getAmount());
         Transaction tx = Transaction.builder()
                 .date(dto.getDate() != null ? Instant.parse(dto.getDate()) : Instant.now())
                 .amount(dto.getAmount())
@@ -86,18 +97,20 @@ public class BudgetServiceImpl implements BudgetService {
     }
 
     @Transactional
+    @Override
     public TransactionDto refundTransaction(UUID transactionId) {
+        log.info("Refunding transaction {}", transactionId);
         Transaction originalTx = transactionRepository.findById(transactionId)
-                .orElseThrow(() -> new RuntimeException("Transaction not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Transaction not found"));
 
         // Only allow refunding INCOME transactions (usually orders)
         if (originalTx.getType() != Transaction.TransactionType.INCOME) {
-            throw new RuntimeException("Only income transactions can be refunded");
+            throw new BusinessRuleException("Only income transactions can be refunded");
         }
 
         String refundDescription = "Возврат по транзакции #" + originalTx.getId();
         if (transactionRepository.existsByDescription(refundDescription)) {
-            throw new RuntimeException("This transaction has already been refunded");
+            throw new DuplicateResourceException("This transaction has already been refunded");
         }
 
         // Create the Storno (Refund) transaction
@@ -118,21 +131,28 @@ public class BudgetServiceImpl implements BudgetService {
                 order.setStatus(Order.OrderStatus.CANCELLED);
                 orderRepository.save(order);
                 
-                order.getItems().stream()
-                        .filter(item -> item.getStatus() != OrderItem.ItemStatus.CANCELLED)
-                        .forEach(orderItem -> {
-                            Dish dish = orderItem.getDish();
-                            if (dish.getRecipe() != null) {
-                                dish.getRecipe().forEach(recipeIngredient -> {
-                                    double totalAmountToReturn = recipeIngredient.getAmount() * orderItem.getQuantity();
-                                    // Restock inventory
-                                    inventoryService.restock(recipeIngredient.getInventoryItem().getId(), totalAmountToReturn);
-                                });
-                            }
-                        });
+                inventoryService.restockByOrder(order);
             });
         }
 
         return TransactionDto.fromEntity(savedRefund);
+    }
+
+    @Override
+    public byte[] exportCsv(Instant start, Instant end) {
+        log.info("Exporting budget to CSV");
+        Page<TransactionDto> transactions = getTransactions(start, end, org.springframework.data.domain.Pageable.unpaged());
+        StringBuilder sb = new StringBuilder();
+        sb.append("ID;Дата;Сумма;Тип;Категория;Описание\n");
+        for (TransactionDto tx : transactions.getContent()) {
+            sb.append(String.format("%s;%s;%s;%s;%s;%s\n",
+                    tx.getId(),
+                    tx.getDate() != null ? tx.getDate() : "",
+                    tx.getAmount(),
+                    CsvExportUtil.escapeField(tx.getType()),
+                    CsvExportUtil.escapeField(tx.getCategory()),
+                    CsvExportUtil.escapeField(tx.getDescription())));
+        }
+        return CsvExportUtil.wrapWithBom(sb.toString());
     }
 }

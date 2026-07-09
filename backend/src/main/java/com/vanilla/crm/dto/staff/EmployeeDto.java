@@ -7,17 +7,32 @@ import lombok.Data;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.UUID;
+import java.util.Map;
+import java.math.BigDecimal;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.PositiveOrZero;
 
 @Data
 @Builder
 public class EmployeeDto {
     private UUID id;
+    
+    @NotBlank(message = "Имя сотрудника не может быть пустым")
     private String name;
+    
+    @NotBlank(message = "Телефон обязателен")
     private String phone;
+    
     private String email;
-    private java.math.BigDecimal salary;
+    
+    @PositiveOrZero(message = "Зарплата не может быть отрицательной")
+    private BigDecimal salary;
+    
     private String salaryDate;
+    
+    @NotBlank(message = "Роль обязательна")
     private String role;      // "Менеджер", "Официант", "Повар", "Кассир"
+    
     private String status;    // "Активен", "В отпуске", "Уволен"
     private String hireDate;
     private String fireDate;
@@ -27,27 +42,27 @@ public class EmployeeDto {
     private String shiftStartTime;
 
     // Mapping from Russian labels used in the frontend to Java enums
-    private static final java.util.Map<String, Employee.EmployeeRole> ROLE_MAP = java.util.Map.of(
+    private static final Map<String, Employee.EmployeeRole> ROLE_MAP = Map.of(
             "Менеджер", Employee.EmployeeRole.MANAGER,
             "Официант", Employee.EmployeeRole.WAITER,
             "Повар", Employee.EmployeeRole.COOK,
             "Кассир", Employee.EmployeeRole.CASHIER
     );
 
-    private static final java.util.Map<Employee.EmployeeRole, String> ROLE_REVERSE = java.util.Map.of(
+    private static final Map<Employee.EmployeeRole, String> ROLE_REVERSE = Map.of(
             Employee.EmployeeRole.MANAGER, "Менеджер",
             Employee.EmployeeRole.WAITER, "Официант",
             Employee.EmployeeRole.COOK, "Повар",
             Employee.EmployeeRole.CASHIER, "Кассир"
     );
 
-    private static final java.util.Map<String, Employee.EmployeeStatus> STATUS_MAP = java.util.Map.of(
+    private static final Map<String, Employee.EmployeeStatus> STATUS_MAP = Map.of(
             "Активен", Employee.EmployeeStatus.ACTIVE,
             "В отпуске", Employee.EmployeeStatus.ON_VACATION,
             "Уволен", Employee.EmployeeStatus.FIRED
     );
 
-    private static final java.util.Map<Employee.EmployeeStatus, String> STATUS_REVERSE = java.util.Map.of(
+    private static final Map<Employee.EmployeeStatus, String> STATUS_REVERSE = Map.of(
             Employee.EmployeeStatus.ACTIVE, "Активен",
             Employee.EmployeeStatus.ON_VACATION, "В отпуске",
             Employee.EmployeeStatus.FIRED, "Уволен"

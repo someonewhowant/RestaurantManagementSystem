@@ -1,10 +1,9 @@
 package com.vanilla.crm.config;
 
-import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.vanilla.crm.dto.common.ApiError;
+import com.vanilla.crm.exception.BusinessRuleException;
+import com.vanilla.crm.exception.DuplicateResourceException;
+import com.vanilla.crm.exception.ResourceNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +14,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.LocalDateTime;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 /**
@@ -26,38 +24,15 @@ import java.util.stream.Collectors;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    // ─── DTO for error responses ──────────────────────────────────────
-    @Data
-    @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @Schema(description = "Стандартный формат ответа при ошибке")
-    public static class ApiError {
-        @Schema(description = "HTTP-статус код", example = "400")
-        private int status;
-
-        @Schema(description = "Краткое описание ошибки", example = "Bad Request")
-        private String error;
-
-        @Schema(description = "Подробное сообщение", example = "Блюдо с данным ID не найдено")
-        private String message;
-
-        @Schema(description = "Время возникновения ошибки")
-        private LocalDateTime timestamp;
-
-        @Schema(description = "Детали валидации (если есть)")
-        private Map<String, String> details;
-    }
-
     // ─── 404: Resource not found ──────────────────────────────────────
-    @ExceptionHandler(NoSuchElementException.class)
-    public ResponseEntity<ApiError> handleNotFound(NoSuchElementException ex) {
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ApiError> handleNotFound(ResourceNotFoundException ex) {
         log.warn("Resource not found: {}", ex.getMessage());
         return buildResponse(HttpStatus.NOT_FOUND, ex.getMessage());
     }
 
     // ─── 400: Business logic / illegal argument ──────────────────────
-    @ExceptionHandler({IllegalArgumentException.class, IllegalStateException.class})
+    @ExceptionHandler({BusinessRuleException.class, IllegalArgumentException.class, IllegalStateException.class})
     public ResponseEntity<ApiError> handleBadRequest(RuntimeException ex) {
         log.warn("Bad request: {}", ex.getMessage());
         return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
@@ -87,14 +62,15 @@ public class GlobalExceptionHandler {
     }
 
     // ─── 409: Conflict (e.g. duplicate email on register) ────────────
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<ApiError> handleRuntime(RuntimeException ex) {
-        // Check for common conflict messages
-        if (ex.getMessage() != null && ex.getMessage().toLowerCase().contains("already")) {
-            log.warn("Conflict: {}", ex.getMessage());
-            return buildResponse(HttpStatus.CONFLICT, ex.getMessage());
-        }
+    @ExceptionHandler(DuplicateResourceException.class)
+    public ResponseEntity<ApiError> handleConflict(DuplicateResourceException ex) {
+        log.warn("Conflict: {}", ex.getMessage());
+        return buildResponse(HttpStatus.CONFLICT, ex.getMessage());
+    }
 
+    // ─── 500: Unexpected errors ────────────
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ApiError> handleRuntime(Exception ex) {
         log.error("Unexpected error", ex);
         return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR,
                 "Внутренняя ошибка сервера. Обратитесь к администратору.");
