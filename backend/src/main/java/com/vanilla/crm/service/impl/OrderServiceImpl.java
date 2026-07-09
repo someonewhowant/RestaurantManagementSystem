@@ -16,6 +16,7 @@ import com.vanilla.crm.dto.orders.OrderDto;
 import com.vanilla.crm.dto.orders.OrderItemDto;
 import com.vanilla.crm.entity.Order;
 import com.vanilla.crm.entity.OrderItem;
+import com.vanilla.crm.mapper.OrderMapper;
 import com.vanilla.crm.repository.StaffRepository;
 import com.vanilla.crm.entity.Employee;
 import com.vanilla.crm.repository.TableRepository;
@@ -48,6 +49,7 @@ public class OrderServiceImpl implements OrderService {
     private final BudgetService budgetService;
     private final InventoryService inventoryService;
     private final StaffRepository staffRepository;
+    private final OrderMapper orderMapper;
 
     /**
      * Get the active order for a given table, or return an empty order DTO.
@@ -56,7 +58,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderDto getOrderForTable(UUID tableId) {
         return orderRepository.findFirstByTableIdAndStatus(tableId, Order.OrderStatus.ACTIVE)
-                .map(OrderDto::fromEntity)
+                .map(orderMapper::toDto)
                 .orElse(OrderDto.builder()
                         .tableId(tableId)
                         .status("active")
@@ -75,7 +77,7 @@ public class OrderServiceImpl implements OrderService {
                 .filter(o -> o.getStatus() == Order.OrderStatus.ACTIVE)
                 .filter(o -> o.getItems().stream().anyMatch(
                         i -> i.getStatus() == OrderItem.ItemStatus.COOKING || i.getStatus() == OrderItem.ItemStatus.NEW))
-                .map(OrderDto::fromEntity)
+                .map(orderMapper::toDto)
                 .collect(Collectors.toList());
     }
 
@@ -87,7 +89,7 @@ public class OrderServiceImpl implements OrderService {
     public OrderDto createOrder(UUID tableId) {
         // Check if there's already an active order for this table
         return orderRepository.findFirstByTableIdAndStatus(tableId, Order.OrderStatus.ACTIVE)
-                .map(OrderDto::fromEntity)
+                .map(orderMapper::toDto)
                 .orElseGet(() -> {
                     RestaurantTable table = tableRepository.findById(tableId)
                             .orElseThrow(() -> new ResourceNotFoundException("Table not found"));
@@ -97,7 +99,7 @@ public class OrderServiceImpl implements OrderService {
                             .status(Order.OrderStatus.ACTIVE)
                             .build();
 
-                    return OrderDto.fromEntity(orderRepository.save(order));
+                    return orderMapper.toDto(orderRepository.save(order));
                 });
     }
 
@@ -130,7 +132,7 @@ public class OrderServiceImpl implements OrderService {
         }
         orderRepository.save(order);
 
-        return OrderDto.fromEntity(orderRepository.findById(order.getId()).orElseThrow());
+        return orderMapper.toDto(orderRepository.findById(order.getId()).orElseThrow());
     }
 
     /**
@@ -158,7 +160,7 @@ public class OrderServiceImpl implements OrderService {
             }
         }
 
-        return OrderDto.fromEntity(orderRepository.findById(orderId).orElseThrow());
+        return orderMapper.toDto(orderRepository.findById(orderId).orElseThrow());
     }
 
     /**
@@ -177,7 +179,7 @@ public class OrderServiceImpl implements OrderService {
             }
         });
 
-        return OrderDto.fromEntity(orderRepository.save(order));
+        return orderMapper.toDto(orderRepository.save(order));
     }
 
     /**
@@ -193,9 +195,9 @@ public class OrderServiceImpl implements OrderService {
         order.getItems().stream()
                 .filter(i -> i.getId().equals(itemId))
                 .findFirst()
-                .ifPresent(item -> item.setStatus(OrderItemDto.toStatusEnum(newStatus)));
+                .ifPresent(item -> item.setStatus(orderMapper.toItemStatusEnum(newStatus)));
 
-        return OrderDto.fromEntity(orderRepository.save(order));
+        return orderMapper.toDto(orderRepository.save(order));
     }
 
     /**
@@ -251,7 +253,7 @@ public class OrderServiceImpl implements OrderService {
 
         log.info("Order {} closed. Total: {} ₽", orderId, total);
 
-        return OrderDto.fromEntity(orderRepository.save(order));
+        return orderMapper.toDto(orderRepository.save(order));
     }
 
     /**

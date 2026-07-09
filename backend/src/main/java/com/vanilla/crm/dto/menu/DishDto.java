@@ -1,6 +1,5 @@
 package com.vanilla.crm.dto.menu;
 
-import com.vanilla.crm.entity.Dish;
 import com.vanilla.crm.entity.Macros;
 import lombok.Builder;
 import lombok.Data;
@@ -36,20 +35,4 @@ public class DishDto {
     private Macros macros;
     private List<RecipeIngredientDto> recipe;
 
-    public static DishDto fromEntity(Dish dish) {
-        return DishDto.builder()
-                .id(dish.getId())
-                .name(dish.getName())
-                .category(dish.getCategory())
-                .price(dish.getPrice())
-                .status(dish.getStatus() != null ? dish.getStatus().name().toLowerCase() : "available")
-                .weight(dish.getWeight())
-                .imageIcon(dish.getImageIcon())
-                .instructions(dish.getInstructions())
-                .allergens(dish.getAllergens() != null ? new ArrayList<>(dish.getAllergens()) : null)
-                .macros(dish.getMacros())
-                .recipe(dish.getRecipe() != null ? 
-                    dish.getRecipe().stream().map(RecipeIngredientDto::fromEntity).toList() : null)
-                .build();
-    }
 }

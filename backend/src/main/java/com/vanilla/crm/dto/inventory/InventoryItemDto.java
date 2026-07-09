@@ -1,6 +1,5 @@
 package com.vanilla.crm.dto.inventory;
 
-import com.vanilla.crm.entity.InventoryItem;
 import lombok.Builder;
 import lombok.Data;
 import jakarta.validation.constraints.*;
@@ -36,16 +35,4 @@ public class InventoryItemDto {
     
     private Integer expiresInDays;
 
-    public static InventoryItemDto fromEntity(InventoryItem item) {
-        return InventoryItemDto.builder()
-                .id(item.getId())
-                .name(item.getName())
-                .category(item.getCategory())
-                .currentStock(item.getCurrentStock())
-                .minStock(item.getMinStock())
-                .unit(item.getUnit())
-                .pricePerUnit(item.getPricePerUnit())
-                .expiresInDays(item.getExpiresInDays())
-                .build();
-    }
 }

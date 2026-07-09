@@ -10,6 +10,7 @@ import com.vanilla.crm.entity.Dish;
 import com.vanilla.crm.entity.RecipeIngredient;
 import com.vanilla.crm.repository.InventoryRepository;
 import com.vanilla.crm.entity.InventoryItem;
+import com.vanilla.crm.mapper.MenuMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,12 +29,13 @@ public class MenuServiceImpl implements MenuService {
 
     private final MenuRepository menuRepository;
     private final InventoryRepository inventoryRepository;
+    private final MenuMapper menuMapper;
 
     @Transactional(readOnly = true)
     @Override
     public List<DishDto> getAllDishes() {
         return menuRepository.findAll().stream()
-                .map(DishDto::fromEntity)
+                .map(menuMapper::toDto)
                 .collect(Collectors.toList());
     }
 
@@ -44,11 +46,11 @@ public class MenuServiceImpl implements MenuService {
             // Frontend specific logic: take first 4 as popular for now
             return menuRepository.findAll().stream()
                     .limit(4)
-                    .map(DishDto::fromEntity)
+                    .map(menuMapper::toDto)
                     .collect(Collectors.toList());
         }
         return menuRepository.findByCategory(category).stream()
-                .map(DishDto::fromEntity)
+                .map(menuMapper::toDto)
                 .collect(Collectors.toList());
     }
 
@@ -75,7 +77,7 @@ public class MenuServiceImpl implements MenuService {
                 .allergens(dto.getAllergens() != null ? new HashSet<>(dto.getAllergens()) : null)
                 .macros(dto.getMacros())
                 .build();
-        return DishDto.fromEntity(menuRepository.save(dish));
+        return menuMapper.toDto(menuRepository.save(dish));
     }
 
     @Transactional
@@ -107,7 +109,7 @@ public class MenuServiceImpl implements MenuService {
             }
         }
 
-        return DishDto.fromEntity(menuRepository.save(dish));
+        return menuMapper.toDto(menuRepository.save(dish));
     }
 
     @Transactional
@@ -138,6 +140,6 @@ public class MenuServiceImpl implements MenuService {
             dish.getRecipe().add(recipeIngredient);
         }
 
-        return DishDto.fromEntity(menuRepository.save(dish));
+        return menuMapper.toDto(menuRepository.save(dish));
     }
 }

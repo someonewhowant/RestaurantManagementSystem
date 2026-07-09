@@ -12,6 +12,7 @@ import com.vanilla.crm.repository.InventoryRepository;
 import com.vanilla.crm.dto.inventory.ConsumeItemDto;
 import com.vanilla.crm.dto.inventory.InventoryItemDto;
 import com.vanilla.crm.entity.InventoryItem;
+import com.vanilla.crm.mapper.InventoryMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,12 +31,13 @@ import java.util.HashMap;
 public class InventoryServiceImpl implements InventoryService {
 
     private final InventoryRepository inventoryRepository;
+    private final InventoryMapper inventoryMapper;
 
     @Transactional(readOnly = true)
     @Override
     public List<InventoryItemDto> getAllItems() {
         return inventoryRepository.findAll().stream()
-                .map(InventoryItemDto::fromEntity)
+                .map(inventoryMapper::toDto)
                 .collect(Collectors.toList());
     }
 
@@ -43,7 +45,7 @@ public class InventoryServiceImpl implements InventoryService {
     @Override
     public List<InventoryItemDto> getLowStockItems() {
         return inventoryRepository.findLowStockItems().stream()
-                .map(InventoryItemDto::fromEntity)
+                .map(inventoryMapper::toDto)
                 .collect(Collectors.toList());
     }
 
@@ -51,7 +53,7 @@ public class InventoryServiceImpl implements InventoryService {
     @Override
     public List<InventoryItemDto> getExpiringItems() {
         return inventoryRepository.findExpiringItems().stream()
-                .map(InventoryItemDto::fromEntity)
+                .map(inventoryMapper::toDto)
                 .collect(Collectors.toList());
     }
 
@@ -68,7 +70,7 @@ public class InventoryServiceImpl implements InventoryService {
                 .pricePerUnit(dto.getPricePerUnit())
                 .expiresInDays(dto.getExpiresInDays())
                 .build();
-        return InventoryItemDto.fromEntity(inventoryRepository.save(item));
+        return inventoryMapper.toDto(inventoryRepository.save(item));
     }
 
     @Transactional
@@ -86,7 +88,7 @@ public class InventoryServiceImpl implements InventoryService {
         if (dto.getPricePerUnit() != null) item.setPricePerUnit(dto.getPricePerUnit());
         if (dto.getExpiresInDays() != null) item.setExpiresInDays(dto.getExpiresInDays());
 
-        return InventoryItemDto.fromEntity(inventoryRepository.save(item));
+        return inventoryMapper.toDto(inventoryRepository.save(item));
     }
 
     @Transactional
@@ -97,19 +99,19 @@ public class InventoryServiceImpl implements InventoryService {
         InventoryItem item = inventoryRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Item not found"));
         item.setCurrentStock(item.getCurrentStock() + amount);
-        return InventoryItemDto.fromEntity(inventoryRepository.save(item));
+        return inventoryMapper.toDto(inventoryRepository.save(item));
     }
 
     @Transactional
     @Override
     public InventoryItemDto consume(UUID id, Double amount) {
         log.info("Consuming item {} by {}", id, amount);
-        if (amount == null || amount <= 0) return inventoryRepository.findById(id).map(InventoryItemDto::fromEntity).orElseThrow();
+        if (amount == null || amount <= 0) return inventoryRepository.findById(id).map(inventoryMapper::toDto).orElseThrow();
         InventoryItem item = inventoryRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Item not found"));
         double newStock = item.getCurrentStock() - amount;
         item.setCurrentStock(newStock < 0 ? 0.0 : newStock);
-        return InventoryItemDto.fromEntity(inventoryRepository.save(item));
+        return inventoryMapper.toDto(inventoryRepository.save(item));
     }
 
     @Transactional

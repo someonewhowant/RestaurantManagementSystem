@@ -1,6 +1,5 @@
 package com.vanilla.crm.dto.orders;
 
-import com.vanilla.crm.entity.Order;
 import lombok.Builder;
 import lombok.Data;
 
@@ -20,17 +19,4 @@ public class OrderDto {
     private BigDecimal total;
     private List<OrderItemDto> items;
 
-    public static OrderDto fromEntity(Order order) {
-        return OrderDto.builder()
-                .id(order.getId())
-                .tableId(order.getTable().getId())
-                .status(order.getStatus().name().toLowerCase())
-                .createdAt(order.getCreatedAt() != null ? order.getCreatedAt().toString() : null)
-                .closedAt(order.getClosedAt() != null ? order.getClosedAt().toString() : null)
-                .total(order.getTotal())
-                .items(order.getItems() != null
-                        ? order.getItems().stream().map(OrderItemDto::fromEntity).collect(Collectors.toList())
-                        : List.of())
-                .build();
-    }
 }

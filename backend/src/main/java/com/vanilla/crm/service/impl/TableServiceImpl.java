@@ -6,6 +6,7 @@ import com.vanilla.crm.repository.TableRepository;
 
 import com.vanilla.crm.dto.tables.TableDto;
 import com.vanilla.crm.entity.RestaurantTable;
+import com.vanilla.crm.mapper.TableMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,12 +24,13 @@ import com.vanilla.crm.service.TableService;
 public class TableServiceImpl implements TableService {
 
     private final TableRepository tableRepository;
+    private final TableMapper tableMapper;
 
     @Transactional(readOnly = true)
     @Override
     public List<TableDto> getAllTables() {
         return tableRepository.findAll().stream()
-                .map(TableDto::fromEntity)
+                .map(tableMapper::toDto)
                 .collect(Collectors.toList());
     }
 
@@ -39,7 +41,7 @@ public class TableServiceImpl implements TableService {
         RestaurantTable table = tableRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Table not found"));
 
-        RestaurantTable.TableStatus status = TableDto.toStatusEnum(newStatus);
+        RestaurantTable.TableStatus status = tableMapper.toStatusEnum(newStatus);
         table.setStatus(status);
         table.setStatusUpdatedAt(Instant.now());
 
@@ -50,7 +52,7 @@ public class TableServiceImpl implements TableService {
             table.setWaiterId(waiterId);
         }
 
-        return TableDto.fromEntity(tableRepository.save(table));
+        return tableMapper.toDto(tableRepository.save(table));
     }
 
     @Transactional
@@ -61,7 +63,7 @@ public class TableServiceImpl implements TableService {
                 .orElseThrow(() -> new ResourceNotFoundException("Table not found"));
 
         table.setWaiterId(waiterId);
-        return TableDto.fromEntity(tableRepository.save(table));
+        return tableMapper.toDto(tableRepository.save(table));
     }
 
     @Transactional
@@ -74,7 +76,7 @@ public class TableServiceImpl implements TableService {
                 .status(RestaurantTable.TableStatus.FREE)
                 .statusUpdatedAt(Instant.now())
                 .build();
-        return TableDto.fromEntity(tableRepository.save(table));
+        return tableMapper.toDto(tableRepository.save(table));
     }
 
     @Transactional
@@ -85,7 +87,7 @@ public class TableServiceImpl implements TableService {
                 .orElseThrow(() -> new ResourceNotFoundException("Table not found"));
         if (dto.getNumber() != null) table.setNumber(dto.getNumber());
         if (dto.getCapacity() != null) table.setCapacity(dto.getCapacity());
-        return TableDto.fromEntity(tableRepository.save(table));
+        return tableMapper.toDto(tableRepository.save(table));
     }
 
     @Transactional

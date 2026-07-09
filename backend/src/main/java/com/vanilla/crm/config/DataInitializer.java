@@ -1,252 +1,27 @@
 package com.vanilla.crm.config;
 
-import com.vanilla.crm.repository.UserRepository;
-import com.vanilla.crm.entity.User;
-import com.vanilla.crm.repository.TransactionRepository;
-import com.vanilla.crm.entity.Transaction;
-import com.vanilla.crm.repository.InventoryRepository;
-import com.vanilla.crm.entity.InventoryItem;
-import com.vanilla.crm.repository.MenuRepository;
-import com.vanilla.crm.entity.Dish;
-import com.vanilla.crm.entity.RecipeIngredient;
-import com.vanilla.crm.repository.StaffRepository;
-import com.vanilla.crm.entity.Employee;
-import com.vanilla.crm.repository.TableRepository;
-import com.vanilla.crm.entity.RestaurantTable;
-import com.vanilla.crm.repository.OrderRepository;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import com.vanilla.crm.config.seed.DataSeeder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
-import java.math.BigDecimal;
-import java.time.Instant;
-import java.time.LocalDate;
 import java.util.List;
-import com.vanilla.crm.entity.Macros;
-import java.util.HashSet;
+
 
 @Component
 @RequiredArgsConstructor
 @Slf4j
 public class DataInitializer implements CommandLineRunner {
 
-    private final MenuRepository menuRepository;
-    private final InventoryRepository inventoryRepository;
-    private final StaffRepository staffRepository;
-    private final TransactionRepository transactionRepository;
-    private final TableRepository tableRepository;
-    private final UserRepository userRepository;
-    private final OrderRepository orderRepository;
-    private final PasswordEncoder passwordEncoder;
+    private final List<DataSeeder> seeders;
 
     @Override
     public void run(String... args) throws Exception {
-        // Принудительно очистим таблицы, если там только старые тестовые данные, чтобы загрузить новые 5 блюд
-        if (menuRepository.count() > 0 && menuRepository.count() < 5) {
-            log.info("Detected old test data. Clearing database to seed new full data...");
-            orderRepository.deleteAll(); // Delete orders first due to foreign key constraints on dishes
-            menuRepository.deleteAll();
-            inventoryRepository.deleteAll();
+        log.info("Starting data initialization with {} seeders...", seeders.size());
+        for (DataSeeder seeder : seeders) {
+            seeder.seed();
         }
-
-        if (menuRepository.count() == 0 && inventoryRepository.count() == 0) {
-            log.info("Database is empty. Seeding inventory and menu data...");
-            seedInventory();
-            seedMenuAndRecipes();
-        } else {
-            if (inventoryRepository.count() == 0) {
-                log.info("Database is empty. Seeding inventory data...");
-                seedInventory();
-            }
-            if (menuRepository.count() == 0) {
-                log.info("Database is empty. Seeding menu data...");
-                seedMenuAndRecipes();
-            }
-        }
-
-        if (staffRepository.count() == 0) {
-            log.info("Database is empty. Seeding staff data...");
-            seedStaff();
-        }
-
-        if (transactionRepository.count() == 0) {
-            log.info("Database is empty. Seeding budget data...");
-            seedBudget();
-        }
-
-        if (userRepository.count() == 0) {
-            log.info("Database is empty. Seeding admin user...");
-            seedUsers();
-        }
-
-        if (tableRepository.count() == 0) {
-            log.info("Database is empty. Seeding tables data...");
-            seedTables();
-        }
-    }
-
-    private void seedInventory() {
-        List<InventoryItem> items = List.of(
-            InventoryItem.builder().name("Лосось").category("Морепродукты").currentStock(2.0).minStock(5.0).unit("кг").pricePerUnit(new BigDecimal("1200")).expiresInDays(2).build(),
-            InventoryItem.builder().name("Говядина").category("Мясо").currentStock(15.0).minStock(10.0).unit("кг").pricePerUnit(new BigDecimal("850")).build(),
-            InventoryItem.builder().name("Картофель").category("Овощи").currentStock(40.0).minStock(20.0).unit("кг").pricePerUnit(new BigDecimal("40")).build(),
-            InventoryItem.builder().name("Помидоры").category("Овощи").currentStock(18.0).minStock(15.0).unit("кг").pricePerUnit(new BigDecimal("150")).expiresInDays(1).build(),
-            InventoryItem.builder().name("Оливковое масло").category("Бакалея").currentStock(12.0).minStock(5.0).unit("л").pricePerUnit(new BigDecimal("800")).build(),
-            InventoryItem.builder().name("Соль").category("Бакалея").currentStock(1.0).minStock(3.0).unit("кг").pricePerUnit(new BigDecimal("30")).build(),
-            InventoryItem.builder().name("Сливки 33%").category("Молочка").currentStock(5.0).minStock(3.0).unit("л").pricePerUnit(new BigDecimal("300")).expiresInDays(0).build(),
-            InventoryItem.builder().name("Кофе в зернах").category("Напитки").currentStock(3.0).minStock(2.0).unit("кг").pricePerUnit(new BigDecimal("1500")).build()
-        );
-        inventoryRepository.saveAll(items);
-        log.info("Seeded {} inventory items.", items.size());
-    }
-
-    private void seedMenuAndRecipes() {
-        Dish dish1 = Dish.builder()
-                .name("Стейк Рибай")
-                .category("Горячее")
-                .price(new BigDecimal("2500"))
-                .status(Dish.DishStatus.AVAILABLE)
-                .weight("300г")
-                .imageIcon("🥩")
-                .instructions("Прожарка medium rare, подавать с чесночным маслом")
-                .allergens(new HashSet<>(List.of("Мясо")))
-                .macros(Macros.builder().calories(650.0).protein(45.0).carbs(0.0).fats(50.0).build())
-                .build();
-
-        Dish dish2 = Dish.builder()
-                .name("Салат Цезарь")
-                .category("Салаты")
-                .price(new BigDecimal("450"))
-                .status(Dish.DishStatus.AVAILABLE)
-                .weight("250г")
-                .imageIcon("🥗")
-                .instructions("Соус отдельно")
-                .allergens(new HashSet<>(List.of("Яйцо", "Глютен")))
-                .macros(Macros.builder().calories(320.0).protein(12.0).carbs(15.0).fats(25.0).build())
-                .build();
-
-        Dish dish3 = Dish.builder()
-                .name("Картофель Фри")
-                .category("Закуски")
-                .price(new BigDecimal("200"))
-                .status(Dish.DishStatus.AVAILABLE)
-                .weight("150г")
-                .imageIcon("🍟")
-                .instructions("Жарить во фритюре до золотистой корочки")
-                .allergens(new HashSet<>())
-                .macros(Macros.builder().calories(290.0).protein(3.0).carbs(35.0).fats(15.0).build())
-                .build();
-
-        Dish dish4 = Dish.builder()
-                .name("Эспрессо")
-                .category("Напитки")
-                .price(new BigDecimal("150"))
-                .status(Dish.DishStatus.AVAILABLE)
-                .weight("30мл")
-                .imageIcon("☕")
-                .instructions("Классический эспрессо")
-                .allergens(new HashSet<>())
-                .macros(Macros.builder().calories(5.0).protein(0.0).carbs(0.0).fats(0.0).build())
-                .build();
-
-        Dish dish5 = Dish.builder()
-                .name("Тирамису")
-                .category("Десерты")
-                .price(new BigDecimal("350"))
-                .status(Dish.DishStatus.AVAILABLE)
-                .weight("150г")
-                .imageIcon("🍰")
-                .instructions("Подавать охлажденным")
-                .allergens(new HashSet<>(List.of("Лактоза", "Глютен", "Яйцо")))
-                .macros(Macros.builder().calories(280.0).protein(5.0).carbs(30.0).fats(12.0).build())
-                .build();
-
-        List<Dish> dishes = menuRepository.saveAll(List.of(dish1, dish2, dish3, dish4, dish5));
-
-        List<InventoryItem> items = inventoryRepository.findAll();
-        if (!items.isEmpty()) {
-            InventoryItem meat = items.stream().filter(i -> i.getName().equals("Говядина")).findFirst().orElse(items.get(0));
-            InventoryItem tomatoes = items.stream().filter(i -> i.getName().equals("Помидоры")).findFirst().orElse(items.get(0));
-            InventoryItem potatoes = items.stream().filter(i -> i.getName().equals("Картофель")).findFirst().orElse(items.get(0));
-            InventoryItem coffee = items.stream().filter(i -> i.getName().equals("Кофе в зернах")).findFirst().orElse(items.get(0));
-            InventoryItem cream = items.stream().filter(i -> i.getName().equals("Сливки 33%")).findFirst().orElse(items.get(0));
-            InventoryItem oil = items.stream().filter(i -> i.getName().equals("Оливковое масло")).findFirst().orElse(items.get(0));
-            InventoryItem salt = items.stream().filter(i -> i.getName().equals("Соль")).findFirst().orElse(items.get(0));
-
-            Dish savedDish1 = dishes.get(0);
-            savedDish1.getRecipe().add(RecipeIngredient.builder().dish(savedDish1).inventoryItem(meat).amount(0.35).build());
-            savedDish1.getRecipe().add(RecipeIngredient.builder().dish(savedDish1).inventoryItem(oil).amount(0.02).build());
-            savedDish1.getRecipe().add(RecipeIngredient.builder().dish(savedDish1).inventoryItem(salt).amount(0.01).build());
-            
-            Dish savedDish2 = dishes.get(1);
-            savedDish2.getRecipe().add(RecipeIngredient.builder().dish(savedDish2).inventoryItem(tomatoes).amount(0.05).build());
-            savedDish2.getRecipe().add(RecipeIngredient.builder().dish(savedDish2).inventoryItem(oil).amount(0.02).build());
-
-            Dish savedDish3 = dishes.get(2);
-            savedDish3.getRecipe().add(RecipeIngredient.builder().dish(savedDish3).inventoryItem(potatoes).amount(0.2).build());
-            savedDish3.getRecipe().add(RecipeIngredient.builder().dish(savedDish3).inventoryItem(salt).amount(0.01).build());
-
-            Dish savedDish4 = dishes.get(3);
-            savedDish4.getRecipe().add(RecipeIngredient.builder().dish(savedDish4).inventoryItem(coffee).amount(0.015).build());
-
-            Dish savedDish5 = dishes.get(4);
-            savedDish5.getRecipe().add(RecipeIngredient.builder().dish(savedDish5).inventoryItem(cream).amount(0.05).build());
-
-            menuRepository.saveAll(dishes);
-        }
-
-        log.info("Seeded {} dishes with recipes.", dishes.size());
-    }
-
-    private void seedStaff() {
-        List<Employee> employees = List.of(
-            Employee.builder().name("Александр Иванов").role(Employee.EmployeeRole.MANAGER).status(Employee.EmployeeStatus.ACTIVE).hireDate(LocalDate.of(2025, 1, 15)).onShift(true).shiftStartTime(Instant.now()).build(),
-            Employee.builder().name("Мария Смирнова").role(Employee.EmployeeRole.WAITER).status(Employee.EmployeeStatus.ACTIVE).hireDate(LocalDate.of(2025, 3, 22)).onShift(false).build(),
-            Employee.builder().name("Дмитрий Кузнецов").role(Employee.EmployeeRole.COOK).status(Employee.EmployeeStatus.ON_VACATION).hireDate(LocalDate.of(2024, 11, 5)).vacationStart(LocalDate.of(2026, 6, 1)).vacationEnd(LocalDate.of(2026, 6, 30)).onShift(false).build(),
-            Employee.builder().name("Анна Попова").role(Employee.EmployeeRole.CASHIER).status(Employee.EmployeeStatus.ACTIVE).hireDate(LocalDate.of(2026, 2, 10)).onShift(true).shiftStartTime(Instant.now().minusSeconds(3600)).build()
-        );
-        staffRepository.saveAll(employees);
-        log.info("Seeded {} employees.", employees.size());
-    }
-
-    private void seedBudget() {
-        List<Transaction> txs = List.of(
-            Transaction.builder().date(Instant.now().minusSeconds(86400 * 2)).amount(new BigDecimal("1500")).type(Transaction.TransactionType.INCOME).category("Оплата заказа").description("Выручка за смену").build(),
-            Transaction.builder().date(Instant.now().minusSeconds(86400)).amount(new BigDecimal("300")).type(Transaction.TransactionType.EXPENSE).category("Закупки").description("Закупка овощей").build(),
-            Transaction.builder().date(Instant.now()).amount(new BigDecimal("2100")).type(Transaction.TransactionType.INCOME).category("Оплата заказа").description("Выручка за смену").build(),
-            Transaction.builder().date(Instant.now()).amount(new BigDecimal("500")).type(Transaction.TransactionType.EXPENSE).category("Коммуналка").description("Оплата электричества").build()
-        );
-        transactionRepository.saveAll(txs);
-        log.info("Seeded {} transactions.", txs.size());
-    }
-
-    private void seedTables() {
-        List<RestaurantTable> tables = List.of(
-            RestaurantTable.builder().number(1).capacity(2).status(RestaurantTable.TableStatus.FREE).build(),
-            RestaurantTable.builder().number(2).capacity(2).status(RestaurantTable.TableStatus.OCCUPIED).statusUpdatedAt(Instant.now().minusSeconds(15 * 60)).build(),
-            RestaurantTable.builder().number(3).capacity(4).status(RestaurantTable.TableStatus.AWAITING_FOOD).statusUpdatedAt(Instant.now().minusSeconds(25 * 60)).build(),
-            RestaurantTable.builder().number(4).capacity(4).status(RestaurantTable.TableStatus.FREE).build(),
-            RestaurantTable.builder().number(5).capacity(6).status(RestaurantTable.TableStatus.PAYMENT).statusUpdatedAt(Instant.now().minusSeconds(5 * 60)).build(),
-            RestaurantTable.builder().number(6).capacity(8).status(RestaurantTable.TableStatus.FREE).build(),
-            RestaurantTable.builder().number(7).capacity(2).status(RestaurantTable.TableStatus.OCCUPIED).statusUpdatedAt(Instant.now().minusSeconds(40 * 60)).build(),
-            RestaurantTable.builder().number(8).capacity(4).status(RestaurantTable.TableStatus.FREE).build()
-        );
-        tableRepository.saveAll(tables);
-        log.info("Seeded {} tables.", tables.size());
-    }
-
-    private void seedUsers() {
-        User admin = User.builder()
-                .email("admin@vanilla.crm")
-                .passwordHash(passwordEncoder.encode("admin"))
-                .firstName("Иван")
-                .lastName("Иванов")
-                .restaurantName("Ресторан Vanilla")
-                .role(User.Role.OWNER)
-                .build();
-        userRepository.save(admin);
-        log.info("Seeded default admin user (admin@vanilla.crm / admin).");
+        log.info("Data initialization completed.");
     }
 }

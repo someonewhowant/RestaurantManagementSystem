@@ -10,14 +10,13 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.vanilla.crm.util.CsvExportUtil;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import jakarta.validation.Valid;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -40,8 +39,8 @@ public class BudgetController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
             @PageableDefault(size = 20, sort = "date", direction = Sort.Direction.DESC) Pageable pageable) {
         
-        Instant start = startDate != null ? startDate.atStartOfDay(ZoneId.systemDefault()).toInstant() : null;
-        Instant end = endDate != null ? endDate.plusDays(1).atStartOfDay(ZoneId.systemDefault()).toInstant() : null;
+        Instant start = toStartOfDay(startDate);
+        Instant end = toEndOfDay(endDate);
         
         return ResponseEntity.ok(budgetService.getTransactions(start, end, pageable));
     }
@@ -53,8 +52,8 @@ public class BudgetController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
         
-        Instant start = startDate != null ? startDate.atStartOfDay(ZoneId.systemDefault()).toInstant() : null;
-        Instant end = endDate != null ? endDate.plusDays(1).atStartOfDay(ZoneId.systemDefault()).toInstant() : null;
+        Instant start = toStartOfDay(startDate);
+        Instant end = toEndOfDay(endDate);
                 
         return ResponseEntity.ok(budgetService.getSummary(start, end));
     }
@@ -78,15 +77,17 @@ public class BudgetController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
         
-        Instant start = startDate != null ? startDate.atStartOfDay(ZoneId.systemDefault()).toInstant() : null;
-        Instant end = endDate != null ? endDate.plusDays(1).atStartOfDay(ZoneId.systemDefault()).toInstant() : null;
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.parseMediaType("text/csv"));
-        headers.setContentDispositionFormData("attachment", "budget_report.csv");
+        Instant start = toStartOfDay(startDate);
+        Instant end = toEndOfDay(endDate);
         
-        return ResponseEntity.ok()
-                .headers(headers)
-                .body(budgetService.exportCsv(start, end));
+        return CsvExportUtil.buildCsvResponse(budgetService.exportCsv(start, end), "budget_report.csv");
+    }
+
+    private Instant toStartOfDay(LocalDate date) {
+        return date != null ? date.atStartOfDay(ZoneId.systemDefault()).toInstant() : null;
+    }
+
+    private Instant toEndOfDay(LocalDate date) {
+        return date != null ? date.plusDays(1).atStartOfDay(ZoneId.systemDefault()).toInstant() : null;
     }
 }

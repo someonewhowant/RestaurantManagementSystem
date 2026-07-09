@@ -15,6 +15,7 @@ import com.vanilla.crm.entity.Dish;
 import com.vanilla.crm.dto.budget.BudgetSummaryDto;
 import com.vanilla.crm.dto.budget.TransactionDto;
 import com.vanilla.crm.entity.Transaction;
+import com.vanilla.crm.mapper.BudgetMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,16 +40,17 @@ public class BudgetServiceImpl implements BudgetService {
     private final TransactionRepository transactionRepository;
     private final OrderRepository orderRepository;
     private final InventoryService inventoryService;
+    private final BudgetMapper budgetMapper;
 
     @Transactional(readOnly = true)
     @Override
     public Page<TransactionDto> getTransactions(Instant start, Instant end, Pageable pageable) {
         if (start != null && end != null) {
             return transactionRepository.findAllByDateBetweenOrderByDateDesc(start, end, pageable)
-                    .map(TransactionDto::fromEntity);
+                    .map(budgetMapper::toDto);
         }
         return transactionRepository.findAllByOrderByDateDesc(pageable)
-                .map(TransactionDto::fromEntity);
+                .map(budgetMapper::toDto);
     }
 
     @Transactional(readOnly = true)
@@ -87,13 +89,13 @@ public class BudgetServiceImpl implements BudgetService {
         Transaction tx = Transaction.builder()
                 .date(dto.getDate() != null ? Instant.parse(dto.getDate()) : Instant.now())
                 .amount(dto.getAmount())
-                .type(TransactionDto.toTypeEnum(dto.getType()))
+                .type(budgetMapper.toTypeEnum(dto.getType()))
                 .category(dto.getCategory())
                 .description(dto.getDescription())
                 .orderId(dto.getOrderId())
                 .build();
 
-        return TransactionDto.fromEntity(transactionRepository.saveAndFlush(tx));
+        return budgetMapper.toDto(transactionRepository.saveAndFlush(tx));
     }
 
     @Transactional
@@ -135,7 +137,7 @@ public class BudgetServiceImpl implements BudgetService {
             });
         }
 
-        return TransactionDto.fromEntity(savedRefund);
+        return budgetMapper.toDto(savedRefund);
     }
 
     @Override

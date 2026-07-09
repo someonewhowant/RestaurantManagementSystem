@@ -9,10 +9,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.vanilla.crm.util.CsvExportUtil;
 import jakarta.validation.Valid;
 
 import java.util.List;
@@ -98,12 +97,6 @@ public class InventoryController {
     @Operation(summary = "Экспорт в CSV", description = "Скачать остатки на складе в формате CSV.")
     @GetMapping("/export/csv")
     public ResponseEntity<byte[]> exportCsv() {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.parseMediaType("text/csv"));
-        headers.setContentDispositionFormData("attachment", "inventory_report.csv");
-
-        return ResponseEntity.ok()
-                .headers(headers)
-                .body(inventoryService.exportCsv());
+        return CsvExportUtil.buildCsvResponse(inventoryService.exportCsv(), "inventory_report.csv");
     }
 }

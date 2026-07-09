@@ -7,6 +7,7 @@ import com.vanilla.crm.repository.StaffRepository;
 
 import com.vanilla.crm.dto.staff.EmployeeDto;
 import com.vanilla.crm.entity.Employee;
+import com.vanilla.crm.mapper.StaffMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,12 +26,13 @@ import com.vanilla.crm.service.StaffService;
 public class StaffServiceImpl implements StaffService {
 
     private final StaffRepository staffRepository;
+    private final StaffMapper staffMapper;
 
     @Transactional(readOnly = true)
     @Override
     public List<EmployeeDto> getAllEmployees() {
         return staffRepository.findAll().stream()
-                .map(EmployeeDto::fromEntity)
+                .map(staffMapper::toDto)
                 .collect(Collectors.toList());
     }
 
@@ -44,8 +46,8 @@ public class StaffServiceImpl implements StaffService {
                 .email(dto.getEmail())
                 .salary(dto.getSalary())
                 .salaryDate(dto.getSalaryDate())
-                .role(EmployeeDto.toRoleEnum(dto.getRole()))
-                .status(EmployeeDto.toStatusEnum(dto.getStatus()))
+                .role(staffMapper.toRoleEnum(dto.getRole()))
+                .status(staffMapper.toStatusEnum(dto.getStatus()))
                 .hireDate(dto.getHireDate() != null && !dto.getHireDate().isEmpty() ? LocalDate.parse(dto.getHireDate()) : LocalDate.now())
                 .onShift(dto.getOnShift() != null ? dto.getOnShift() : false)
                 .build();
@@ -53,7 +55,7 @@ public class StaffServiceImpl implements StaffService {
         if (dto.getVacationStart() != null && !dto.getVacationStart().isEmpty()) employee.setVacationStart(LocalDate.parse(dto.getVacationStart()));
         if (dto.getVacationEnd() != null && !dto.getVacationEnd().isEmpty()) employee.setVacationEnd(LocalDate.parse(dto.getVacationEnd()));
 
-        return EmployeeDto.fromEntity(staffRepository.save(employee));
+        return staffMapper.toDto(staffRepository.save(employee));
     }
 
     @Transactional
@@ -68,13 +70,13 @@ public class StaffServiceImpl implements StaffService {
         if (dto.getEmail() != null) employee.setEmail(dto.getEmail());
         if (dto.getSalary() != null) employee.setSalary(dto.getSalary());
         if (dto.getSalaryDate() != null) employee.setSalaryDate(dto.getSalaryDate());
-        if (dto.getRole() != null) employee.setRole(EmployeeDto.toRoleEnum(dto.getRole()));
+        if (dto.getRole() != null) employee.setRole(staffMapper.toRoleEnum(dto.getRole()));
         if (dto.getHireDate() != null && !dto.getHireDate().isEmpty()) {
             employee.setHireDate(LocalDate.parse(dto.getHireDate()));
         }
 
         if (dto.getStatus() != null) {
-            Employee.EmployeeStatus newStatus = EmployeeDto.toStatusEnum(dto.getStatus());
+            Employee.EmployeeStatus newStatus = staffMapper.toStatusEnum(dto.getStatus());
             employee.setStatus(newStatus);
             if (newStatus == Employee.EmployeeStatus.FIRED) {
                 employee.setOnShift(false);
@@ -96,7 +98,7 @@ public class StaffServiceImpl implements StaffService {
             employee.setVacationEnd(dto.getVacationEnd().isEmpty() ? null : LocalDate.parse(dto.getVacationEnd()));
         }
 
-        return EmployeeDto.fromEntity(staffRepository.save(employee));
+        return staffMapper.toDto(staffRepository.save(employee));
     }
 
     @Transactional
@@ -106,7 +108,7 @@ public class StaffServiceImpl implements StaffService {
         Employee employee = staffRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Employee not found"));
 
-        employee.setStatus(EmployeeDto.toStatusEnum(newStatus));
+        employee.setStatus(staffMapper.toStatusEnum(newStatus));
 
         // If fired, record the date
         if (employee.getStatus() == Employee.EmployeeStatus.FIRED) {
@@ -115,7 +117,7 @@ public class StaffServiceImpl implements StaffService {
             employee.setShiftStartTime(null);
         }
 
-        return EmployeeDto.fromEntity(staffRepository.save(employee));
+        return staffMapper.toDto(staffRepository.save(employee));
     }
 
     @Transactional
@@ -129,7 +131,7 @@ public class StaffServiceImpl implements StaffService {
         employee.setOnShift(isNowOnShift);
         employee.setShiftStartTime(isNowOnShift ? Instant.now() : null);
 
-        return EmployeeDto.fromEntity(staffRepository.save(employee));
+        return staffMapper.toDto(staffRepository.save(employee));
     }
 
     @Transactional

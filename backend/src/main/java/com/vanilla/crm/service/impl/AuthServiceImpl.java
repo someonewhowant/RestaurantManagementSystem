@@ -10,6 +10,7 @@ import com.vanilla.crm.dto.auth.LoginRequest;
 import com.vanilla.crm.dto.auth.RegisterRequest;
 import com.vanilla.crm.dto.auth.UserDto;
 import com.vanilla.crm.entity.User;
+import com.vanilla.crm.mapper.AuthMapper;
 import com.vanilla.crm.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -32,6 +33,7 @@ public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider tokenProvider;
+    private final AuthMapper authMapper;
 
     @Transactional
     @Override
@@ -68,7 +70,7 @@ public class AuthServiceImpl implements AuthService {
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
-        return new AuthResponse(jwt, UserDto.fromEntity(user));
+        return new AuthResponse(jwt, authMapper.toDto(user));
     }
 
     @Transactional(readOnly = true)
@@ -76,6 +78,6 @@ public class AuthServiceImpl implements AuthService {
     public UserDto getCurrentUser(UUID userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
-        return UserDto.fromEntity(user);
+        return authMapper.toDto(user);
     }
 }

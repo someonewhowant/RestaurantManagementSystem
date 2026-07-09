@@ -1,6 +1,9 @@
 package com.vanilla.crm.util;
 
 import java.nio.charset.StandardCharsets;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 
 /**
  * Utility class for CSV export operations.
@@ -37,5 +40,22 @@ public final class CsvExportUtil {
     public static String escapeField(Object value) {
         if (value == null) return "";
         return value.toString().replace(";", " ");
+    }
+
+    /**
+     * Builds a standardized ResponseEntity for CSV file downloads.
+     *
+     * @param data     the CSV byte array
+     * @param filename the name of the file to be downloaded
+     * @return a properly configured ResponseEntity
+     */
+    public static ResponseEntity<byte[]> buildCsvResponse(byte[] data, String filename) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.parseMediaType("text/csv"));
+        headers.setContentDispositionFormData("attachment", filename);
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(data);
     }
 }

@@ -8,10 +8,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.vanilla.crm.util.CsvExportUtil;
 import jakarta.validation.Valid;
 
 import java.util.List;
@@ -75,12 +74,6 @@ public class StaffController {
     @Operation(summary = "Экспорт в CSV", description = "Скачать список персонала в формате CSV.")
     @GetMapping("/export/csv")
     public ResponseEntity<byte[]> exportCsv() {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.parseMediaType("text/csv"));
-        headers.setContentDispositionFormData("attachment", "staff_report.csv");
-
-        return ResponseEntity.ok()
-                .headers(headers)
-                .body(staffService.exportCsv());
+        return CsvExportUtil.buildCsvResponse(staffService.exportCsv(), "staff_report.csv");
     }
 }
